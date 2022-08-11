@@ -1,0 +1,10 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Create a new ec2 key pair
+  delegate_to: localhost
+  amazon.aws.ec2_key:
+    region: "{{ region_id }}"
+    name: "{{ ec2_key_name }}"
+    key_material: "{{ lookup('file', local_ssh_key.path + '/' + local_ssh_key.public_key_name) }}"
+  register: r_ec2_key
+

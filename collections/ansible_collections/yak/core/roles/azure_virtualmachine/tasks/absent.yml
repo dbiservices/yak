@@ -1,0 +1,14 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Delete the VM
+  delegate_to: localhost
+  azure.azcollection.azure_rm_virtualmachine:
+    resource_group: "{{ resource_group }}"
+    name: "{{ server_name }}"
+    remove_on_absent: all
+    state: absent
+  register: r_azure
+
+- debug: var=r_azure
+  delegate_to: localhost
+  when: debug | bool

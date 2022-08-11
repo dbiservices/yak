@@ -1,0 +1,45 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get facts by name
+  delegate_to: localhost
+  azure_rm_virtualmachine_info:
+    resource_group: "{{ resource_group }}"
+    name: "{{ server_name }}"
+  register: r_azure_rm_virtualmachine_info
+
+- debug: var=r_azure_rm_virtualmachine_info
+  when: debug|bool
+
+- name: Get facts for one network interface
+  delegate_to: localhost
+  azure_rm_networkinterface_info:
+    resource_group: "{{ resource_group }}"
+    name: "{{ r_azure_rm_virtualmachine_info.vms[0].network_interface_names[0] }}"
+  register: r_azure_rm_networkinterface_info
+
+- debug: var=r_azure_rm_networkinterface_info
+  when: debug|bool
+
+- set_fact:
+    azure_private_ip: "{{ r_azure_rm_networkinterface_info.networkinterfaces[0].ip_configurations[0].private_ip_address }}"
+
+- set_fact:
+    administrative_ip: "{{ r_azure_rm_networkinterface_info.networkinterfaces[0].ip_configurations[0].private_ip_address }}"
+  when: host_ip_access == 'private_ip'
+
+- block:
+    - name: Get facts for one Public IP
+      delegate_to: localhost
+      azure_rm_publicipaddress_info:
+        resource_group: "{{ resource_group }}"
+        name: "{{ r_azure_rm_networkinterface_info.networkinterfaces[0].ip_configurations[0].public_ip_address|basename }}"
+      register: r_azure_rm_publicipaddress_info
+
+    - debug: var=r_azure_rm_publicipaddress_info
+      when: debug|bool
+
+    - set_fact:
+        administrative_ip: "{{ r_azure_rm_publicipaddress_info.publicipaddresses[0].ip_address }}"
+        azure_public_ip: "{{ r_azure_rm_publicipaddress_info.publicipaddresses[0].ip_address }}"
+  when: host_ip_access == 'public_ip'
+

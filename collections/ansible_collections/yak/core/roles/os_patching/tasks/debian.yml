@@ -1,0 +1,75 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+  changed_when: false
+
+
+# apt module doesn't have a parameter to list available updates
+- name: Get packages that can be upgraded
+  become: true
+  shell: | 
+    apt list --upgradable
+  register: reg_apt_output
+  changed_when: false
+
+
+- name: List packages that can be upgraded
+  ansible.builtin.debug:
+    msg: "{{ reg_apt_output.stdout_lines }}"
+  when: reg_apt_output.stdout is not regex("^Listing...$")
+
+
+# - name: Request user confirmation
+#   ansible.builtin.pause:
+#     prompt: |
+    
+#       *************************************************************************
+#       * The packages listed above will be upgraded. Do you want to continue ? *
+#       * -> Press RETURN to continue.                                          *
+#       * -> Press Ctrl+c and then "a" to abort.                                *
+#       *************************************************************************
+#   when:
+#     - reg_apt_output is defined
+#     - reg_apt_output.stdout is not regex("^Listing...$")
+
+
+- name: Upgrade packages
+  become: true
+  ansible.builtin.apt:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: reg_upgrade_ok
+  when: reg_apt_output.stdout is not regex("^Listing...$")
+
+
+- name: Display errors if upgrade failed
+  ansible.builtin.debug:
+    msg: "Packages upgrade failed"
+  when:
+    - reg_apt_output.stdout is not regex("^Listing...$")
+    - reg_upgrade_ok is not defined
+
+
+- name: Check if a reboot is required
+  stat:
+    path: /var/run/reboot-required
+  register: reg_reboot_required
+  changed_when: reg_reboot_required.stat.exists
+  notify:
+    - Reboot server
+  when: reg_apt_output.stdout is not regex("^Listing...$")
+
+
+- name: No updates available
+  debug:
+    msg:
+      - "**********************************************************************"
+      - "* No updates available.                                              *"
+      - "* Your OS is already running with the latest version of all packages *"
+      - "**********************************************************************"
+  when: reg_apt_output.stdout is regex("^Listing...$")
+...

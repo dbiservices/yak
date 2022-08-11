@@ -1,0 +1,12 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+is_cloud_environement: yes
+environment: production
+ansible_user: azureuser
+provider: azure
+subscription:
+    id:
+    name: Azure subscription 1
+resource_group: 
+virtual_network_name: 
+subnet_name: 
+security_group: 

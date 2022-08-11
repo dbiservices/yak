@@ -1,0 +1,79 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get packages that can be upgraded
+  become: yes
+  ansible.builtin.dnf:
+    list: upgrades
+    state: latest
+    update_cache: yes
+  register: reg_dnf_output
+  changed_when: false
+
+
+- name: List packages that can be upgraded
+  ansible.builtin.debug:
+    msg: "{{ reg_dnf_output.results | map(attribute='name') | list }}"
+  when: reg_dnf_output.results
+  
+
+# - name: Request user confirmation
+#   ansible.builtin.pause:
+#     prompt: |
+    
+#       *************************************************************************
+#       * The packages listed above will be upgraded. Do you want to continue ? *
+#       * -> Press RETURN to continue.                                          *
+#       * -> Press Ctrl+c and then "a" to abort.                                *
+#       *************************************************************************
+#   when: reg_dnf_output.results
+
+
+- name: Upgrade packages
+  become: yes
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+    update_only: no
+  register: reg_upgrade_ok
+  when: reg_dnf_output.results
+
+
+- name: Display errors if upgrade failed
+  ansible.builtin.debug:
+    msg: "Packages upgrade failed"
+  when: 
+    - reg_dnf_output.results
+    - reg_upgrade_ok is not defined
+
+
+- name: Install dnf-utils
+  become: true
+  ansible.builtin.dnf:
+    name: 'dnf-utils'
+    state: latest
+    update_cache: yes
+  when: reg_dnf_output.results
+
+
+- name: Check if a reboot is required
+  become: true
+  ansible.builtin.command: needs-restarting -r
+  register: reg_reboot_required
+  ignore_errors: true
+  failed_when: false
+  changed_when: reg_reboot_required.rc != 0
+  notify:
+    - Reboot server
+  when: reg_dnf_output.results
+
+
+- name: No updates available
+  debug:
+    msg:
+      - "**********************************************************************"
+      - "* No updates available.                                              *"
+      - "* Your OS is already running with the latest version of all packages *"
+      - "**********************************************************************"
+  when: not reg_dnf_output.results
+...

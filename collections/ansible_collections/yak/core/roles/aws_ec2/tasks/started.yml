@@ -1,0 +1,24 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get instance ID
+  delegate_to: localhost
+  amazon.aws.ec2_instance_info:
+    region: "{{ region_id }}"
+    filters:
+      "tag:Name": "{{ server_name }}"
+      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+  failed_when: r_ec2_instance_info.instances|length > 1
+  register: r_ec2_instance_info
+
+- debug: var=r_ec2_instance_info
+  when: debug | bool
+
+- name: Start EC2 instance
+  delegate_to: localhost
+  amazon.aws.ec2_instance:
+    region: "{{ region_id }}"
+    state: started
+    instance_ids:
+      - "{{ r_ec2_instance_info.instances[0].instance_id }}"
+
+- include_tasks: "wait_for_connection_{{ os_type }}.yml"

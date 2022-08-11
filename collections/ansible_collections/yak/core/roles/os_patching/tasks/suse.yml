@@ -1,0 +1,68 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+# zypper module doesn't have a parameter to list available updates
+- name: Get packages that can be upgraded
+  become: true
+  shell: | 
+    zypper list-updates
+  register: reg_zypper_output
+  changed_when: false
+
+
+- name: List packages that can be upgraded
+  ansible.builtin.debug:
+    msg: "{{ reg_zypper_output.stdout_lines }}"
+  when: reg_zypper_output is not regex("No updates found")
+
+
+# - name: Request user confirmation
+#   ansible.builtin.pause:
+#     prompt: |
+    
+#       *************************************************************************
+#       * The packages listed above will be upgraded. Do you want to continue ? *
+#       * -> Press RETURN to continue.                                          *
+#       * -> Press Ctrl+c and then "a" to abort.                                *
+#       *************************************************************************
+#   when:
+#     - reg_zypper_output is defined
+#     - reg_zypper_output is not regex("No updates found")
+
+
+- name: Upgrade packages
+  become: true
+  zypper:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: reg_upgrade_ok
+  when: reg_zypper_output is not regex("No updates found")
+
+
+- name: Display errors if upgrade failed
+  ansible.builtin.debug:
+    msg: "Packages upgrade failed"
+  when:
+    - reg_zypper_output is not regex("No updates found") 
+    - reg_upgrade_ok is not defined
+
+
+- name: Check if a reboot is required
+  stat:
+    path: /boot/do_purge_kernels
+  register: reg_reboot_required
+  changed_when: reg_reboot_required.stat.exists
+  notify:
+    - Reboot server
+  when: reg_zypper_output is not regex("No updates found")
+
+
+- name: No updates available
+  debug:
+    msg:
+      - "**********************************************************************"
+      - "* No updates available.                                              *"
+      - "* Your OS is already running with the latest version of all packages *"
+      - "**********************************************************************"
+  when: reg_zypper_output is regex("No updates found")
+...

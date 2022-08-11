@@ -1,0 +1,54 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- name: Get instance ID
+  delegate_to: localhost
+  amazon.aws.ec2_instance_info:
+    region: "{{ region_id }}"
+    filters:
+      "tag:Name": "{{ server_name }}"
+      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+  failed_when: r_ec2_instance_info.instances|length > 1
+  register: r_ec2_instance_info
+
+- debug: var=r_ec2_instance_info
+  when: debug | bool
+
+- name: Create the ssh config file if not exists
+  delegate_to: localhost
+  copy:
+    content: ""
+    dest: ~/.ssh/config
+    force: no
+    mode: 0600
+
+- name: Insert/Update ssh config file
+  delegate_to: localhost
+  blockinfile:
+    path: ~/.ssh/config
+    marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
+    block: |
+      {% if host_ip_access == 'private_ip' %}
+      Host {{ r_ec2_instance_info.instances[0].private_ip_address }} {{ inventory_hostname }}
+      {% elif host_ip_access == 'public_ip' and public_ip.mode == 'auto' %}
+      Host {{ r_ec2_instance_info.instances[0].public_ip_address }} {{ inventory_hostname }}
+      {% elif host_ip_access == 'public_ip' and public_ip.mode == 'manual' %}
+      Host {{ r_ec2_instance_info.instances[0].public_ip_address }} {{ inventory_hostname }}
+      {% endif %}
+          {% if host_ip_access == 'private_ip' %}
+          HostName {{ r_ec2_instance_info.instances[0].private_ip_address }}
+          {% elif host_ip_access == 'public_ip' and public_ip.mode == 'auto' %}
+          HostName {{ r_ec2_instance_info.instances[0].public_ip_address }}
+          {% elif host_ip_access == 'public_ip' and public_ip.mode == 'manual' %}
+          HostName {{ r_ec2_instance_info.instances[0].public_ip_address }}
+          {% endif %}
+          User {{ os_admin_username }}
+          StrictHostKeyChecking no
+          IdentityFile {{ local_ssh_key.path }}/{{ local_ssh_key.private_key_name }}
+          ServerAliveInterval 60
+
+- include_tasks: "wait_for_connection_{{ os_type }}.yml"
+
+- name: Return facts to playbook
+  delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_ec2_instance_info.instances[0] }}"

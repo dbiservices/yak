@@ -1,0 +1,21 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get OCI instances facts
+  delegate_to: localhost
+  oracle.oci.oci_compute_instance_facts:
+    compartment_id: "{{ compartment_id }}"
+    display_name: "{{ display_name }}"
+    lifecycle_state: RUNNING
+  register: r_oci_compute_instance_facts
+  failed_when: r_oci_compute_instance_facts.instances|length != 1
+
+- debug: var=r_oci_compute_instance_facts
+  when: debug|bool
+
+- name: Stop instance
+  delegate_to: localhost
+  oracle.oci.oci_compute_instance_actions:
+    compartment_id: "{{ compartment_id }}"
+    instance_id: "{{ r_oci_compute_instance_facts.instances[0].id }}"
+    action: stop
+    action_type: softreset

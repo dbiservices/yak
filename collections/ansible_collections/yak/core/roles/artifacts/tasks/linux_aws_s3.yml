@@ -1,0 +1,60 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Download and install AWS command line utility
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     unzip -o awscliv2.zip 
+     ./aws/install --update
+    chdir: "/tmp"
+    creates: "/usr/local/bin/aws"
+
+- name: Install python3-pip
+  become: true
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+
+- name: Install boto3
+  become: true
+  ansible.builtin.pip:
+    name: boto3
+
+- name: Get details/listing of AWS s3 storage bucket s3://{{ pv_artifacts_repo.bucket_name }} (prefix "{{ pv_artifacts_repo.prefix }}")
+  amazon.aws.aws_s3:
+    bucket: "{{ pv_artifacts_repo.bucket_name }}"
+    prefix: "{{ pv_artifacts_repo.prefix }}"
+    mode: list
+  register: reg_bucket_items
+
+- name: Create folders as they are not managed by Ansible module amazon.aws.aws_s3
+  become: true
+  ansible.builtin.file:
+    path: "{{ pv_artifacts_repo.path }}/{{ item | regex_replace( ( item | basename ),'') }}"
+    state: directory
+    mode: 0755
+    owner: "{{ pv_artifacts_repo.owner }}"
+    group: "{{ pv_artifacts_repo.group }}"
+  loop: "{{ reg_bucket_items.s3_keys }}"
+  when: 
+    - (item | regex_replace( ( item | basename ),'')) is regex('/$')
+    - item in pv_artifacts_list
+  loop_control:
+    label: "{{ pv_artifacts_repo.path }}/{{ item | regex_replace( ( item | basename ),'') }}"
+
+- name: Download specific AWS s3 files
+  become: true
+  become_user: "{{ pv_artifacts_repo.owner }}"
+  amazon.aws.aws_s3:
+    bucket: "{{ pv_artifacts_repo.bucket_name }}"
+    object: "{{ item }}"
+    dest: "{{ pv_artifacts_repo.path }}/{{ item }}"
+    mode: get
+    overwrite: different
+  loop: "{{ pv_artifacts_list }}"
+  loop_control:
+    label: "{{ pv_artifacts_repo.path }}/{{ item }}"
+  when: item is not regex('/$')
+
+...

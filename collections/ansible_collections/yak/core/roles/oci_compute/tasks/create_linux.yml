@@ -1,0 +1,31 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- include_tasks: create_vnic_details.yml
+
+- name: Create instance
+  delegate_to: localhost
+  oracle.oci.oci_compute_instance:
+    state: present
+    region: "{{ region }}"
+    availability_domain: "{{ availability_domain }}"
+    compartment_id: "{{ compartment_id }}"
+    shape: "{{ shape.name }}"
+    shape_config:
+      memory_in_gbs: "{{ shape.memory_in_gbs }}"
+      ocpus: "{{ shape.ocpus }}"
+    image_id: "{{ image_id }}"
+    display_name: "{{ display_name }}"
+    subnet_id: "{{ subnet_id }}"
+    create_vnic_details: "{{ vnic_details }}"
+    preserve_boot_volume: no
+    metadata : { "ssh_authorized_keys" : "{{ lookup('file', ssh_public_key) }}" }
+  register: r_oci_compute_instance_present
+
+- debug: var=r_oci_compute_instance_present
+  delegate_to: localhost
+  when: debug | bool
+
+- delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_oci_compute_instance_present.instance }}"

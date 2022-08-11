@@ -1,0 +1,46 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- set_fact:
+    iscsi_commands: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].volume_attachment.iscsi_attach_commands|[]') }}"
+
+- name: Run ISCSI configuration
+  ansible.windows.win_powershell:
+    script: "{{ iscsi_commands|join('\n') }}"
+
+- name: Get disk number per TargetNodeAddress
+  ansible.windows.win_powershell:
+    script: |
+      # Take each disk number and get drive letter and iSCSI conenctions from variables
+      Foreach ($disk in Get-Disk| ?{$_.BusType -Eq "iSCSI"}) {
+          $ISCSI = Get-Disk -Number $disk.Number | Get-IscsiSession
+
+        # Custom Output based on variables
+          [pscustomobject]@{
+              DiskNumber=$disk.Number -join '';
+              TargetNodeAddress=$ISCSI.TargetNodeAddress -join '';
+
+          }
+      }
+  register: r_disk_number_per_target_node_address
+
+- debug: var=r_disk_number_per_target_node_address
+
+- set_fact:
+    derived_disk_metadata: []
+
+# The next task expects this format.
+- set_fact:
+    derived_disk_metadata: >
+      {{ derived_disk_metadata }} +
+      [
+        {
+          'drive_letter': '{{ item.drive_letter }}',
+          'partition_label': '{{ item.partition_label }}',
+          'windows_disk_number': {{ r_disk_number_per_target_node_address|json_query('output[?TargetNodeAddress==`'+item.iqn|string+'`].DiskNumber|[0]')|int }}
+        }
+      ]
+  with_items: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].{volume_name: item.item.volume_name, drive_letter: item.item.drive_letter, partition_label: item.item.partition_label, iqn:volume_attachment.iqn}') }}"
+
+- debug: var=derived_disk_metadata
+  when: debug | bool
+

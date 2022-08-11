@@ -1,0 +1,83 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- debug:
+    msg:
+      - "Derive IP configuration with:"
+      - "  private_ip | mode = '{{ private_ip.mode }}'"
+      - "  private_ip | ip   = '{{ private_ip.ip|default('none') }}'"
+      - "  public_ip  | mode = '{{ public_ip.mode }}'"
+      - "  public_ip  | ip   = '{{ public_ip.ip|default('none') }}'"
+
+- name: Retrieve the public IP name from IP
+  delegate_to: localhost
+  azure.azcollection.azure_rm_publicipaddress_info:
+    resource_group: "{{ resource_group }}"
+  register: r_azure_rm_publicipaddress_info
+  when: public_ip.mode == 'manual'
+
+- debug: var=r_azure_rm_publicipaddress_info
+  when: debug|bool
+  when: public_ip.mode == 'manual'
+
+- set_fact:
+    azure_ip_configurations:
+      - name: "{{ server_name }}-ipconfig1"
+        private_ip_address: "{{ private_ip.ip }}"
+        private_ip_allocation_method: Static
+        public_ip_address_name: "{{ server_name }}-public_ip001"
+        public_ip_allocation_method: "Static"
+        primary: True
+  when: private_ip.mode == 'manual' and public_ip.mode == 'auto'
+
+- set_fact:
+    azure_ip_configurations:
+      - name: "{{ server_name }}-ipconfig1"
+        private_ip_address: "{{ private_ip.ip }}"
+        private_ip_allocation_method: Static
+        public_ip_address_name: "{{ r_azure_rm_publicipaddress_info|json_query('publicipaddresses[?ip_address==`'+public_ip.ip+'`].name|[0]') }}"
+        public_ip_allocation_method: "Static"
+        primary: True
+  when: private_ip.mode == 'manual' and public_ip.mode == 'manual'
+
+- set_fact:
+    azure_ip_configurations:
+      - name: "{{ server_name }}-ipconfig1"
+        private_ip_address: "{{ private_ip.ip }}"
+        private_ip_allocation_method: Static
+        primary: True
+  when: private_ip.mode == 'manual' and public_ip.mode == 'none'
+
+- set_fact:
+    azure_ip_configurations:
+      - name: "{{ server_name }}-ipconfig1"
+        private_ip_allocation_method: Dynamic
+        public_ip_address_name: "{{ server_name }}-public_ip001"
+        public_ip_allocation_method: "Static"
+        primary: True
+  when: private_ip.mode == 'auto' and public_ip.mode == 'auto'
+
+- set_fact:
+    azure_ip_configurations:
+      - name: "{{ server_name }}-ipconfig1"
+        private_ip_allocation_method: Dynamic
+        public_ip_address_name: "{{ r_azure_rm_publicipaddress_info|json_query('publicipaddresses[?ip_address==`'+public_ip.ip+'`].name|[0]') }}"
+        public_ip_allocation_method: "Static"
+        primary: True
+  when: private_ip.mode == 'auto' and public_ip.mode == 'manual'
+
+- set_fact:
+    azure_ip_configurations:
+      - name: "{{ server_name }}-ipconfig1"
+        private_ip_allocation_method: Dynamic
+        primary: True
+  when: private_ip.mode == 'auto' and public_ip.mode == 'none'
+
+- name: Create a network interface with minimal parameters
+  delegate_to: localhost
+  azure.azcollection.azure_rm_networkinterface:
+    name: "{{ server_name }}-nic001"
+    resource_group: "{{ resource_group }}"
+    virtual_network: "{{ virtual_network_name }}"
+    subnet_name: "{{ subnet_name }}"
+    security_group: "{{ security_group }}"
+    ip_configurations: "{{ azure_ip_configurations }}"

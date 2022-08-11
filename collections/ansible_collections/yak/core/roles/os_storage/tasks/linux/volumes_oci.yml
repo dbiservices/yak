@@ -1,0 +1,34 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Perform a ISCSI discovery
+  become: yes
+  community.general.open_iscsi:
+    show_nodes: yes
+    discover: yes
+    auto_portal_startup: yes
+    auto_node_startup: yes
+    ip: "{{ item.volume_attachment.ipv4 }}"
+    port: "{{ item.volume_attachment.port }}"
+  with_items: "{{ r_oci_blockstorage_volume_attachment.results }}"
+
+- name: Login to ISCSI target
+  become: yes
+  community.general.open_iscsi:
+    login: yes
+    target: "{{ item.volume_attachment.iqn }}"
+  with_items: "{{ r_oci_blockstorage_volume_attachment.results }}"
+  register: r_iscsi_devices
+
+- debug: var=r_iscsi_devices
+  delegate_to: localhost
+  when: debug | bool
+
+- set_fact:
+    pvs_list: "{{ r_iscsi_devices|json_query('results[*].devicenodes|[]') }}"
+
+- name: Create a volume group
+  become: yes
+  lvg:
+    vg: "{{ volume_group_name }}"
+    pvs: "{{ pvs_list }}"
+

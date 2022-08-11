@@ -1,0 +1,26 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Check target type
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - delegate_to: localhost
+      ansible.builtin.assert:
+        that:
+          - target_type == 'server'
+        msg: "This playbook can only run on 'server' target type. Current is '{{ target_type }}'."
+
+- name: Patch server
+  tags: patch
+  hosts: "{{ target }}"
+  vars:
+    debug: false
+  tasks:
+
+    - include_role:
+        name: yak.core.os_patching
+...

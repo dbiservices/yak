@@ -1,0 +1,27 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+# defaults file for aws
+state: started
+os_type: linux
+os_admin_username: ec2-user
+server_name: "test-srv-01"
+ec2_key_name: "{{ server_name }}"
+ec2_instance_base_directory: "~/.{{ server_name }}"
+nb_instances: 1
+debug: False
+returned: ""
+force: False # If the instance exists, delete it before creating it
+image_id: ami-00a205cb8e06c3c4e # Amazon Linux 2 AMI (HVM), SSD Volume Type | 64-bit x86 | Free tier eligible
+instance_type: t3.large
+region_id: eu-central-1
+availability_zone: eu-central-1a
+local_ssh_key:
+    path: ~/.ssh
+    private_key_name: id_rsa
+    public_key_name: id_rsa.pub
+volumes_params:
+  - device_name: /dev/sda1
+    volume_type: gp2
+    volume_size: 10
+#volumes: List of additional devices, default no additional devices, example
+  # - { name: sdd, size_GB: 50, type: gp2 }

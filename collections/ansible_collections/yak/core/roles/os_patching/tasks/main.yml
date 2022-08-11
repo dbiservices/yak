@@ -1,0 +1,11 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- include_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- include_tasks: suse.yml
+  when: ansible_os_family == "Suse"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+...

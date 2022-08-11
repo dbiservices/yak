@@ -1,0 +1,61 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- name: Gather information about instance
+  delegate_to: localhost
+  community.aws.ec2_instance_info:
+    region: "{{ region_id }}"
+    filters:
+      "tag:Name": "{{ vm_name }}"
+      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+  register: r_ec2_instance_info
+
+- set_fact:
+    vm_disk: "{{ r_ec2_instance_info | json_query('instances[0].block_device_mappings[*].{device_name:device_name,volume_id:ebs.volume_id}') }}"
+
+- debug: var=vm_disk
+  when: debug | bool
+
+- name: Get disk facts
+  win_disk_facts:
+
+- set_fact:
+    windows_disks: []
+
+- debug: var=windows_disks
+  when: debug | bool
+
+- set_fact:
+    windows_disks: >
+      {{ windows_disks }} +
+      [
+        {
+          'windows_disk_number': {{ item.windows_disk_number }},
+          'volume_id': 'vol-{{ item.serial_number.split("_")[0][3:] }}',
+          'device_name': '{{ vm_disk|json_query('[?volume_id==`vol-'+item.serial_number.split("_")[0][3:]+'`].device_name|[0]') }}'
+        }
+      ]
+  with_items: "{{ ansible_disks | json_query('[?partitions[0].drive_letter!=`C`].{serial_number:serial_number,windows_disk_number:number}') }}"
+
+- debug: var=windows_disks
+  when: debug | bool
+
+- debug: var=volumes
+  when: debug | bool
+
+- set_fact:
+    derived_disk_metadata: []
+
+# The next task expects this format.
+- set_fact:
+    derived_disk_metadata: >
+      {{ derived_disk_metadata }} +
+      [
+        {
+          'drive_letter': '{{ item.drive_letter }}',
+          'partition_label': '{{ item.partition_label }}',
+          'windows_disk_number': {{ windows_disks|json_query('[?device_name==`'+item.device_name+'`].windows_disk_number|[0]')|int }}
+        }
+      ]
+  with_items: "{{ volumes }}"
+
+- debug: var=derived_disk_metadata
+  when: debug | bool

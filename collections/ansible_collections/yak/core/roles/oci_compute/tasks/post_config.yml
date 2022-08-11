@@ -1,0 +1,25 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get OCI instances facts
+  delegate_to: localhost
+  oracle.oci.oci_compute_instance_facts:
+    compartment_id: "{{ compartment_id }}"
+    display_name: "{{ display_name }}"
+    lifecycle_state: RUNNING
+  register: r_oci_compute_instance_facts
+  failed_when: r_oci_compute_instance_facts.instances|length != 1
+
+- debug: var=r_oci_compute_instance_facts
+  when: debug|bool
+
+- set_fact:
+    oci_private_ip: "{{ r_oci_compute_instance_facts.instances[0].primary_private_ip }}"
+    oci_public_ip: "{{ r_oci_compute_instance_facts.instances[0].primary_public_ip }}"
+
+- set_fact:
+    administrative_ip: "{{ oci_private_ip }}"
+  when: host_ip_access == 'private_ip'
+
+- set_fact:
+    administrative_ip: "{{ oci_public_ip }}"
+  when: host_ip_access == 'public_ip'

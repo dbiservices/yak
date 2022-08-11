@@ -1,0 +1,10 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Stop server
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - include_tasks: "stop/{{ provider }}.yml"

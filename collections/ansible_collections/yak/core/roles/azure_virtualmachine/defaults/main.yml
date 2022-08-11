@@ -1,0 +1,6 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+os_admin_username: azureuser
+managed_disk_type: StandardSSD_LRS
+debug: false
+returned: ""

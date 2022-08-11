@@ -1,0 +1,6 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+## TODO
+# ---> 0 - Crosscheck attributes vs reality
+# ---> 1 - Update attribute of component
+# ---> 2 - Apply (--tag <PRE|EXEC|POST|ROLLBACK>)

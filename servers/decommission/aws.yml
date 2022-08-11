@@ -1,0 +1,7 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- include_role:
+    name: yak.core.aws_ec2
+  vars:
+    state: absent
+    server_name: "{{ machine_name }}"
+    ec2_key_name: "{{ target }}"

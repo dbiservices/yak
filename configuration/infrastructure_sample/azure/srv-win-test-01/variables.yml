@@ -1,0 +1,19 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+hostname: srv-win-test-01
+is_physical_server: no
+host_ip_access: public_ip
+private_ip:
+    mode: auto
+    ip: 172.19.16.5
+public_ip:
+    mode: auto
+    ip: 20.229.99.174
+os_type: windows
+time_zone: UTC
+#vm_size: Standard_B2ms
+vm_size: Standard_D2as_v5
+image:
+    offer: WindowsServer
+    publisher: MicrosoftWindowsServer
+    sku: 2019-Datacenter
+    version: latest

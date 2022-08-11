@@ -1,0 +1,24 @@
+
+Some AWS AMIs you can use
+=========================
+OL 8.5      : ami-07e51b655b107cd9b - OL8.5-x86_64-HVM-2021-11-24
+Debian 10   : ami-0623a3b0ec93b4fb7 - debian-10-amd64-20211011-792                    ! take care ! user = admin
+Debian 11   : ami-00c36c60f07e21791 - debian-11-amd64-20220121-894                    ! take care ! user = admin
+SLES15 SP3  : ami-0874f0548b754bf50 - suse-sles-15-sp3-v20220126-hvm-ssd-x86_64
+OpenSUSE 15 : ami-0f98068ad51be15ce - openSUSE-Leap-15-3-v20220114-5535c495-72d4-4355-b169-54ffa874f849
+
+
+If you want to see all AMIs of a provider (owner)
+=================================================
+aws ec2 describe-images --owners <owner_id> --filters "Name=architecture,Values=x86_64" "Name=state,Values=available" --query 'reverse(sort_by(Images[],&CreationDate)) | [].[ImageId,Name,CreationDate,VirtualizationType]' --output table --region eu-central-1
+
+
+Owner IDs
+=========
+OL       : 131827586825
+CentOS   : 125523088429
+Debian   : 379101102735
+SLES     : 013907871322
+OpenSUSE : 679593333241 (AWS)
+
+

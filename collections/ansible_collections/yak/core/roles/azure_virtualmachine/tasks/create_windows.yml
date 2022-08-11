@@ -1,0 +1,73 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Set password for Windows Admin account
+  no_log: true
+  set_fact:
+    os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+
+- name: Call role the generate the winrm_script for WinRM config
+  include_role:
+    name: yak.core.winrm
+  vars:
+    script_type: azure
+    winrm_user: "{{ os_admin_username }}"
+    winrm_user_password: "{{ os_admin_password }}"
+
+- include_tasks: create_nic.yml
+
+- name: Create the VM
+  delegate_to: localhost
+  azure.azcollection.azure_rm_virtualmachine:
+    resource_group: "{{ resource_group }}"
+    name: "{{ server_name }}"
+    short_hostname: "{{ server_name }}"
+    admin_username: "{{ os_admin_username }}"
+    admin_password: "{{ os_admin_password }}"
+    vm_size: "{{ vm_size }}"
+    virtual_network_name: "{{ virtual_network_name }}"
+    subnet_name: "{{ subnet_name }}"
+    network_interfaces: "{{ server_name }}-nic001"
+    image:
+      offer: "{{ image.offer }}"
+      publisher: "{{ image.publisher }}"
+      sku: "{{ image.sku }}"
+      version: "{{ image.version }}"
+    os_type: "{{ os_type | capitalize }}"
+    managed_disk_type: "{{ managed_disk_type }}"
+    custom_data: "{{ winrm_script }}"
+  register: r_azure
+
+- debug: var=r_azure
+  delegate_to: localhost
+  when: debug | bool
+
+- name: VM Extension[copy file from custom data]
+  delegate_to: localhost
+  azure_rm_virtualmachineextension:
+    name: winrm-extension
+    resource_group: "{{ resource_group }}"
+    virtual_machine_name: "{{ server_name }}"
+    publisher: Microsoft.Compute
+    virtual_machine_extension_type: CustomScriptExtension
+    type_handler_version: '1.9'
+    settings: '{"commandToExecute": "powershell -ExecutionPolicy Unrestricted Copy-Item -Path %SYSTEMDRIVE%\AzureData\CustomData.bin -Destination %SYSTEMDRIVE%\AzureData\CustomData.ps1"}'
+    auto_upgrade_minor_version: true
+
+- name: Execute VM script extension to enable HTTPS WinRM listener
+  delegate_to: localhost
+  azure_rm_virtualmachineextension:
+    name: winrm-extension
+    resource_group: "{{ resource_group }}"
+    virtual_machine_name: "{{ server_name }}"
+    publisher: Microsoft.Compute
+    virtual_machine_extension_type: CustomScriptExtension
+    type_handler_version: '1.9'
+    settings: '{"commandToExecute": "powershell -ExecutionPolicy Unrestricted -File %SYSTEMDRIVE%\AzureData\CustomData.ps1"}'
+    auto_upgrade_minor_version: true
+
+- delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_azure.ansible_facts.azure_vm }}"
+      os_admin_username: "{{ os_admin_username }}"
+      os_admin_password: "{{ os_admin_password }}"

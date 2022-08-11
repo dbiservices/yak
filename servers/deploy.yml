@@ -1,0 +1,50 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Check target type
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - delegate_to: localhost
+      ansible.builtin.assert:
+        that:
+          - target_type == 'server'
+        msg: "This playbook can only run on 'server' target type. Current is '{{ target_type }}'."
+
+- name: Deploy/update server
+  tags: server
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - include_tasks: "deploy/{{ provider }}.yml"
+
+    - name: Refresh inventory to ensure IPs are up to date
+      ansible.builtin.meta: refresh_inventory
+
+- name: Apply server prerequisites
+  tags: component_requirements
+  hosts: "{{ target }}"
+  vars:
+    debug: false
+  tasks:
+
+    - include_role:
+        name: yak.core.os_prerequisites
+      vars:
+        host_name: "{{ hostname }}"
+
+    - include_role:
+        name: yak.core.os_storage
+      vars:
+        vm_name: "{{ machine_name }}"
+        volumes: "{{ storage.volumes }}"
+        filesystems: "{{ storage.filesystems }}"
+      loop: "{{ storages }}"
+      loop_control:
+        loop_var: storage

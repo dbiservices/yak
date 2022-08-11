@@ -1,0 +1,15 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Delete server
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - ansible.builtin.assert:
+        that:
+          - target_type == 'server'
+        msg: "This playbook can only run on 'server' target type. Current is '{{ target_type }}'."
+
+    - include_tasks: "decommission/{{ provider }}.yml"

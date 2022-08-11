@@ -1,0 +1,65 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get OCI instances facts
+  delegate_to: localhost
+  oracle.oci.oci_compute_instance_facts:
+    compartment_id: "{{ compartment_id }}"
+    display_name: "{{ display_name }}"
+  register: r_oci_compute_instance_facts
+
+- debug: var=r_oci_compute_instance_facts
+  delegate_to: localhost
+  when: debug | bool
+
+- name: Filter to get non already terminated instance
+  set_fact:
+    filtered_instance_id: "{{ r_oci_compute_instance_facts|json_query('
+                                instances[?lifecycle_state==`MOVING`
+                                        || lifecycle_state==`STARTING`
+                                        || lifecycle_state==`STOPPING`
+                                        || lifecycle_state==`STOPPED`
+                                        || lifecycle_state==`RUNNING`
+                                ].id') }}"
+  failed_when: filtered_instance_id|length > 1
+
+- block:
+    - name: Get OCI instances facts
+      delegate_to: localhost
+      oracle.oci.oci_compute_volume_attachment_facts:
+        compartment_id: "{{ compartment_id }}"
+        instance_id: "{{ filtered_instance_id[0] }}"
+      register: r_oci_compute_volume_attachment_facts
+
+    - debug: var=r_oci_compute_volume_attachment_facts
+      delegate_to: localhost
+      when: debug | bool
+
+    - name: Delete compute instance
+      delegate_to: localhost
+      oracle.oci.oci_compute_instance:
+        compartment_id: "{{ compartment_id }}"
+        display_name: "{{ display_name }}"
+        state: absent
+        preserve_boot_volume: false
+      register: r_oci_compute_instance_absent
+
+    - debug: var=r_oci_compute_instance_absent
+      delegate_to: localhost
+      when: debug | bool
+
+    - name: Delete instance volumes
+      delegate_to: localhost
+      oracle.oci.oci_blockstorage_volume:
+        compartment_id: "{{ compartment_id }}"
+        volume_id: "{{ item.volume_id }}"
+        state: absent
+      with_items: "{{ r_oci_compute_volume_attachment_facts.volume_attachments }}"
+
+  when: filtered_instance_id|length == 1
+
+- name: Delete key from ssh config file
+  delegate_to: localhost
+  blockinfile:
+    path: ~/.ssh/config
+    state: absent
+    marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ display_name }} ##"

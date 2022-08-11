@@ -1,0 +1,30 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# IMPORTANT: On Azure, the only way to make a link between machine disks and
+# their device mapping in the VM is by checking the value LUN number of the
+# Azure VM and to match it with the path /dev/disk/azure/scsi1/lun{LUN number}
+# in the Linux VM.
+
+- name: Get facts by name
+  delegate_to: localhost
+  azure_rm_virtualmachine_info:
+    name: "{{ vm_name }}"
+    resource_group: "{{ resource_group }}"
+  register: r_azure_rm_virtualmachine_info
+
+- debug: var=r_azure_rm_virtualmachine_info
+
+- set_fact:
+    pvs_list: []
+
+- set_fact:
+    pvs_list: "{{ pvs_list }} + [ '/dev/disk/azure/scsi1/lun{{ item }}' ]"
+  with_items: "{{ r_azure_rm_virtualmachine_info|json_query('vms[?name==`'+vm_name+'`].data_disks[*].lun|[]') }}"
+
+- debug: var=pvs_list
+  when: debug | bool
+
+- name: Create a volume group
+  become: yes
+  lvg:
+    vg: "{{ volume_group_name }}"
+    pvs: "{{ pvs_list }}"

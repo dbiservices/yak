@@ -1,0 +1,38 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- include_role:
+    name: yak.core.aws_ec2
+  vars:
+    state: present
+    server_name: "{{ machine_name }}"
+    ec2_key_name: "{{ machine_name }}"
+    image_id: "{{ ami_id }}"
+    local_ssh_key:
+        path: "{{ ansible_ssh_private_key_file|dirname }}"
+        private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
+        public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
+    volumes_params: "{{ ec2_volumes_params }}"
+    winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
+    winrm_user: "{{ ansible_user }}"
+    os_admin_username: "{{ ansible_user }}"
+
+- block:
+  - name: Update yak inventory
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: "{{ target }}"
+      private_ip: "{{ returned.instance.private_ip_address|default(None) }}"
+      public_ip: "{{ returned.instance.public_ip_address|default(None) }}"
+    when: yak_inventory_type == 'file'
+
+  - debug:
+      msg:
+        - "The instance is ready. Connection details:"
+        - "  ansible_host: {{ ansible_host }}"
+        - "  private_ip: {{ returned.instance.private_ip_address }}"
+        - "  public_ip: {{ returned.instance.public_ip_address|default('none') }}"
+
+  - debug:
+      msg:
+        - "  Windows user/password: {{ returned.os_admin_username }}/{{ returned.os_admin_password }}"
+    when: os_type == 'windows'
+  when: returned is defined

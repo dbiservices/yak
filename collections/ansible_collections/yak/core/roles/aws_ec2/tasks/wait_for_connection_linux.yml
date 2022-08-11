@@ -1,0 +1,11 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Wait for SSH to come up on private IP
+  delegate_to: "{{ r_ec2_instance_info.instances[0].private_ip_address }}"
+  wait_for_connection:
+  when: host_ip_access == 'private_ip'
+
+- name: Wait for SSH to come up on public IP
+  delegate_to: "{{ r_ec2_instance_info.instances[0].public_ip_address }}"
+  wait_for_connection:
+  when: host_ip_access == 'public_ip'

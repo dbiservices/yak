@@ -1,0 +1,19 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: wait for the WinRM port to come online
+  delegate_to: localhost
+  wait_for:
+    port: 5986
+    host: "{{ administrative_ip }}"
+    timeout: 600
+
+- name: Return facts to playbook
+  delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_oci_compute_instance_facts.instances[0] }}"
+      administrative_ip: "{{ administrative_ip }}"
+      private_ip_address: "{{ oci_private_ip }}"
+      public_ip_address: "{{ oci_public_ip|default('none') }}"
+      os_admin_username: "{{ os_admin_username }}"
+      os_admin_password: "{{ os_admin_password }}"

@@ -1,0 +1,40 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- name: Create a logical volume
+  become: yes
+  community.general.lvol:
+    vg: "{{ volume_group_name }}"
+    lv: "{{ item.mount_point | replace('/','') }}"
+    size: "{{ item.size_GB }}g"
+    shrink: no
+  with_items: "{{ filesystems }}"
+
+- name: Create a filesystem on logical volume
+  become: yes
+  filesystem:
+    fstype: "{{ item.filesystem_type }}"
+    dev: "/dev/{{ volume_group_name }}/{{ item.mount_point | replace('/','') }}"
+  with_items: "{{ filesystems }}"
+
+- name: Get UUID for each FS
+  become: yes
+  shell: >
+    lsblk /dev/{{ volume_group_name }}/{{ item.mount_point | replace('/','') }}
+    -o uuid
+    | egrep  -v '^UUID'
+  register: r_fs_uuid
+  with_items: "{{ filesystems }}"
+
+- debug: var=r_fs_uuid
+  when: debug | bool
+
+- name: Mount logical volume
+  become: yes
+  ansible.posix.mount:
+    path: "{{ item.mount_point }}"
+    src: "UUID={{ r_fs_uuid|json_query('results[?item.mount_point==`'+item.mount_point+'`].stdout|[0]') }}"
+    # _netdev: must be set for OCI cloud at least, because we use ISCSI
+    #          Not needed on AWS and Azure but not harmful.
+    opts: _netdev{% if item.opts is defined %}{% if item.opts %}{% if item.opts|length>0 %},{{ item.opts }}{% endif %}{% endif %}{% endif %}
+    fstype: "{{ item.filesystem_type }}"
+    state: mounted
+  with_items: "{{ filesystems }}"

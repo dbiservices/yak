@@ -1,0 +1,33 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- include_role:
+    name: yak.core.azure_virtualmachine
+  vars:
+    state: present
+    server_name: "{{ machine_name }}"
+    ssh_public_key: "{{ ansible_ssh_public_key_file }}"
+    ssh_private_key: "{{ ansible_ssh_private_key_file }}"
+    winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
+    winrm_user: "{{ ansible_user }}"
+    os_admin_username: "{{ ansible_user }}"
+
+- block:
+  - name: Update yak inventory
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: "{{ target }}"
+      private_ip: "{{ returned.private_ip_address|default(None) }}"
+      public_ip: "{{ returned.public_ip_address|default(None) }}"
+    when: yak_inventory_type == 'file'
+
+  - debug:
+      msg:
+        - "The instance is ready. Connection details:"
+        - "  administrative_ip: {{ administrative_ip }}"
+        - "  private_ip: {{ returned.private_ip_address }}"
+        - "  public_ip: {{ returned.public_ip_address }}"
+
+  - debug:
+      msg:
+        - "  Windows user/password: {{ returned.os_admin_username }}/{{ returned.os_admin_password }}"
+    when: os_type == 'windows'
+  when: returned is defined

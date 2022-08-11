@@ -1,0 +1,35 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Create the ssh config file if not exists
+  delegate_to: localhost
+  copy:
+    content: ""
+    dest: ~/.ssh/config
+    force: no
+    mode: 0600
+
+- name: Insert/Update ssh config file
+  delegate_to: localhost
+  blockinfile:
+    path: ~/.ssh/config
+    marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
+    block: |
+      Host {{ administrative_ip }} {{ inventory_hostname }}
+          HostName {{ administrative_ip }}
+          User {{ os_admin_username }}
+          StrictHostKeyChecking no
+          IdentityFile {{ ssh_private_key }}
+          ServerAliveInterval 60
+
+- name: Wait for SSH to come up
+  delegate_to: "{{ administrative_ip }}"
+  wait_for_connection:
+
+- name: Return facts to playbook
+  delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_oci_compute_instance_facts.instances[0] }}"
+      administrative_ip: "{{ administrative_ip }}"
+      private_ip_address: "{{ oci_private_ip }}"
+      public_ip_address: "{{ oci_public_ip|default('none') }}"

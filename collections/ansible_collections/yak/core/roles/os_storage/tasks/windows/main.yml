@@ -1,0 +1,5 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- include_tasks: derived_disk_metadata_{{ provider }}.yml
+- include_tasks: partitions.yml
+

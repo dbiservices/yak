@@ -1,0 +1,47 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Test playbook to download an entire AWS S3 bucket
+  hosts: ansible_ctlr_nodes
+  gather_facts: false
+  vars:
+    - pv_artifacts_repo:
+        provider: aws_s3
+        # AWS S3 blucket name
+        bucket_name: "dbi-services-yak-artifacts"
+        # s3 prefixes are similar to folders (organize data)
+        prefix: "rdbms/oracle"
+        path: "{{ hv_appliance_home }}"
+
+  environment:
+    - AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+    - AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+    - AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+  
+  tasks:
+    - name: Get details (list) of AWS s3 storage bucket s3://{{ pv_artifacts_repo.bucket_name }}
+      amazon.aws.aws_s3:
+        bucket: "{{ pv_artifacts_repo.bucket_name }}"
+        prefix: "{{ pv_artifacts_repo.prefix }}"
+        mode: list
+      register: reg_bucket_items
+
+    - name: Create folders as they are not managed by Ansible module amazon.aws.aws_s3
+      ansible.builtin.file:
+        path: "{{ pv_artifacts_repo.path }}/{{ item | regex_replace( ( item | basename ),'') }}"
+        state: directory
+        mode: 0755
+      loop: "{{ reg_bucket_items.s3_keys }}"
+      when: (item | regex_replace( ( item | basename ),'')) is regex('/$')
+      loop_control:
+        label: "{{ pv_artifacts_repo.path }}/{{ item | regex_replace( ( item | basename ),'') }}"
+
+    - name: Download ENTIRE AWS S3 bucket items (s3://{{ pv_artifacts_repo.bucket_name }})
+      amazon.aws.aws_s3:
+        bucket: "{{ pv_artifacts_repo.bucket_name }}"
+        object: "{{ item }}"
+        dest: "{{ pv_artifacts_repo.path }}/{{ item }}"
+        mode: get
+        overwrite: different
+      loop: "{{ reg_bucket_items.s3_keys }}"
+      when: item is not regex('/$')
+

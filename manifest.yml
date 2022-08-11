@@ -1,0 +1,14 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# https://semver.org
+version:
+  major: 0
+  minor: 1
+  patch: 0
+
+components:
+  - src: git@gitlab.com:dbiservices/yak/yak_components/oracle_instance.git
+    version: master
+  - src: git@gitlab.com:dbiservices/yak/yak_components/postgresql_instance.git
+    version: master
+  - src: git@gitlab.com:dbiservices/yak/yak_components/sqlserver_instance.git
+    version: master
