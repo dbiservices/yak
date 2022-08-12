@@ -35,6 +35,7 @@ if ! id yak > /dev/null 2>&1; then
     echo "INFO: type 'yakhelp' to display the help of YAK"
     echo
     mkdir ${YAK_USER_HOME}/.oci
+    mkdir ${YAK_USER_HOME}/.ssh
     touch ${YAK_USER_HOME}/.oci/config
     chown yak:yak ${YAK_USER_HOME}
     chown yak:yak ${YAK_USER_HOME}/.bashrc
@@ -58,6 +59,7 @@ if ! id yak > /dev/null 2>&1; then
     #Set the correct privilege for the yak files 
     chown yak:yak -R ${YAK_USER_HOME}/yak
 
+    # No longer used 
     # ln -s ${YAK_LOCAL_SSH} ${YAK_USER_HOME}/.ssh
     # Sudo
     if [ "${YAK_ENABLE_SUDO}" = true ]; then
