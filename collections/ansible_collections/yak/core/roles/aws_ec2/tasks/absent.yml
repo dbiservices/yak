@@ -27,9 +27,9 @@
 - name: Delete key from ssh config file
   delegate_to: localhost
   blockinfile:
-    path: ~/.ssh/config
+    path: "{{ yak_local_ssh_config_file }}"
     state: absent
-    marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ server_name }} ##"
+    marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
 
 - name: Delete server key pair
   delegate_to: localhost

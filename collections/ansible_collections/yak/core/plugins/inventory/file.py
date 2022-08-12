@@ -68,6 +68,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.server_group_name = "servers"
         self.allowed_providers = ['aws', 'azure', 'oci', 'on-premises']
         self.secret_permissions = stat.S_IRUSR | stat.S_IWUSR
+        self.local_ssh_config_file = "~/yak/configuration/infrastructure/.ssh/config"
 
     # Functions used by Ansible
     def verify_file(self, path):
@@ -188,6 +189,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         self.inventory.groups['all'].vars = variables_yaml
         self.inventory.groups['all'].vars['yak_inventory_type'] = 'file'
+        self.inventory.groups['all'].vars['yak_local_ssh_config_file'] = self.local_ssh_config_file
 
     def _populate_infrastructure_global_secrets(self, path):
         master_secrets = "{}/secrets".format(path)

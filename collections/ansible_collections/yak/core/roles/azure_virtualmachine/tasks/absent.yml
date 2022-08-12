@@ -12,3 +12,10 @@
 - debug: var=r_azure
   delegate_to: localhost
   when: debug | bool
+
+- name: Delete key from ssh config file
+  delegate_to: localhost
+  blockinfile:
+    path: "{{ yak_local_ssh_config_file }}"
+    state: absent
+    marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"

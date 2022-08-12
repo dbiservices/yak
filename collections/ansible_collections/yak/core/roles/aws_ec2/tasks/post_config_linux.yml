@@ -16,14 +16,14 @@
   delegate_to: localhost
   copy:
     content: ""
-    dest: ~/.ssh/config
+    dest: "{{ yak_local_ssh_config_file }}"
     force: no
     mode: 0600
 
 - name: Insert/Update ssh config file
   delegate_to: localhost
   blockinfile:
-    path: ~/.ssh/config
+    path: "{{ yak_local_ssh_config_file }}"
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
     block: |
       {% if host_ip_access == 'private_ip' %}
