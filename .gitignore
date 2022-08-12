@@ -1,2 +1,3 @@
 components/*
 configuration/infrastructure/@*
+configuration/infrastructure/.ssh
