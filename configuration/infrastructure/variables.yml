@@ -1,1 +1,0 @@
-ansible_winrm_read_timeout_sec: 60

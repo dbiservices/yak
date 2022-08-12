@@ -185,11 +185,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_infrastructure_global_variables(self, path):
 
-        variables_yaml = self._load_yaml_file("{}/variables.yml".format(path))
+        if os.path.exists("{}/variables.yml".format(path)):
+            variables_yaml = self._load_yaml_file("{}/variables.yml".format(path))
+            self.inventory.groups['all'].vars = variables_yaml
 
-        self.inventory.groups['all'].vars = variables_yaml
         self.inventory.groups['all'].vars['yak_inventory_type'] = 'file'
         self.inventory.groups['all'].vars['yak_local_ssh_config_file'] = self.local_ssh_config_file
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
 
     def _populate_infrastructure_global_secrets(self, path):
         master_secrets = "{}/secrets".format(path)
