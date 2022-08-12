@@ -46,7 +46,7 @@ if ! id yak > /dev/null 2>&1; then
     fi
     chmod -R 700 ${YAK_USER_HOME}/yak/configuration/infrastructure/secrets
 
-    YAK_LOCAL_SSH="${YAK_USER_HOME}/yak/configuration/infrastructure/ssh"
+    YAK_LOCAL_SSH="${YAK_USER_HOME}/yak/configuration/infrastructure/.ssh"
     if [ ! -d "${YAK_LOCAL_SSH}" ]; then
         mkdir -p ${YAK_LOCAL_SSH}
         touch ${YAK_LOCAL_SSH}/config 
