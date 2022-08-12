@@ -8,6 +8,7 @@ import glob
 import os.path
 from pathlib import Path
 from os import environ
+import stat
 
 DOCUMENTATION = r'''
     name: yak.core.file
@@ -66,6 +67,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.default_server_os_type = "linux"
         self.server_group_name = "servers"
         self.allowed_providers = ['aws', 'azure', 'oci', 'on-premises']
+        self.secret_permissions = stat.S_IRUSR | stat.S_IWUSR
 
     # Functions used by Ansible
     def verify_file(self, path):
@@ -216,6 +218,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups['all'].vars["yak_secrets_directory"] = \
             master_secrets
 
+        os.chmod(self.inventory.groups['all'].vars["ansible_ssh_private_key_file"], self.secret_permissions)
+        os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_pem"], self.secret_permissions)
+        os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
+
     def _set_auth_secrets(self, target, base_directory):
         self._log_debug(
             "## _set_auth_secrets => testing: {} | {}"
@@ -226,6 +232,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 .format(base_directory))
             target.vars["ansible_ssh_private_key_file"] = \
                 "{}/sshkey".format(base_directory)
+            os.chmod(target.vars["ansible_ssh_private_key_file"], self.secret_permissions)
             target.vars["ansible_ssh_public_key_file"] = \
                 "{}/sshkey.pub".format(base_directory)
             target.vars["yak_secrets_directory"] = base_directory
@@ -239,8 +246,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                             and os.path.exists("{}/cert.pem".format(base_directory)):
                         target.vars["ansible_winrm_cert_pem"] = \
                             "{}/cert.pem".format(base_directory)
+                        os.chmod(target.vars["ansible_winrm_cert_pem"], self.secret_permissions)
                         target.vars["ansible_winrm_cert_key_pem"] = \
                             "{}/cert_key.pem".format(base_directory)
+                        os.chmod(target.vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
                         target.vars["yak_secrets_directory"] = base_directory
 
     def check_and_sanitize_infrastructure_variables(self, config):
