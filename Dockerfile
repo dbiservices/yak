@@ -37,10 +37,7 @@ RUN  apt-get update \
      && pip3 install oci-cli \
      # Cleanup
      # -------
-     && rm -f *.zip \
-     # Sudo
-     # ----
-     && echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
+     && rm -f *.zip
 
 # COPY Sources
 COPY ./collections /workspace/yak/collections/
