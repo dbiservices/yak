@@ -178,43 +178,32 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 'default_server_os_type')
 
         # Start populating
-        self._populate_infrastructure_global_variables()
-        self._populate_infrastructure()
+        self._populate_infrastructure_global_variables(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
+        self._populate_infrastructure_global_secrets(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
+        self._populate_infrastructure(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
 
-    def _populate_infrastructure_global_variables(self):
+    def _populate_infrastructure_global_variables(self, path):
 
-        variables_yaml = self._load_yaml_file(
-            "{}/{}/variables.yml" .format(
-                self.configuration_path,
-                self.infrastructure_directory_name
-            )
-        )
+        variables_yaml = self._load_yaml_file("{}/variables.yml".format(path))
 
         self.inventory.groups['all'].vars = variables_yaml
         self.inventory.groups['all'].vars['yak_inventory_type'] = 'file'
 
-        self._populate_infrastructure_global_secrets()
-
-    def _populate_infrastructure_global_secrets(self):
-        master_secrets = "{}/{}/secrets".format(
-            self.configuration_path, self.infrastructure_directory_name)
+    def _populate_infrastructure_global_secrets(self, path):
+        master_secrets = "{}/secrets".format(path)
         self._log_debug(master_secrets)
         if not os.path.exists("{}".format(master_secrets)):
             raise AnsibleError(
                 "Missing global secret directory '{}/sshkey'."
                 .format(master_secrets))
         self.inventory.groups['all'].vars["ansible_ssh_private_key_file"] = \
-            "{}/{}/secrets/sshkey".format(
-            self.configuration_path, self.infrastructure_directory_name)
+            "{}/secrets/sshkey".format(path)
         self.inventory.groups['all'].vars["ansible_ssh_public_key_file"] = \
-            "{}/{}/secrets/sshkey.pub".format(
-            self.configuration_path, self.infrastructure_directory_name)
+            "{}/secrets/sshkey.pub".format(path)
         self.inventory.groups['all'].vars["ansible_winrm_cert_pem"] = \
-            "{}/{}/secrets/cert.pem".format(
-            self.configuration_path, self.infrastructure_directory_name)
+            "{}/secrets/cert.pem".format(path)
         self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"] = \
-            "{}/{}/secrets/cert_key.pem".format(
-            self.configuration_path, self.infrastructure_directory_name)
+            "{}/secrets/cert_key.pem".format(path)
         self.inventory.groups['all'].vars["yak_secrets_directory"] = \
             master_secrets
 
@@ -268,50 +257,36 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             )
         return config_sanitized
 
-    def _populate_infrastructure(self):
+    def _populate_infrastructure(self, path):
 
-        for infrastructure_file in glob.glob("{}/{}/*/".format(
-                self.configuration_path,
-                self.infrastructure_directory_name)):
+        self._log_debug('Discovering infra {}'.format(path))
+        for infrastructure_file in glob.glob("{}/*/".format(path)):
             if os.path.basename(infrastructure_file[:-1]) == 'secrets':
+                continue
+            if os.path.basename(infrastructure_file[:-1]).startswith('@'):
+                self._log_debug('Subinfra detected {}'.format(infrastructure_file[:-1]))
+                self._populate_infrastructure(path=infrastructure_file[:-1])
                 continue
             group = os.path.basename(infrastructure_file[:-1])
             group = self.inventory.add_group(group)
             self.inventory.add_child('all', group)
 
             # Add group vars
-            group_config_yaml = self._load_yaml_file(
-                "{}/{}/{}/variables.yml".format(
-                    self.configuration_path,
-                    self.infrastructure_directory_name,
-                    group
-                )
-            )
-
-            infrastructure_variables = \
-                self.check_and_sanitize_infrastructure_variables(
-                    group_config_yaml
-                )
+            group_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path,group))
+            infrastructure_variables = self.check_and_sanitize_infrastructure_variables(group_config_yaml)
             self.inventory.groups[group].vars = infrastructure_variables
-            self._set_auth_secrets(
-                self.inventory.groups[group],
-                "{}/{}/{}/secrets"
-                .format(
-                    self.configuration_path,
-                    self.infrastructure_directory_name,
-                    group)
-            )
+            self._set_auth_secrets(self.inventory.groups[group],"{}/{}/secrets".format(path,group))
             self.current_provider = \
                 self.inventory.groups[group].vars["provider"]
 
-            self._add_hosts(group)
+            self._add_hosts(path, group)
 
-    def _add_hosts(self, group):
+    def _add_hosts(self, path, group ):
 
+        self._log_debug('Discovering servers in {}'.format(path))
         group_server = self.inventory.add_group(self.server_group_name)
-        for host_file in glob.glob("{}/{}/{}/*/".format(
-                self.configuration_path,
-                self.infrastructure_directory_name,
+        for host_file in glob.glob("{}/{}/*/".format(
+                path,
                 group)):
             if os.path.basename(host_file[:-1]) == 'secrets':
                 continue
@@ -321,16 +296,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_host(host, group=group_server)
 
             # Add host vars
-            host_config_yaml = self._load_yaml_file(
-                "{}/{}/{}/variables.yml".format(
-                    self.configuration_path,
-                    self.infrastructure_directory_name,
-                    host
-                )
-            )
-
-            if host_config_yaml is not None:
-                self.inventory.hosts[host].vars = host_config_yaml
+            host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path,host))
+            self.inventory.hosts[host].vars = host_config_yaml
 
             # Default variable for hosts
             self.inventory.hosts[host].vars["target_type"] = 'server'
@@ -340,13 +307,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self.default_server_os_type
 
             # Add ssh key
-            self._set_auth_secrets(
-                self.inventory.hosts[host],
-                "{}/{}/{}/secrets".format(
-                    self.configuration_path,
-                    self.infrastructure_directory_name,
-                    host)
-            )
+            self._set_auth_secrets(self.inventory.hosts[host],"{}/{}/secrets".format(path,host))
 
             # IPs policy
             # ** When host_ip_access doesn't exists, set default to private
@@ -422,48 +383,26 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.hosts[host].vars["storages"] = []
 
             # Populate components on current host
-            self._add_components(group, host)
+            self._add_components(path, group, host)
 
-    def _add_components(self, group, host):
+    def _add_components(self, path, group, host):
 
-        for component_file in glob.glob("{}/{}/{}/*/".format(
-                self.configuration_path,
-                self.infrastructure_directory_name,
-                host)):
+        for component_file in glob.glob("{}/{}/*/".format(path, host)):
             if os.path.basename(component_file[:-1]) == 'secrets':
                 continue
-            component = "{}/{}".format(host,
-                                       os.path.basename(component_file[:-1]))
-            self.inventory.add_host(
-                component, group=group)
+            component = "{}/{}".format(host, os.path.basename(component_file[:-1]))
+            self.inventory.add_host(component, group=group)
 
             # Overwrite with component vars
-            component_config_yaml = self._load_yaml_file(
-                "{}/{}/{}/variables.yml".format(
-                    self.configuration_path,
-                    self.infrastructure_directory_name,
-                    component
-                )
-            )
-
-            if component_config_yaml is not None:
-                self.inventory.hosts[component].vars = \
-                    {**self.inventory.hosts[host].vars,
-                        **component_config_yaml}
-
+            component_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path,component))
+            self.inventory.hosts[component].vars = {**self.inventory.hosts[host].vars, **component_config_yaml}
 
             # Default variable for components
             self.inventory.hosts[component].vars["parent_target_name"] = host
             self.inventory.hosts[component].vars["target_type"] = 'component'
 
             # Add ansible key file
-            self._set_auth_secrets(
-                self.inventory.hosts[component],
-                "{}/{}/{}/secrets".format(
-                    self.configuration_path,
-                    self.infrastructure_directory_name,
-                    component)
-            )
+            self._set_auth_secrets(self.inventory.hosts[component], "{}/{}/secrets".format(path,component))
 
             # Add to component_type group
             if 'component_type' in self.inventory.hosts[component].vars:
