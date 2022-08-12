@@ -34,12 +34,19 @@ if ! id yak > /dev/null 2>&1; then
     echo
     echo "INFO: type 'yakhelp' to display the help of YAK"
     echo
-    mkdir ${YAK_USER_HOME}/.oci
-    mkdir ${YAK_USER_HOME}/.ssh
-    touch ${YAK_USER_HOME}/.oci/config
+
     chown yak:yak ${YAK_USER_HOME}
     chown yak:yak ${YAK_USER_HOME}/.bashrc
-    chown yak:yak -R ${YAK_USER_HOME}/.oci
+    
+    if [ ! -d "${YAK_USER_HOME}/.ssh" ]; then
+       mkdir ${YAK_USER_HOME}/.ssh
+    fi
+
+    if [ ! -d "${YAK_USER_HOME}/.oci" ]; then
+       mkdir ${YAK_USER_HOME}/.oci
+       touch ${YAK_USER_HOME}/.oci/config
+       chown yak:yak -R ${YAK_USER_HOME}/.oci
+    fi
 
     YAK_LOCAL_SECRETS="${YAK_USER_HOME}/yak/configuration/infrastructure/secrets"
     if [ ! -d "${YAK_LOCAL_SECRETS}" ]; then
@@ -54,7 +61,7 @@ if ! id yak > /dev/null 2>&1; then
     fi
 
     # Use Yak local ssh config file
-    echo 'Include ${YAK_LOCAL_SSH}/config' >> /etc/ssh/ssh_config 
+    echo "Include ${YAK_LOCAL_SSH}/config" >> /etc/ssh/ssh_config 
 
     #Set the correct privilege for the yak files 
     chown yak:yak -R ${YAK_USER_HOME}/yak
