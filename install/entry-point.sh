@@ -54,7 +54,7 @@ if ! id yak > /dev/null 2>&1; then
     fi
 
     # Use Yak local ssh config file
-    echo 'Include ${YAK_LOCAL_SSH}/config' >> /etc/ssh/ssh_config 
+    echo "Include ${YAK_LOCAL_SSH}/config" >> /etc/ssh/ssh_config 
 
     #Set the correct privilege for the yak files 
     chown yak:yak -R ${YAK_USER_HOME}/yak
