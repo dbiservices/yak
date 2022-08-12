@@ -44,16 +44,21 @@ if ! id yak > /dev/null 2>&1; then
     if [ ! -d "${YAK_LOCAL_SECRETS}" ]; then
         mkdir -p ${YAK_LOCAL_SECRETS}
     fi
-    chmod -R 700 ${YAK_USER_HOME}/yak/configuration/infrastructure/secrets
+    chmod 700 ${YAK_USER_HOME}/yak/configuration/infrastructure/secrets
 
     YAK_LOCAL_SSH="${YAK_USER_HOME}/yak/configuration/infrastructure/.ssh"
     if [ ! -d "${YAK_LOCAL_SSH}" ]; then
         mkdir -p ${YAK_LOCAL_SSH}
-        touch ${YAK_LOCAL_SSH}/config 
+        touch ${YAK_LOCAL_SSH}/config
     fi
 
+    # Use Yak local ssh config file
+    echo 'Include ${YAK_LOCAL_SSH}/config' >> /etc/ssh/ssh_config 
+
+    #Set the correct privilege for the yak files 
     chown yak:yak -R ${YAK_USER_HOME}/yak
-    ln -s ${YAK_LOCAL_SSH} ${YAK_USER_HOME}/.ssh
+
+    # ln -s ${YAK_LOCAL_SSH} ${YAK_USER_HOME}/.ssh
     # Sudo
     if [ "${YAK_ENABLE_SUDO}" = true ]; then
        echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
