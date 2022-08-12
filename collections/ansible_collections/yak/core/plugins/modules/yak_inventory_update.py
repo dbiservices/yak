@@ -6,6 +6,7 @@
 from __future__ import (absolute_import, division, print_function)
 from ansible.errors import AnsibleError
 import ruamel.yaml
+import os
 
 __metaclass__ = type
 
@@ -77,7 +78,12 @@ def run_module():
     # part where your module will do what it needs to do)
     result['message'] = 'goodbye'
 
-    variables_file_path="/workspace/yak/configuration/infrastructure/{}/variables.yml".format(module.params['target'])
+    for root, dirs, filenames in os.walk('/workspace/yak/configuration/infrastructure'):
+        for dir_name in dirs:
+            if '{}/{}'.format(root,dir_name).endswith(module.params['target']):
+                variables_file_path='{}/{}/variables.yml'.format(root,dir_name)
+                break
+
     try:
         variables_file = open(variables_file_path, 'r')
     except Exception as e:
