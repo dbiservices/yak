@@ -54,6 +54,10 @@ if ! id yak > /dev/null 2>&1; then
 
     chown yak:yak -R ${YAK_USER_HOME}/yak
     ln -s ${YAK_LOCAL_SSH} ${YAK_USER_HOME}/.ssh
+    # Sudo
+    if [ "${YAK_ENABLE_SUDO}" = true ]; then
+       echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
+    fi
 fi
 
 su - yak --pty -c "$@"
