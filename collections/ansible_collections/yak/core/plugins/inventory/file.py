@@ -196,24 +196,28 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     def _populate_infrastructure_global_secrets(self, path):
         master_secrets = "{}/secrets".format(path)
         self._log_debug(master_secrets)
-        if not os.path.exists("{}".format(master_secrets)):
-            raise AnsibleError(
-                "Missing global secret directory '{}/sshkey'."
-                .format(master_secrets))
-        self.inventory.groups['all'].vars["ansible_ssh_private_key_file"] = \
-            "{}/secrets/sshkey".format(path)
-        self.inventory.groups['all'].vars["ansible_ssh_public_key_file"] = \
-            "{}/secrets/sshkey.pub".format(path)
-        self.inventory.groups['all'].vars["ansible_winrm_cert_pem"] = \
-            "{}/secrets/cert.pem".format(path)
-        self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"] = \
-            "{}/secrets/cert_key.pem".format(path)
-        self.inventory.groups['all'].vars["yak_secrets_directory"] = \
-            master_secrets
+        if os.path.exists("{}".format(master_secrets)):
+            self.inventory.groups['all'].vars["yak_secrets_directory"] = master_secrets
 
-        os.chmod(self.inventory.groups['all'].vars["ansible_ssh_private_key_file"], self.secret_permissions)
-        os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_pem"], self.secret_permissions)
-        os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
+            # ansible_ssh_private_key_file
+            if os.path.exists("{}/secrets/sshkey".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_ssh_private_key_file"] = "{}/secrets/sshkey".format(path)
+                os.chmod(self.inventory.groups['all'].vars["ansible_ssh_private_key_file"], self.secret_permissions)
+
+            # ansible_ssh_public_key_file
+            if os.path.exists("{}/secrets/sshkey.pub".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_ssh_public_key_file"] = "{}/secrets/sshkey.pub".format(path)
+
+            # ansible_winrm_cert_pem
+            if os.path.exists("{}/secrets/cert.pem".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_winrm_cert_pem"] =  "{}/secrets/cert.pem".format(path)
+                os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_pem"], self.secret_permissions)
+
+            # ansible_winrm_cert_key_pem
+            if os.path.exists("{}/secrets/cert_key.pem".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"] = "{}/secrets/cert_key.pem".format(path)
+                os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
+
 
     def _set_auth_secrets(self, target, base_directory):
         self._log_debug(
