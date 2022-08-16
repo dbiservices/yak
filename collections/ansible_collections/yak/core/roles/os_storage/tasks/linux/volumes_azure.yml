@@ -17,7 +17,7 @@
     pvs_list: []
 
 - set_fact:
-    pvs_list: "{{ pvs_list }} + [ '/dev/disk/azure/scsi1/lun{{ item }}' ]"
+    pvs_list: "{{ pvs_list + [ '/dev/disk/azure/scsi1/lun' + item|string ] }}"
   with_items: "{{ r_azure_rm_virtualmachine_info|json_query('vms[?name==`'+vm_name+'`].data_disks[*].lun|[]') }}"
 
 - debug: var=pvs_list
