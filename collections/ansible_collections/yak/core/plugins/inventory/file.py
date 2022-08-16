@@ -200,22 +200,22 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.groups['all'].vars["yak_secrets_directory"] = master_secrets
 
             # ansible_ssh_private_key_file
-            if os.path.exists("{}/secrets/sshkey".format(master_secrets)):
-                self.inventory.groups['all'].vars["ansible_ssh_private_key_file"] = "{}/secrets/sshkey".format(path)
+            if os.path.exists("{}/sshkey".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_ssh_private_key_file"] = "{}/sshkey".format(master_secrets)
                 os.chmod(self.inventory.groups['all'].vars["ansible_ssh_private_key_file"], self.secret_permissions)
 
             # ansible_ssh_public_key_file
-            if os.path.exists("{}/secrets/sshkey.pub".format(master_secrets)):
-                self.inventory.groups['all'].vars["ansible_ssh_public_key_file"] = "{}/secrets/sshkey.pub".format(path)
+            if os.path.exists("{}/sshkey.pub".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_ssh_public_key_file"] = "{}/sshkey.pub".format(master_secrets)
 
             # ansible_winrm_cert_pem
-            if os.path.exists("{}/secrets/cert.pem".format(master_secrets)):
-                self.inventory.groups['all'].vars["ansible_winrm_cert_pem"] =  "{}/secrets/cert.pem".format(path)
+            if os.path.exists("{}/cert.pem".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_winrm_cert_pem"] = "{}/cert.pem".format(master_secrets)
                 os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_pem"], self.secret_permissions)
 
             # ansible_winrm_cert_key_pem
-            if os.path.exists("{}/secrets/cert_key.pem".format(master_secrets)):
-                self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"] = "{}/secrets/cert_key.pem".format(path)
+            if os.path.exists("{}/cert_key.pem".format(master_secrets)):
+                self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"] = "{}/cert_key.pem".format(master_secrets)
                 os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
 
 
