@@ -40,6 +40,7 @@ if ! id yak > /dev/null 2>&1; then
     
     if [ ! -d "${YAK_USER_HOME}/.ssh" ]; then
        mkdir ${YAK_USER_HOME}/.ssh
+       chown yak:yak -R ${YAK_USER_HOME}/.ssh
     fi
 
     if [ ! -d "${YAK_USER_HOME}/.oci" ]; then
