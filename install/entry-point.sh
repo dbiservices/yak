@@ -31,6 +31,7 @@ if ! id yak > /dev/null 2>&1; then
     echo 'apsdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'gen_secret() { ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N ""; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'yakhelp() { cat /yakhelp.lst | more; }' >> ${YAK_USER_HOME}/.bashrc
+    clear
     echo
     echo "INFO: type 'yakhelp' to display the help of YAK"
     echo
@@ -76,3 +77,34 @@ if ! id yak > /dev/null 2>&1; then
 fi
 
 su - yak --pty -c "$@"
+alias ll='ls -latr'
+alias cdci='cd /workspace/yak/configuration/infrastructure'
+alias cdct='cd /workspace/yak/configuration/template'
+alias cdh='cd /workspace/yak'
+alias cdr='cd /workspace/yak/roles'
+alias cds='cd /workspace/yak/servers'
+cd /workspace/yak
+aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }
+aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }
+apsdp() { cd ~/yak && ansible-playbook servers/deploy.yml -e target="$1"; cd - > /dev/null; }
+apsr() { cd ~/yak && ansible-playbook servers/deploy.yml --tag=component_requirements -e target="$1"; cd - > /dev/null; }
+apsdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }
+gen_secret() { ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N ""; }
+yakhelp() { cat /yakhelp.lst | more; }
+echo
+echo "==========================================================="
+echo
+echo "As of demo this environment as some restriction" 
+echo
+echo "The servers"
+echo "       - provisioning allows only instance_type=t3.micro "
+echo "       - are automatically destroyed after 4h"
+echo "       - are only reachable from the YaK container"
+echo "            ssh demo/linux"
+echo "       - storage size can't be extended"
+echo
+echo " Disclaimer about usage of YaK"
+echo
+echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
+echo
+echo "==========================================================="
