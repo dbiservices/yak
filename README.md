@@ -1,8 +1,8 @@
 # YaK
 
-YaK Commnunity your solution to deploy and configure your instances accross the Public Cloud Providers without any provider competency and dependency. 
+YaK Commnunity is your solution to deploy and configure your machines accross the Public Cloud Providers without any provider competency and dependency. 
 With YaK you will have a uniq entry point to deploy, configure and manage all your machines for any Cloud provider.
-Additional YaK as some products on top with subsction to deploy and manage your Oracle and PostgreSQL Database, more information on http://dbi-services.com/en/yak/components
+Additional YaK as some products on top with subscription to deploy and manage your Oracle and PostgreSQL Database, more information on http://dbi-services.com/en/yak/components
 
 ## Design Principles
 
