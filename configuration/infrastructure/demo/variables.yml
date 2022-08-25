@@ -4,7 +4,7 @@ environment: aws-demo
 operating_system: Debian 11.4
 provider: aws
 availability_zone: eu-west-1a
-instance_type: t3.medium
+instance_type: t3.micro
 ami_id: ami-0419c120afb9fd58b
 region_id: eu-west-1
 security_group_id: sg-0751b1a72bd251609
