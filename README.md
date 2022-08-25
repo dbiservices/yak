@@ -18,16 +18,18 @@ Additional YaK as some products on top with subscription to deploy and manage yo
   - Be the easiest IT Cross Cloud Provider automation system to use, ever.
   - Allow development for additional Cloud Provider or Components
 
-# How to test Shortly YaK
+## How to access YaK Demo
 
-   Access our YaK DEMO environment to get a Very Fast introduction, How it works in real life :-) https://......
+   Access our YaK DEMO environment to get a very fast introduction on it , How it works in real life :-) https://......
 
-# How use Yak In your Environment
+## How to setup your YaK
+
+Please see [Setup Instructions](setup.md)
+
+## Yak documentation
 
 
-## How to contribute to the YaK Prokect 
 
-Please see [instructions](CONTRIBUTION.md).
 
 ## Project inventory
 
