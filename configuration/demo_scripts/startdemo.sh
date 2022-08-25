@@ -40,9 +40,9 @@ start_aws_demo()
    echo
    echo "cat $HOME/yak/configuration/infrastructure/demo/variables.yml" 
    echo
+   read -p "Press enter to continue"
    cat $HOME/yak/configuration/infrastructure/demo/variables.yml
    echo
-   read -p "Press enter to continue"
 
    echo
    echo "STEP 2"
@@ -51,9 +51,9 @@ start_aws_demo()
    echo
    echo "cat $HOME/yak/configuration/infrastructure/demo/linux/variables.yml" 
    echo
+   read -p "Press enter to continue"
    cat $HOME/yak/configuration/infrastructure/demo/linux/variables.yml
    echo
-   read -p "Press enter to continue"
 
    echo
    echo "STEP 3"
@@ -62,9 +62,9 @@ start_aws_demo()
    echo
    echo "ansible-inventory --host demo/linux" 
    echo
+   read -p "Press enter to continue"
 ansible-inventory --host demo/linux
    echo
-   read -p "Press enter to continue"
 
    echo
    echo "STEP 5"
@@ -86,20 +86,35 @@ ansible-inventory --host demo/linux
    echo
    echo "ansible-playbook servers/deploy.ymk -e target=demo/linux" 
    echo
+   read -p "Press enter to continue"
 ansible-playbook servers/deploy.yml -e target=demo/linux
    echo
-   read -p "Press enter to continue"
    
    echo
    echo "Last Step"
    echo "-------------------------------------------------------------------------------------"
    echo "           you can connect your created server "
    echo "    and check that the storage is correclty configured"
+   echo "    please exit the session when checked with df -h"
    echo
    echo "ssh demo/linux" 
+   echo "df -h"
+   echo "exit" 
    echo
 ssh demo/linux 
    echo
+   echo 
+   echo "Cleanup step"
+   echo "-------------------------------------------------------------------------------------"
+   echo "           Now your can decommission your created server "
+   echo
+   echo "ansible-playbook servers/decommission.yml -e target=demo/linux" 
+   echo
+   read -p "Press enter to continue"
+ansible-playbook servers/decommission.yml -e target=demo/linux
+   echo
+   echo
+   echo "Please Close this DEMO session with \"exit\" before leaving"
 }
 
 ###############
