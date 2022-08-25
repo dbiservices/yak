@@ -87,8 +87,9 @@ if ! id yak > /dev/null 2>&1; then
        echo "       - storage size can't be extended"
        echo
        echo " Disclaimer about usage of YaK"
-     # echo
-     # echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
+       echo
+       alias startdemo="/$HOME/yak/configuration/demo_scripts/startdemo.sh"
+       echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
        echo
        echo "==========================================================="
    fi
