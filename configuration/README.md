@@ -32,15 +32,15 @@ configuration/
 │       └── ...
 │
 ├── infrastructure_example
-│   └── aws_yak_test
+│   └── aws
 │       ├── variables.yml
 │       ├── srv-linux-test-01
 │       │   ├── variables.yml
 │       │   └── ORA
 │       │       └── variables.yml
-│       ├── srv-ol8-ora
+│       ├── srv-win-test-01
 │       │   ├── variables.yml
-│       │   └── CDB01
+│       │   └── WSDBA
 │       │       └── variables.yml
 │       └── ...
 ├── templates
@@ -57,9 +57,6 @@ configuration/
 ### Create a New environment
 
 [Link to NEW_ENVIRONMENT.md](doc/NEW_ENVIRONMENT.md)
-
-[example](https://gitlab.com/yak4all/yak/-/blob/main/configuration/README.md)
-
 
 ### Create your environment/Virtual Machine secrets
 
