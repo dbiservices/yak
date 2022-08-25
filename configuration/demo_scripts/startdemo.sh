@@ -41,6 +41,7 @@ start_aws_demo()
    echo "cat $HOME/yak/configuration/infrastructure/demo/variables.yml" 
    echo
    read -p "Press enter to continue"
+   echo
    cat $HOME/yak/configuration/infrastructure/demo/variables.yml
    echo
 
@@ -52,6 +53,7 @@ start_aws_demo()
    echo "cat $HOME/yak/configuration/infrastructure/demo/linux/variables.yml" 
    echo
    read -p "Press enter to continue"
+   echo
    cat $HOME/yak/configuration/infrastructure/demo/linux/variables.yml
    echo
 
@@ -63,6 +65,7 @@ start_aws_demo()
    echo "ansible-inventory --host demo/linux" 
    echo
    read -p "Press enter to continue"
+   echo
 ansible-inventory --host demo/linux
    echo
 
@@ -87,6 +90,7 @@ ansible-inventory --host demo/linux
    echo "ansible-playbook servers/deploy.ymk -e target=demo/linux" 
    echo
    read -p "Press enter to continue"
+   echo
 ansible-playbook servers/deploy.yml -e target=demo/linux
    echo
    
@@ -101,6 +105,8 @@ ansible-playbook servers/deploy.yml -e target=demo/linux
    echo "df -h"
    echo "exit" 
    echo
+   read -p "Press enter to continue"
+   echo
 ssh demo/linux 
    echo
    echo 
@@ -111,10 +117,12 @@ ssh demo/linux
    echo "ansible-playbook servers/decommission.yml -e target=demo/linux" 
    echo
    read -p "Press enter to continue"
+   echo
 ansible-playbook servers/decommission.yml -e target=demo/linux
    echo
    echo
-   echo "Please Close this DEMO session with \"exit\" before leaving"
+   echo "Please close this DEMO session with \"exit\" before leaving"
+   echo
 }
 
 ###############

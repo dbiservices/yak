@@ -23,7 +23,7 @@ if ! id yak > /dev/null 2>&1; then
     echo "alias cdh='cd ${YAK_USER_HOME}/yak'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdr='cd ${YAK_USER_HOME}/yak/roles'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ${YAK_USER_HOME}/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias startdemo=/$HOME/yak/configuration/demo_scripts/startdemo.sh" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias startdemo=${YAK_USER_HOME}/yak/configuration/demo_scripts/startdemo.sh" >> ${YAK_USER_HOME}/.bashrc
     echo "cd ${YAK_USER_HOME}/yak" >> ${YAK_USER_HOME}/.bashrc
     echo 'aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
