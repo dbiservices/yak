@@ -35,23 +35,6 @@ if ! id yak > /dev/null 2>&1; then
     echo
     echo "INFO: type 'yakhelp' to display the help of YAK"
     echo
-    echo
-    echo "==========================================================="
-    echo
-    echo "As of demo this environment as some restriction" 
-    echo
-    echo "The servers"
-    echo "       - provisioning allows only instance_type=t3.micro "
-    echo "       - are automatically destroyed after 4h"
-    echo "       - are only reachable from the YaK container"
-    echo "            ssh demo/linux"
-    echo "       - storage size can't be extended"
-    echo
-    echo " Disclaimer about usage of YaK"
-    echo
-  #  echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
-    echo
-    echo "==========================================================="
 
     chown yak:yak ${YAK_USER_HOME}
     chown yak:yak ${YAK_USER_HOME}/.bashrc
@@ -89,6 +72,25 @@ if ! id yak > /dev/null 2>&1; then
     if [ "${YAK_ENABLE_SUDO}" = true ]; then
        echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
     fi
+
+    # Display YaK Demo environement infos 
+    if [ "${YAK_DEMO}" = true ]; then
+       echo "==========================================================="
+       echo "As of demo this environment as some restriction" 
+       echo
+       echo "The servers"
+       echo "       - provisioning allows only instance_type=t3.micro "
+       echo "       - are automatically destroyed after 4h"
+       echo "       - are only reachable from the YaK container"
+       echo "            ssh demo/linux"
+       echo "       - storage size can't be extended"
+       echo
+       echo " Disclaimer about usage of YaK"
+     # echo
+     # echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
+       echo
+       echo "==========================================================="
+   fi
 fi
 su - yak --pty -c "$@"
 cd /workspace/yak
