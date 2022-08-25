@@ -69,10 +69,3 @@ configuration/
 ### Create Virtual Machine and storage configuration
 
 [Link to ../servers/README.md](../servers/README.md)
-
-### Create your component (database)
-
-- [Link to Oracle Instance](https://gitlab.com/dbiservices/yak/yak_components/oracle_instance/-/blob/main/README.md)
-- [Link to PostgreSQL Instance](https://gitlab.com/dbiservices/yak/yak_components/postgresql_instance/-/blob/main/README.md)
-- [Link to SQLServer Instance ](https://gitlab.com/dbiservices/yak/yak_components/sqlserver_instance/-/blob/main/README.md)
-
