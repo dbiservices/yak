@@ -77,6 +77,7 @@ if ! id yak > /dev/null 2>&1; then
 
     # Display YaK Demo environement infos 
     if [ "${YAK_DEMO}" = true ]; then
+       clear
        echo "==========================================================="
        echo "As of demo this environment as some restriction" 
        echo

@@ -17,7 +17,7 @@ usage()
 {
 	echo "This script will run a Demo of the YaK for the selected provider"
 	echo 
-	echo "startdemo.sh [AWS|OCI|AZURE]"
+	echo "      $ startdemo.sh [AWS|OCI|AZURE]"
 	echo
 }
 
@@ -46,6 +46,7 @@ start_aws_demo()
    echo
 
    echo
+   read -p "Press enter to continue"
    echo "STEP 2"
    echo "-------------------------------------------------------------------------------------"
    echo "       Then a Machine configuration must exist under this environment "
@@ -58,6 +59,7 @@ start_aws_demo()
    echo
 
    echo
+   read -p "Press enter to continue"
    echo "STEP 3"
    echo "-------------------------------------------------------------------------------------"
    echo "    Now you can display your ansible inventory to check if everything is correct  "
@@ -70,7 +72,8 @@ ansible-inventory --host demo/linux
    echo
 
    echo
-   echo "STEP 5"
+   read -p "Press enter to continue"
+   echo "STEP 4"
    echo "-------------------------------------------------------------------------------------"
    echo "         Now you must set your authentification method "
    echo "  to have the privileges to create and configure the instance" 
@@ -83,6 +86,7 @@ ansible-inventory --host demo/linux
    read -p "Press enter to continue"
 
    echo
+   read -p "Press enter to continue"
    echo "STEP 5"
    echo "-------------------------------------------------------------------------------------"
    echo "    Now you are ready to create your host including storage configuration"
@@ -95,6 +99,7 @@ ansible-playbook servers/deploy.yml -e target=demo/linux
    echo
    
    echo
+   read -p "Press enter to continue"
    echo "Last Step"
    echo "-------------------------------------------------------------------------------------"
    echo "           you can connect your created server "
