@@ -56,15 +56,18 @@ configuration/
 
 ### Create a New environment
 
-[Link to NEW_ENVIRONMENT.md](NEW_ENVIRONMENT.md)
+[Link to NEW_ENVIRONMENT.md](doc/NEW_ENVIRONMENT.md)
+
+[example](https://gitlab.com/yak4all/yak/-/blob/main/configuration/README.md)
+
 
 ### Create your environment/Virtual Machine secrets
 
-[Link to SECRET_MANAGEMENT.md](SECRET_MANAGEMENT.md)
+[Link to SECRET_MANAGEMENT.md](doc/SECRET_MANAGEMENT.md)
 
 ### Cloud Provider Authentification
 
-[Link to CLOUD_AUTHENTIFICATION.md](CLOUD_AUTHENTIFICATION.md)
+[Link to CLOUD_AUTHENTIFICATION.md](doc/CLOUD_AUTHENTIFICATION.md)
 
 ### Create Virtual Machine and storage configuration
 
