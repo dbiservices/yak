@@ -6,7 +6,7 @@
 
 - the inventory will only parse the configuration files available under the directory ./configuration/infrastructure
 - per default this directory is empty
-- We made you some provider and host templates available under configuration/infrastructure_example that can be copied and adapted
+- We made you some provider and host templates available under configuration/infrastructure_sample that can be copied and adapted
 
 ### inventory structure
 
