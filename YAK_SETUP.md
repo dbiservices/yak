@@ -24,7 +24,7 @@ Additional YaK as some products on top with subscription to deploy and manage yo
 
 ## Use YaK
 
-Please see [Setup Instructions](YAK_SETUP.md)
+Please see [Setup Instructions](yak_setup.md)
 
 ## Yak documentation
 
