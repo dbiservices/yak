@@ -31,7 +31,7 @@ configuration/
 │   └── {environment_name_2}
 │       └── ...
 │
-├── infrastructure_example
+├── infrastructure_sample
 │   └── aws
 │       ├── variables.yml
 │       ├── srv-linux-test-01
