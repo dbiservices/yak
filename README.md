@@ -1,32 +1,35 @@
-This page will give you the Global information of the YaK project
+# YaK
 
-[[_TOC_]]
+YaK Commnunity is your solution to deploy and configure your machines accross the Public Cloud Providers without any provider competency and dependency. 
+With YaK you will have a uniq entry point to deploy, configure and manage all your machines for any Cloud provider.
+Additional YaK as some products on top with subscription to deploy and manage your Oracle and PostgreSQL Database, more information on http://dbi-services.com/en/yak/components
 
-## How to contribute
+## Design Principles
 
-Please see [instructions](CONTRIBUTION.md).
+  - Source code based on Ansible and Python written in a Collextion yak.yak
+  - No need to do any specific Ansible configuration.
+  - YaK is fully based on Ansible Community.
+  - YaK include it's own ansible inventory model.
+       - Cross Cloud Provider
+       - Multilevel (Environement/Server/Component)
+  - Same command as ansible-playbook ansible-inventory are used.
+  - Describe infrastructure for all Cloud Provider together in JSON as Ansible.
+  - Manage machines instantly for differents Cloud Provider as AWS,Azure,OCI in parallel.
+  - Be the easiest IT Cross Cloud Provider automation system to use, ever.
+  - Allow development for additional Cloud Provider or Components
 
-## How to build a release
+## YaK Demo
 
-```bash
-Not defined Yet
-```
+   Access our YaK DEMO environment to get a very fast introduction on it , How it works in real life :-) https://......
 
-## Ansible configuration file
+## Use YaK
 
-In the ansible.cfg file you will find all default location of the different ansible files (roles, collections, inventory)
-```
-[defaults]
-collections_paths = ./collections:/etc/ansible/collections
-roles_path = ./components/oracle_instance/roles:./components/postgresql_instance/roles:./components/sqlserver_instance/roles
-inventory = ./inventory/yak.core.file.yml
-gathering = smart
-callbacks_enabled = profile_tasks
+Please see [Setup Instructions](setup.md)
 
-[inventory]
-enable_plugins = yak.core.file, yak.core.db
-any_unparsed_is_failed = True
-```
+## Yak documentation
+
+
+
 
 ## Project inventory
 
@@ -40,20 +43,15 @@ ansible-inventory all --graph
 ```
 
 More details about the inventory structure can be found in the inventory
-[plugin documentation](https://gitlab.com/dbiservices/yak/yak/-/tree/master/collections/ansible_collections/yak/core).
+[plugin documentation](https://gitlab.com/yak4all/yak/-/tree/main/collections/ansible_collections/yak/core).
 
 ## New environment example
 
 To get an example how setup a new environment and servers
-[example](https://gitlab.com/dbiservices/yak/yak/-/blob/master/configuration/README.md).
+[example](https://gitlab.com/yak4all/yak/-/blob/main/configuration/README.md).
 
+## License
 
-## Ansible Roles and collections
-
-Ansible Roles and collections are pulled from the projects based on the structure from the YAK group and *ansible* subgroups
-[dbi_ansible_roles](https://gitlab.com/dbiservices/yak/yak_ansible_roles).
-
-
-
-
+GNU General Public License v3.0 or later
+See COPYING to see the full text.
 
