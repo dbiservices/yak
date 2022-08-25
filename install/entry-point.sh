@@ -85,27 +85,12 @@ if ! id yak > /dev/null 2>&1; then
     #Set the correct privilege for the yak files 
     chown yak:yak -R ${YAK_USER_HOME}/yak
 
-    # No longer used 
-    # ln -s ${YAK_LOCAL_SSH} ${YAK_USER_HOME}/.ssh
     # Sudo
     if [ "${YAK_ENABLE_SUDO}" = true ]; then
        echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
     fi
 fi
 su - yak --pty -c "$@"
-
-#alias ll='ls -latr'
-#alias cdci='cd /workspace/yak/configuration/infrastructure'
-#alias cdct='cd /workspace/yak/configuration/template'
-#alias cdh='cd /workspace/yak'
-#alias cdr='cd /workspace/yak/roles'
-#alias cds='cd /workspace/yak/servers'
 cd /workspace/yak
-#aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }
-#aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }
-#apsdp() { cd ~/yak && ansible-playbook servers/deploy.yml -e target="$1"; cd - > /dev/null; }
-#apsr() { cd ~/yak && ansible-playbook servers/deploy.yml --tag=component_requirements -e target="$1"; cd - > /dev/null; }
-#apsdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }
-#gen_secret() { ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N ""; }
-#yakhelp() { cat /yakhelp.lst | more; }
+
 
