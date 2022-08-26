@@ -12,8 +12,8 @@
   set_fact:
     returned:
       instance: "{{ r_oci_compute_instance_facts.instances[0] }}"
-      administrative_ip: "{{ administrative_ip }}"
-      private_ip_address: "{{ oci_private_ip }}"
+      administrative_ip: "{{ administrative_ip|default('none')  }}"
+      private_ip_address: "{{ oci_private_ip|default('none')  }}"
       public_ip_address: "{{ oci_public_ip|default('none') }}"
-      os_admin_username: "{{ os_admin_username }}"
-      os_admin_password: "{{ os_admin_password }}"
+      os_admin_username: "{{ os_admin_username|default('none') }}"
+      os_admin_password: "{{ os_admin_password|default('none') }}"
