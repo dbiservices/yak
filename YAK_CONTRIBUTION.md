@@ -52,10 +52,6 @@ yak@d915a92de516:~/yak$ aig
 yak@d915a92de516:~/yak$
 ```
 
-## Appendix 
-
-
-
 ## License
 
 GNU General Public License v3.0 or later
