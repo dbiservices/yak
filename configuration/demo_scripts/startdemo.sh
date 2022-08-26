@@ -4,7 +4,7 @@
 #
 # PURPOSE: Script to execute Yak Demo with the different Cloud Provider
 #
-# PARAMETERS: AWS, OCI, AZURE
+# PARAMETERS: aws, azure, oci
 #
 # NOTE:
 #-------------------------------------------------------------------------------
@@ -15,9 +15,12 @@
 # print the usage of this script
 usage()
 {
+	echo
+	echo
 	echo "This script will run a Demo of the YaK for the selected provider"
 	echo 
-	echo "      $ startdemo.sh [AWS|OCI|AZURE]"
+	echo "      $ startdemo [aws|azure|oci]"
+	echo
 	echo
 }
 
@@ -30,7 +33,16 @@ fi
 scriptname="$(basename $0)"
 dir=`dirname $0`
 
-start_aws_demo()
+not_available ()
+{
+   echo
+   echo " Yak Demo deployment is currently not available for the OCI and AZURE provider"
+   echo " But it works perfectly, we only need to build a Demo environment as for AWS"    
+   echo
+}
+
+
+start_demo ()
 {
    echo 
    echo "STEP 1"
@@ -38,42 +50,55 @@ start_aws_demo()
    echo "         To create a Machine on AWS, an  environment configuration must exist"
    echo "   In our case we will use the environment DEMO under ./configuration/infrastructure"
    echo
-   echo "cat $HOME/yak/configuration/infrastructure/demo/variables.yml" 
+   echo "cat $HOME/yak/configuration/infrastructure/demo-${provider}/variables.yml" 
    echo
    read -p "Press enter to continue"
    echo
-   cat $HOME/yak/configuration/infrastructure/demo/variables.yml
-   echo
+   cat $HOME/yak/configuration/infrastructure/demo-${provider}/variables.yml
 
    echo
    read -p "Press enter to continue"
+   echo
    echo "STEP 2"
    echo "-------------------------------------------------------------------------------------"
    echo "       Then a Machine configuration must exist under this environment "
    echo
-   echo "cat $HOME/yak/configuration/infrastructure/demo/linux-$(hostname -s)/variables.yml" 
+   echo "cat $HOME/yak/configuration/infrastructure/demo-${provider}/linux-$(hostname -s)/variables.yml" 
    echo
    read -p "Press enter to continue"
    echo
-   cat $HOME/yak/configuration/infrastructure/demo/linux-$(hostname -s)/variables.yml
-   echo
-
+   cat $HOME/yak/configuration/infrastructure/demo-${provider}/linux-$(hostname -s)/variables.yml
+   
    echo
    read -p "Press enter to continue"
+   echo
    echo "STEP 3"
-   echo "-------------------------------------------------------------------------------------"
-   echo "    Now you can display your ansible inventory to check if everything is correct  "
+   echo "--------------------------------------------------------------------------------------"
+   echo "    Display the ansible inventory  "
    echo
-   echo "ansible-inventory --host demo/linux-$(hostname -s)" 
+   echo "ansible-inventory --graph" 
    echo
    read -p "Press enter to continue"
    echo
-ansible-inventory --host demo/linux-$(hostname -s)
-   echo
+ansible-inventory --graph
 
    echo
    read -p "Press enter to continue"
+   echo
    echo "STEP 4"
+   echo "--------------------------------------------------------------------------------------"
+   echo "    Display the ansible inventory from your machine  "
+   echo
+   echo "ansible-inventory --host demo-${provider}/linux-$(hostname -s)" 
+   echo
+   read -p "Press enter to continue"
+   echo
+ansible-inventory --host demo-${provider}/linux-$(hostname -s)
+
+   echo
+   read -p "Press enter to continue"
+   echo
+   echo "STEP 5"
    echo "-------------------------------------------------------------------------------------"
    echo "         Now you must set your authentification method "
    echo "  to have the privileges to create and configure the instance" 
@@ -82,21 +107,19 @@ ansible-inventory --host demo/linux-$(hostname -s)
    echo "export AWS_ACCESS_KEY_ID=ASI********2E7"
    echo "export AWS_SECRET_ACCESS_KEY=PE************UNaHGu2"
    echo "export AWS_SESSION_TOKEN=IQoJb3JpZ2luX*******4+vfWexbFF3cKg="
+
    echo 
    read -p "Press enter to continue"
-
    echo
-   read -p "Press enter to continue"
-   echo "STEP 5"
+   echo "STEP 6"
    echo "-------------------------------------------------------------------------------------"
    echo "    Now you are ready to create your host including storage configuration"
    echo
-   echo "ansible-playbook servers/deploy.ymk -e target=demo/linux-$(hostname -s)" 
+   echo "ansible-playbook servers/deploy.ymk -e target=demo-${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue"
    echo
-ansible-playbook servers/deploy.yml -e target=demo/linux-$(hostname -s)
-   echo
+ansible-playbook servers/deploy.yml -e target=demo-${provider}/linux-$(hostname -s)
    
    echo
    read -p "Press enter to continue"
@@ -106,25 +129,25 @@ ansible-playbook servers/deploy.yml -e target=demo/linux-$(hostname -s)
    echo "    and check that the storage is correclty configured"
    echo "    please exit the session when checked with df -h"
    echo
-   echo "ssh demo/linux-$(hostname -s)" 
+   echo "ssh demo-${provider}/linux-$(hostname -s)" 
    echo "df -h"
    echo "exit" 
    echo
    read -p "Press enter to continue"
    echo
-ssh demo/linux-$(hostname -s) 
-   echo
+ssh demo-${provider}/linux-$(hostname -s) 
+
    echo 
    echo "Cleanup step"
    echo "-------------------------------------------------------------------------------------"
    echo "           Now your can decommission your created server "
    echo
-   echo "ansible-playbook servers/decommission.yml -e target=demo/linux-$(hostname -s)" 
+   echo "ansible-playbook servers/decommission.yml -e target=demo-${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue"
    echo
-ansible-playbook servers/decommission.yml -e target=demo/linux-$(hostname -s)
-   echo
+ansible-playbook servers/decommission.yml -e target=demo-${provider}/linux-$(hostname -s)
+
    echo
    echo "Please close this DEMO session with \"exit\" before leaving"
    echo
@@ -134,8 +157,16 @@ ansible-playbook servers/decommission.yml -e target=demo/linux-$(hostname -s)
 # Main Programm
 ###############
 
-if [[ $1 == AWS  ]]; then
-   start_aws_demo 
+if [[ $1 == AWS || $1 == aws ]]; then
+   provider=aws
+   start_demo
+elif [[ $1 == OCI || $1 == oci ]]; then
+   provider=oci
+   not_available
+elif [[ $1 == AZURE || $1 ==  azure ]]; then
+   provider=azure
+   not_available
+   start_demo
 else
    usage 
 fi
