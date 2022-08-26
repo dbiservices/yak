@@ -7,14 +7,14 @@ if ! id yak > /dev/null 2>&1; then
 
     if [ -z "${YAK_DEV_GID}" -o -z "${YAK_DEV_UID}" ]; then
         echo "INFO: Creating group yak => groupadd yak"
-        groupadd yak 
+        groupadd yak
         echo "INFO: Creating user yak  => useradd -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak"
-        useradd -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak  
+        useradd -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak
     else
         echo "INFO: Creating group yak => groupadd -g ${YAK_DEV_GID} yak"
-        groupadd -g ${YAK_DEV_GID} yak 
+        groupadd -g ${YAK_DEV_GID} yak
         echo "INFO: Creating user yak  => useradd -u ${YAK_DEV_UID} -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak"
-        useradd -u ${YAK_DEV_UID} -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak 
+        useradd -u ${YAK_DEV_UID} -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak
     fi
 
     echo "alias ll='ls -latr'" >> ${YAK_USER_HOME}/.bashrc
@@ -28,14 +28,14 @@ if ! id yak > /dev/null 2>&1; then
     echo 'aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'apsdp() { cd ~/yak && ansible-playbook servers/deploy.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
-    echo 'apsr() { cd ~/yak && ansible-playbook servers/deploy.yml --tag=component_requirements -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
+    echo 'apsr() { cd ~/yak && ansible-playbook servers/deploy.yml --tag=requirements -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'apsdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'gen_secret() { ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N ""; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'yakhelp() { cat /yakhelp.lst | more; }' >> ${YAK_USER_HOME}/.bashrc
 
     chown yak:yak ${YAK_USER_HOME}
     chown yak:yak ${YAK_USER_HOME}/.bashrc
-    
+
     if [ ! -d "${YAK_USER_HOME}/.ssh" ]; then
        mkdir ${YAK_USER_HOME}/.ssh
        chown yak:yak -R ${YAK_USER_HOME}/.ssh
@@ -60,9 +60,9 @@ if ! id yak > /dev/null 2>&1; then
     fi
 
     # Use Yak local ssh config file
-    echo "Include ${YAK_LOCAL_SSH}/config" >> /etc/ssh/ssh_config 
+    echo "Include ${YAK_LOCAL_SSH}/config" >> /etc/ssh/ssh_config
 
-    #Set the correct privilege for the yak files 
+    #Set the correct privilege for the yak files
     chown yak:yak -R ${YAK_USER_HOME}/yak
 
     # Sudo
@@ -75,12 +75,12 @@ if ! id yak > /dev/null 2>&1; then
     echo "INFO: type 'yakhelp' to display the help of YAK"
     echo
 
-    # Display YaK Demo environement infos 
+    # Display YaK Demo environement infos
     if [ "${YAK_DEMO}" = true ]; then
        mv ${YAK_USER_HOME}/yak/configuration/infrastructure/demo/linux ${YAK_USER_HOME}/yak/configuration/infrastructure/demo/linux-$(hostname -s)
        clear
        echo "==========================================================="
-       echo "As of demo this environment as some restriction" 
+       echo "As of demo this environment as some restriction"
        echo
        echo "The servers"
        echo "       - provisioning allows only instance_type=t3.micro "

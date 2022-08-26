@@ -28,7 +28,7 @@
       ansible.builtin.meta: refresh_inventory
 
 - name: Apply server prerequisites
-  tags: component_requirements
+  tags: requirements
   hosts: "{{ target }}"
   vars:
     debug: false
