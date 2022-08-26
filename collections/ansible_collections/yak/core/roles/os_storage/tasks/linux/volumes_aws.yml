@@ -1,7 +1,4 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-- name: Re-collect facts after disk addition
-  setup:
-
 - name: Gather information about instance
   delegate_to: localhost
   community.aws.ec2_instance_info:
@@ -12,12 +9,19 @@
   register: r_ec2_instance_info
 
 - debug: var=r_ec2_instance_info
+  when: debug | bool
 
 - set_fact:
     vm_disk: "{{ r_ec2_instance_info | json_query('instances[0].block_device_mappings[*].{device_name:device_name,volume_id:ebs.volume_id}') }}"
 
 - debug: var=vm_disk
   when: debug | bool
+
+- name: Re-collect facts after disk addition and ensure expected data is present
+  setup:
+  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length > volumes|length
+  retries: 10
+  delay: 5
 
 - debug: var=ansible_devices
   when: debug | bool

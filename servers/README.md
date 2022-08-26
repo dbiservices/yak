@@ -8,9 +8,10 @@
   - [Deploy all instances](#deploy-all-instances)
   - [Deploy requirments only all instances](#deploy-requirments-only-all-instances)
   - [Remove all instances](#remove-all-instances)
-- [Deploy Instance for a specific {provider:aws,azure,oci}](#Deploy-Instance-for-a-specific-{provider:aws,azure,oci})
+- [Deploy Instance for a specific {provider:aws,azure,oci}](#deploy-instance-for-a-specific-providerawsazureoci)
   - [Linux](#linux)
     - [Deploy the instance](#deploy-the-instance)
+    - [Deploy server only eithout the requirements](#deploy-server-only-eithout-the-requirements)
     - [Deploy requirements only](#deploy-requirements-only)
     - [Stop the instance](#stop-the-instance)
     - [Start the instance](#start-the-instance)
@@ -100,7 +101,7 @@ servers/deploy.yml \
 ```bash
 ansible-playbook \
 servers/deploy.yml \
---tag=component_requirements \
+--tag=requirements \
 -e target={provider}_yak_test/srv-linux-test-01 \
 -e debug=true
 ```
@@ -161,7 +162,7 @@ ansible -m win_ping aws_yak_test/srv-win-test-01
 ```bash
 ansible-playbook \
 servers/deploy.yml \
---tag=component_requirements \
+--tag=requirements \
 -e target={provider}_yak_test/srv-win-test-01 \
 -e debug=true
 ```
