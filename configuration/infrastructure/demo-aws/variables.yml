@@ -1,0 +1,11 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+is_cloud_environment: yes
+environment: aws-demo
+operating_system: Debian 11.4
+provider: aws
+availability_zone: eu-west-1a
+instance_type: t3.micro
+ami_id: ami-0419c120afb9fd58b
+region_id: eu-west-1
+security_group_id: sg-0751b1a72bd251609
+subnet_id: subnet-0d32f70d21aa22e00
