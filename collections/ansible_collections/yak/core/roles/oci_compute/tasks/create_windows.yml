@@ -1,44 +1,70 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Set password for Windows Admin account
-  no_log: true
-  set_fact:
-    os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
-
-- name: Call role the generate the winrm_script for user_data
-  include_role:
-    name: yak.core.winrm
-  vars:
-    script_type: oci
-    server_name: "{{ display_name }}"
-    winrm_user: "{{ os_admin_username }}"
-    winrm_user_password: "{{ os_admin_password }}"
-
-- include_tasks: create_vnic_details.yml
-
-- name: Create instance
+- name: Get OCI instances facts
   delegate_to: localhost
-  oracle.oci.oci_compute_instance:
-    state: present
-    region: "{{ region }}"
-    availability_domain: "{{ availability_domain }}"
+  oracle.oci.oci_compute_instance_facts:
     compartment_id: "{{ compartment_id }}"
-    shape: "{{ shape.name }}"
-    image_id: "{{ image_id }}"
     display_name: "{{ display_name }}"
-    subnet_id: "{{ subnet_id }}"
-    create_vnic_details: "{{ vnic_details }}"
-    preserve_boot_volume: no
-    metadata : { "user_data" : "{{ winrm_script|b64encode }}" }
-  register: r_oci_compute_instance_present
+  register: r_oci_compute_instance_facts
 
-- debug: var=r_oci_compute_instance_present
+- debug: var=r_oci_compute_instance_facts
   delegate_to: localhost
   when: debug | bool
 
-- delegate_to: localhost
+- name: Filter to get non already terminated instance
   set_fact:
-    returned:
-      instance: "{{ r_oci_compute_instance_present.instance }}"
-      os_admin_username: "{{ os_admin_username }}"
-      os_admin_password: "{{ os_admin_password }}"
+    filtered_instance_id: "{{ r_oci_compute_instance_facts|json_query('
+                                instances[?lifecycle_state==`MOVING`
+                                        || lifecycle_state==`STARTING`
+                                        || lifecycle_state==`STOPPING`
+                                        || lifecycle_state==`STOPPED`
+                                        || lifecycle_state==`RUNNING`
+                                ].id') }}"
+  failed_when: filtered_instance_id|length > 1
+
+- block:
+
+  - name: Set password for Windows Admin account
+    no_log: true
+    set_fact:
+      os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+
+  - name: Call role the generate the winrm_script for user_data
+    include_role:
+      name: yak.core.winrm
+    vars:
+      script_type: oci
+      server_name: "{{ display_name }}"
+      winrm_user: "{{ os_admin_username }}"
+      winrm_user_password: "{{ os_admin_password }}"
+
+  - include_tasks: create_vnic_details.yml
+
+  - name: Create instance
+    delegate_to: localhost
+    oracle.oci.oci_compute_instance:
+      state: present
+      region: "{{ region }}"
+      availability_domain: "{{ availability_domain }}"
+      compartment_id: "{{ compartment_id }}"
+      shape: "{{ shape.name }}"
+      image_id: "{{ image_id }}"
+      display_name: "{{ display_name }}"
+      subnet_id: "{{ subnet_id }}"
+      create_vnic_details: "{{ vnic_details }}"
+      preserve_boot_volume: no
+      metadata : { "user_data" : "{{ winrm_script|b64encode }}" }
+    register: r_oci_compute_instance_present
+
+  - debug: var=r_oci_compute_instance_present
+    delegate_to: localhost
+    when: debug | bool
+
+  - delegate_to: localhost
+    set_fact:
+      returned:
+        instance: "{{ r_oci_compute_instance_present.instance }}"
+        os_admin_username: "{{ os_admin_username }}"
+        os_admin_password: "{{ os_admin_password }}"
+
+  when: filtered_instance_id|length == 0
