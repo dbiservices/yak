@@ -115,7 +115,7 @@ ansible-inventory --host demo_${provider}/linux-$(hostname -s)
    echo "-------------------------------------------------------------------------------------"
    echo "    Now you are ready to create your host including storage configuration"
    echo
-   echo "ansible-playbook servers/deploy.ymk -e target=demo_${provider}/linux-$(hostname -s)" 
+   echo "ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue"
    echo
