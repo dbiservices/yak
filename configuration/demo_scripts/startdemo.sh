@@ -50,11 +50,11 @@ start_demo ()
    echo "         To create a Machine on AWS, an  environment configuration must exist"
    echo "   In our case we will use the environment DEMO under ./configuration/infrastructure"
    echo
-   echo "cat $HOME/yak/configuration/infrastructure/demo-${provider}/variables.yml" 
+   echo "cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml" 
    echo
    read -p "Press enter to continue"
    echo
-   cat $HOME/yak/configuration/infrastructure/demo-${provider}/variables.yml
+   cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml
 
    echo
    read -p "Press enter to continue"
@@ -63,11 +63,11 @@ start_demo ()
    echo "-------------------------------------------------------------------------------------"
    echo "       Then a Machine configuration must exist under this environment "
    echo
-   echo "cat $HOME/yak/configuration/infrastructure/demo-${provider}/linux-$(hostname -s)/variables.yml" 
+   echo "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
    echo
    read -p "Press enter to continue"
    echo
-   cat $HOME/yak/configuration/infrastructure/demo-${provider}/linux-$(hostname -s)/variables.yml
+   cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml
    
    echo
    read -p "Press enter to continue"
@@ -89,11 +89,11 @@ ansible-inventory --graph
    echo "--------------------------------------------------------------------------------------"
    echo "    Display the ansible inventory from your machine  "
    echo
-   echo "ansible-inventory --host demo-${provider}/linux-$(hostname -s)" 
+   echo "ansible-inventory --host demo_${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue"
    echo
-ansible-inventory --host demo-${provider}/linux-$(hostname -s)
+ansible-inventory --host demo_${provider}/linux-$(hostname -s)
 
    echo
    read -p "Press enter to continue"
@@ -115,11 +115,11 @@ ansible-inventory --host demo-${provider}/linux-$(hostname -s)
    echo "-------------------------------------------------------------------------------------"
    echo "    Now you are ready to create your host including storage configuration"
    echo
-   echo "ansible-playbook servers/deploy.ymk -e target=demo-${provider}/linux-$(hostname -s)" 
+   echo "ansible-playbook servers/deploy.ymk -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue"
    echo
-ansible-playbook servers/deploy.yml -e target=demo-${provider}/linux-$(hostname -s)
+ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)
    
    echo
    read -p "Press enter to continue"
@@ -129,24 +129,24 @@ ansible-playbook servers/deploy.yml -e target=demo-${provider}/linux-$(hostname 
    echo "    and check that the storage is correclty configured"
    echo "    please exit the session when checked with df -h"
    echo
-   echo "ssh demo-${provider}/linux-$(hostname -s)" 
+   echo "ssh demo_${provider}/linux-$(hostname -s)" 
    echo "df -h"
    echo "exit" 
    echo
    read -p "Press enter to continue"
    echo
-ssh demo-${provider}/linux-$(hostname -s) 
+ssh demo_${provider}/linux-$(hostname -s) 
 
    echo 
    echo "Cleanup step"
    echo "-------------------------------------------------------------------------------------"
    echo "           Now your can decommission your created server "
    echo
-   echo "ansible-playbook servers/decommission.yml -e target=demo-${provider}/linux-$(hostname -s)" 
+   echo "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue"
    echo
-ansible-playbook servers/decommission.yml -e target=demo-${provider}/linux-$(hostname -s)
+ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
 
    echo
    echo "Please close this DEMO session with \"exit\" before leaving"
