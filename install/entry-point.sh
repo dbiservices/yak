@@ -77,7 +77,7 @@ if ! id yak > /dev/null 2>&1; then
 
     # Display YaK Demo environement infos
     if [ "${YAK_DEMO}" = true ]; then
-       mv ${YAK_USER_HOME}/yak/configuration/infrastructure/demo/linux ${YAK_USER_HOME}/yak/configuration/infrastructure/demo/linux-$(hostname -s)
+       mv ${YAK_USER_HOME}/yak/configuration/infrastructure/demo-aws/linux ${YAK_USER_HOME}/yak/configuration/infrastructure/demo-aws/linux-$(hostname -s)
        clear
        echo "==========================================================="
        echo "As of demo this environment as some restriction"
