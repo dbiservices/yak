@@ -26,9 +26,9 @@ Additional YaK as some products on top with subscription to deploy and manage yo
 
 Please see [Setup Instructions](YAK_SETUP.md)
 
-## Yak documentation
+## Yak Contribution
 
-
+Please see [Contribution Instructions](YAK_CONTRIBUTION.md)
 
 
 ## Project inventory
