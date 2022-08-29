@@ -12,3 +12,7 @@ components:
     version: master
   - src: git@gitlab.com:dbiservices/yak/yak_components/sqlserver_instance.git
     version: master
+  - src: git@gitlab.com:dbiservices/yak/yak_components/mongodb_instance.git
+    version: master
+  - src: git@gitlab.com:dbiservices/yak/yak_components/weblogic_domain.git
+    version: master  
