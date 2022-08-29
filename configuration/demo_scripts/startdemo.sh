@@ -6,7 +6,7 @@
 #
 # PARAMETERS: aws, azure, oci
 #
-# NOTE:
+# NOTE: Test 
 #-------------------------------------------------------------------------------
 # $Author: Herve Schweitzer $
 # $Release: #RELEASE_VERSION 
