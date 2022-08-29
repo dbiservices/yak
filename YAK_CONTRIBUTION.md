@@ -17,12 +17,12 @@ To use Yak in your environment the below requirement must be done
 
   - Define a local storage with the variable ${MY_LOCAL_YAK_DIR} 
   ```
-  export MY_LOCAL_YAK_DIR=$HOME/yak
+  export MY_LOCAL_YAK_DIR=$HOME/GIT/yak
   ```
 
   - Clone the Yak repository in your $HOME directory 
   ```
-  cd $HOME
+  cd $HOME/GIT
   git clone git@gitlab.com:yak4all/yak.git
   ```
 
