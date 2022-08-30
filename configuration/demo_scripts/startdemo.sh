@@ -74,10 +74,10 @@ function not_available ()
 function start_demo ()
 {
    echo 
-   blueLog "STEP 1#9: Provider description."
+   blueLog "STEP 1#10: Provider description"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To create a Machine on AWS, an environment configuration must exist"
-   echo "   The environment DEMO is located under under ./configuration/infrastructure"
+   echo "   To Provision a machine on AWS, a Cloud provider configuration must exist"
+   echo "   The environment demo_aws is located under under ./configuration/infrastructure"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml" 
@@ -90,9 +90,9 @@ function start_demo ()
    echo
    step_time "STEP 1"
 
-   blueLog "STEP 2#9: Machine variables."
+   blueLog "STEP 2#10: Machine variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Machine configuration is located under ./configuration/infrastructure"
+   echo "   The Machine configuration is located under ./configuration/infrastructure/demo_aws"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
@@ -105,15 +105,14 @@ function start_demo ()
    echo
    step_time "STEP 2"
 
-
-   blueLog "STEP 3#9: Component variables."
+   blueLog "STEP 3#10: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The component configuration is located under ./configuration/infrastructure"
+   echo "   The Component configuration is located under ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/PG/variables.yml" 
    echo
-   whitelog "based on the template file located on  ./configuration/templates/linux/storage/postgresql_instance.yml"
+   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/postgresql_instance.yml"
    echo
    read -p "Press enter to continue: "
    echo
@@ -123,9 +122,8 @@ function start_demo ()
    echo
    step_time "STEP 3"
 
-   blueLog "STEP 4#8. DEMO Inventory"
+   blueLog "STEP 4#10. Display the Ansible inventory"
    whiteLog "--------------------------------------------------------------------------------------"
-   echo "    Display the ansible inventory  "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-inventory --graph" 
@@ -138,9 +136,8 @@ function start_demo ()
    echo
    step_time "STEP 4"
 
-   blueLog "STEP 5#9. DEMO inventory for the used VM"
+   blueLog "STEP 5#10. Display the Ansible Host inventory"
    whiteLog "--------------------------------------------------------------------------------------"
-   echo "    Display the ansible inventory from your machine  "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-inventory --host demo_${provider}/linux-$(hostname -s)" 
@@ -153,11 +150,10 @@ function start_demo ()
    echo
    step_time "STEP 5"
 
-   blueLog "STEP 6#9"
+   blueLog "STEP 6#10. Set the authentification method"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   Set the authentification method "
-   echo "   to have the privileges to create and configure the instance" 
-   echo "   For DEMO AWS this is done by exportingg AWS provided variables:"
+   echo "   To have the privileges to create and configure the machine" 
+   echo "   For this DEMO on ${provider} it is done by exporting the ${provider} provided variables"
    echo
    greenLog "Executed command: "
    whiteLog "export AWS_ACCESS_KEY_ID=ASI********2E7"
@@ -168,7 +164,7 @@ function start_demo ()
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#9. VM Creation."
+   blueLog "STEP 7#10. Machine Creation."
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Now you are ready to create your host including storage configuration"
    echo
@@ -182,11 +178,11 @@ function start_demo ()
    read -p "Press enter to continue: "
    step_time "STEP 7"
 
-   blueLog "STEP 8#9. SSH connection to created VM"
+   blueLog "STEP 8#10. SSH connection to created machine"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   At this step the VM was created. An SSH connection will be made."
-   echo "   Check that VM and the storage is correclty configured"
-   echo "   Please exit the session when finished."
+   echo "   At this step the machine is created and an SSH connection will be made."
+   echo "   Check the machine and the storage if it is correclty configured"
+   whiteLog "   Please "exit" the session when finished."
    echo
    greenLog "Executed command: "
    whiteLog "ssh demo_${provider}/linux-$(hostname -s)" 
@@ -196,10 +192,21 @@ function start_demo ()
    ssh demo_${provider}/linux-$(hostname -s) 
    echo 
    step_time "STEP 8"
-
-   blueLog "STEP 9#9 Machine Cleanup."
+   
+   blueLog "STEP 9#10 SSH connection from your PC"
    whiteLog "-------------------------------------------------------------------------------------"
-   redLog   " Machine Decommissioning. You can press CTRL-C now if you want to keep the Machine"
+   whiteLog "If you want to connect from your PC"
+   whitelog "you can use the below information, and copying the content of the sshkey file"
+   echo
+   greenLog "Executed command: "
+   whiteLog "cat configuration/infrastructure/.ssh/config" 
+   echo
+   read -p "Press enter to continue: "
+   step_time "STEP 9"
+
+   blueLog "STEP 10#10 Machine Decommissioning."
+   whiteLog "-------------------------------------------------------------------------------------"
+   redLog   " You can press CTRL-C now if you want to keep the Machine"
    redlog   " In any case the Machine will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
@@ -209,7 +216,7 @@ function start_demo ()
    echo
    ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo
-   step_time "STEP 9"
+   step_time "STEP 10"
 
    blueLog "End."
    whiteLog "-------------------------------------------------------------------------------------"
