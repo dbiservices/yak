@@ -89,9 +89,12 @@ if ! id yak > /dev/null 2>&1; then
        mv ${YAK_USER_HOME}/yak/configuration/infrastructure/demo_aws/linux ${YAK_USER_HOME}/yak/configuration/infrastructure/demo_aws/linux-$(hostname -s)
        clear
        echo "==========================================================="
-       echo "As of demo this environment as some restriction"
+       echo 
+       echo " yakhelp to display the help of YaK"
+       echo 
+       echo " As of demo this environment as some restriction"
        echo
-       echo "The servers"
+       echo " The servers"
        echo "       - provisioning allows only instance_type=t3.micro "
        echo "       - are automatically destroyed after 4h"
        echo "       - storage size can't be extended"
