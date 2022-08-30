@@ -13,33 +13,33 @@
 #-------------------------------------------------------------------------------
 . /workspace/yak/configuration/demo_scripts/lib_log.sh
 START_TIME=$(date +%s)
-HUMAN_NOW=$(date +'%d%m%Y_%H%M%S')
-UUID=$(cat /proc/sys/kernel/random/uuid)
-mkdir -p .log
-echo "New VM creation: $HUMAN_NOW" > .log/$UUID.log
+#HUMAN_NOW=$(date +'%d%m%Y_%H%M%S')
+#UUID=$(cat /proc/sys/kernel/random/uuid)
+#mkdir -p .log
+#echo "New VM creation: $HUMAN_NOW" > .log/$UUID.log
 
 # print the usage of this script
 function usage()
 {
 	echo
 	whiteLog " NAME "
-   echo "   startdemon -  YaK demo"
+   echo "   startdemo -  YaK demo"
    echo ""
    whiteLog " SYNOPSIS"
    echo ""
 	echo "   This script will run a Demo of the YaK for AWS"
-	echo "   YaK  is build to work for main cloud providers: "
-   echo "   Oracle OCI, MICROSOFT AZURE and Amazon AWS"
-   echo "   This demo works only for AWS"
+	echo "   YaK is build to work for main cloud providers: "
+   echo "   Oracle OCI, Microsoft AZURE and Amazon AWS"
+   echo "   This demo works only for AWS currently"
    echo ""
-	whiteLog " USGAE:"
+	whiteLog " USAGE:"
    echo "   startdemo [aws|azure|oci]"
    echo ""
 	whiteLog " NOTE:"
 	echo "   Only AWS is allowed for this DEMO"
    echo " "
    whiteLog " CREDITS:"
-   echo "   Yak is distributed and written by DBiSerices. "
+   echo "   Yak is distributed and written by dbi services "
    echo " "
 
 }
@@ -50,7 +50,7 @@ function step_time() {
    local END_TIME=$(date +%s)
    runtime=$(($END_TIME - $START_TIME))
    runtime_human="$((runtime / 60))m:$((runtime % 60))s"
-   echo "Duration $runtime_human: $MSG" >> .log/$UUID.log
+#   echo "Duration $runtime_human: $MSG" >> .log/$UUID.log
 
 }
 

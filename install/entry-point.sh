@@ -100,7 +100,7 @@ if ! id yak > /dev/null 2>&1; then
        echo
        echo " Disclaimer about usage of YaK"
        echo
-       function_whitelog  " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
+       whiteLog  " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
        echo
        echo "==========================================================="
    fi
