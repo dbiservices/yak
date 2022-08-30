@@ -196,7 +196,7 @@ function start_demo ()
    blueLog "STEP 9#10 SSH connection from your PC"
    whiteLog "-------------------------------------------------------------------------------------"
    whiteLog "If you want to connect from your PC"
-   whitelog "you can use the below information, and copying the content of the sshkey file"
+   whiteLog "you can use the below information, and copying the content of the sshkey file"
    echo
    greenLog "Executed command: "
    whiteLog "cat configuration/infrastructure/.ssh/config" 
