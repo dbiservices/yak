@@ -110,13 +110,13 @@ function start_demo ()
    echo "   The Component configuration is located under ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
    echo
    greenLog "Executed command: "
-   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/PG/variables.yml" 
+   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml" 
    echo
-   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/postgresql_instance.yml"
+   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
    echo
    read -p "Press enter to continue: "
    echo
-   cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/PG/variables.yml
+   cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
    echo
    read -p "Press enter to continue: "
    echo
