@@ -197,10 +197,10 @@ function start_demo ()
    echo 
    step_time "STEP 8"
 
-   blueLog "STEP 9#9 Cleanup."
+   blueLog "STEP 9#9 Machine Cleanup."
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   Decomission the VM. You can press CTRL-C now if you want to keep the VM. In any case "
-   echo "   the VM will be destroyed in 4h. "
+   redLog   " Machine Decommissioning. You can press CTRL-C now if you want to keep the Machine"
+   redlog   " In any case the Machine will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
@@ -213,7 +213,7 @@ function start_demo ()
 
    blueLog "End."
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   Close this DEMO session with \"exit\" before leaving"
+   whiteLog "   Close this DEMO session with \"exit\" before leaving"
    echo
    step_time "END"
 }
