@@ -1,5 +1,12 @@
 stages:
+- test
 - build
+
+test:
+  stage: test
+  script:
+    # TODO run tests on all changes
+    - echo "run test"
 
 build:
   # Use the official docker image.
