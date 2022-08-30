@@ -11,7 +11,7 @@
 # $Author: Herve Schweitzer $
 # $Release: #RELEASE_VERSION 
 #-------------------------------------------------------------------------------
-. lib_log.sh
+. /workspace/yak/configuration/demo_scripts/lib_log.sh
 START_TIME=$(date +%s)
 HUMAN_NOW=$(date +'%d%m%Y_%H%M%S')
 UUID=$(cat /proc/sys/kernel/random/uuid)
