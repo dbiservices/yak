@@ -210,7 +210,7 @@ function start_demo ()
    blueLog "STEP 10#10 Machine Decommissioning."
    whiteLog "-------------------------------------------------------------------------------------"
    redLog   "   You can press CTRL-C now if you want to keep the Machine"
-   redlog   "   In any case the Machine will be destroyed in 4h. "
+   redLog   "   In any case the Machine will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
