@@ -94,8 +94,6 @@ if ! id yak > /dev/null 2>&1; then
        echo "The servers"
        echo "       - provisioning allows only instance_type=t3.micro "
        echo "       - are automatically destroyed after 4h"
-       echo "       - are only reachable from the YaK container"
-       echo "            ssh demo/linux"
        echo "       - storage size can't be extended"
        echo
        echo " Disclaimer about usage of YaK"
