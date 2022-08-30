@@ -195,20 +195,22 @@ function start_demo ()
    
    blueLog "STEP 9#10 SSH connection from your PC"
    whiteLog "-------------------------------------------------------------------------------------"
-   whiteLog "If you want to connect from your PC"
-   whiteLog "you can use the below information, and copying the content of the sshkey file"
+   whiteLog "   If you want to connect from your PC"
+   whiteLog "   You can use the below information, and copying the content of the sshkey file"
    echo
    greenLog "Executed command: "
    whiteLog "cat configuration/infrastructure/.ssh/config" 
    echo
    read -p "Press enter to continue: "
    echo
+   cat configuration/infrastructure/.ssh/config
+   echo
    step_time "STEP 9"
 
    blueLog "STEP 10#10 Machine Decommissioning."
    whiteLog "-------------------------------------------------------------------------------------"
-   redLog   " You can press CTRL-C now if you want to keep the Machine"
-   redlog   " In any case the Machine will be destroyed in 4h. "
+   redLog   "   You can press CTRL-C now if you want to keep the Machine"
+   redlog   "   In any case the Machine will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
