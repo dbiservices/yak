@@ -96,7 +96,6 @@ if ! id yak > /dev/null 2>&1; then
        echo "==========================================================="
    fi
 fi
-export TMOUT=10
 su - yak --pty -c "$@"
 cd /workspace/yak
 
