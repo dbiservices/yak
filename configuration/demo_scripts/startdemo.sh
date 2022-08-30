@@ -74,7 +74,7 @@ function not_available ()
 function start_demo ()
 {
    echo 
-   blueLog "STEP 1#8: Hardware VM Description."
+   blueLog "STEP 1#9: Provider description."
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   To create a Machine on AWS, an environment configuration must exist"
    echo "   The environment DEMO is located under under ./configuration/infrastructure"
@@ -90,9 +90,9 @@ function start_demo ()
    echo
    step_time "STEP 1"
 
-   blueLog "STEP 2#8: VM variables."
+   blueLog "STEP 2#9: Machine variables."
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The VM configuration is located under ./configuration/infrastructure"
+   echo "   The Machine configuration is located under ./configuration/infrastructure"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
@@ -105,7 +105,25 @@ function start_demo ()
    echo
    step_time "STEP 2"
 
-   blueLog "STEP 3#8. DEMO Inventory"
+
+   blueLog "STEP 3#9: Component variables."
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   The component configuration is located under ./configuration/infrastructure"
+   echo
+   greenLog "Executed command: "
+   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/PG/variables.yml" 
+   echo
+   whitelog "based on the template file located on  ./configuration/templates/linux/storage/postgresql_instance.yml"
+   echo
+   read -p "Press enter to continue: "
+   echo
+   cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/PG/variables.yml
+   echo
+   read -p "Press enter to continue: "
+   echo
+   step_time "STEP 3"
+
+   blueLog "STEP 4#8. DEMO Inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo "    Display the ansible inventory  "
    echo
@@ -118,9 +136,9 @@ function start_demo ()
    echo
    read -p "Press enter to continue: "
    echo
-   step_time "STEP 3"
+   step_time "STEP 4"
 
-   blueLog "STEP 4#8. DEMO inventory for the used VM"
+   blueLog "STEP 5#9. DEMO inventory for the used VM"
    whiteLog "--------------------------------------------------------------------------------------"
    echo "    Display the ansible inventory from your machine  "
    echo
@@ -133,9 +151,9 @@ function start_demo ()
    echo
    read -p "Press enter to continue: "
    echo
-   step_time "STEP 4"
+   step_time "STEP 5"
 
-   blueLog "STEP 5#8"
+   blueLog "STEP 6#9"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Set the authentification method "
    echo "   to have the privileges to create and configure the instance" 
@@ -148,23 +166,23 @@ function start_demo ()
    echo 
    read -p "Press enter to continue: "
    echo
-   step_time "STEP 5"
+   step_time "STEP 6"
 
-   blueLog "STEP 6#8. VM Creation."
+   blueLog "STEP 7#9. VM Creation."
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Now you are ready to create your host including storage configuration"
    echo
    greenLog "Executed command: "
-   whiteLog "ansible-playbook servers/deploy.ymk -e target=demo_${provider}/linux-$(hostname -s)" 
+   whiteLog "ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
    read -p "Press enter to continue: "
    echo
    ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo
    read -p "Press enter to continue: "
-   step_time "STEP 6"
+   step_time "STEP 7"
 
-   blueLog "STEP 7#8. SSH connection to created VM"
+   blueLog "STEP 8#9. SSH connection to created VM"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   At this step the VM was created. An SSH connection will be made."
    echo "   Check that VM and the storage is correclty configured"
@@ -177,9 +195,9 @@ function start_demo ()
    echo
    ssh demo_${provider}/linux-$(hostname -s) 
    echo 
-   step_time "STEP 7"
+   step_time "STEP 8"
 
-   blueLog "STEP 8#8 Cleanup."
+   blueLog "STEP 9#9 Cleanup."
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Decomission the VM. You can press CTRL-C now if you want to keep the VM. In any case "
    echo "   the VM will be destroyed in 4h. "
@@ -191,7 +209,7 @@ function start_demo ()
    echo
    ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo
-   step_time "STEP 8"
+   step_time "STEP 9"
 
    blueLog "End."
    whiteLog "-------------------------------------------------------------------------------------"
