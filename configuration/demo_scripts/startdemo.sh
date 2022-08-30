@@ -77,7 +77,7 @@ function start_demo ()
    blueLog "STEP 1#10: Provider description"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   To Provision a machine on AWS, a Cloud provider configuration must exist"
-   echo "   The environment demo_aws is located under under ./configuration/infrastructure"
+   echo "   The environment demo_aws is located under ./configuration/infrastructure"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml" 
@@ -92,7 +92,8 @@ function start_demo ()
 
    blueLog "STEP 2#10: Machine variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Machine configuration is located under ./configuration/infrastructure/demo_aws"
+   echo "   The Machine configuration is located under the Provider environment "
+   echo "   ./configuration/infrastructure/demo_aws"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
@@ -107,16 +108,17 @@ function start_demo ()
 
    blueLog "STEP 3#10: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Component configuration is located under ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
+   echo "   The Component configuration is located under the Machine configuration"
+   echo "   ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
    echo
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml" 
    echo
-   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
-   echo
    read -p "Press enter to continue: "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
+   echo
+   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
    echo
    read -p "Press enter to continue: "
    echo
