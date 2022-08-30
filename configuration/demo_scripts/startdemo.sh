@@ -202,6 +202,7 @@ function start_demo ()
    whiteLog "cat configuration/infrastructure/.ssh/config" 
    echo
    read -p "Press enter to continue: "
+   echo
    step_time "STEP 9"
 
    blueLog "STEP 10#10 Machine Decommissioning."
