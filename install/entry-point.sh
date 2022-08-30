@@ -69,6 +69,15 @@ if ! id yak > /dev/null 2>&1; then
     if [ "${YAK_ENABLE_SUDO}" = true ]; then
        echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
     fi
+    
+    ## Reset to normal: \033[0m
+    NORM="\033[0m"
+    ## Change Color to White
+    WHITE="\033[1;37m"
+    function whiteLog {
+       MSG="$@"
+       echo  -e "${WHITE}$MSG${NORM} "
+    }
 
     clear
     echo
@@ -91,7 +100,7 @@ if ! id yak > /dev/null 2>&1; then
        echo
        echo " Disclaimer about usage of YaK"
        echo
-       echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
+       function_whitelog  " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
        echo
        echo "==========================================================="
    fi
