@@ -37,7 +37,19 @@ It exist 3 way to use YaK Community
     
 ### YaK Demo
 
-   Access our YaK DEMO environment to get a very fast introduction on it , How it works in real life :-) https://......
+   Access our YaK DEMO environment to get a very simple and fast introduction on it !
+   Try it, to see how it works in real life 
+   
+[Start Demo](https://yakdemo.dbi.services.com)
+
+
+| Step | GUI |
+| ------ | ------ |
+| Start Demo |  https://yakdemo.dbi.services.com |
+| Login  | ./install/YaK_login.png|
+    
+
+
 
 ### YaK Testing
 
