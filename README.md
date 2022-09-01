@@ -49,8 +49,6 @@ It exist 3 way to use YaK Community
 | Login User:yak Passwd:yak  | <img src="/install/img/YaK_login.png"  width="400" height="400"> |
 | Double-click on "Yak Demo Server" <br> Enter "stardemo aws"|  <img src="/install/img/YaK_demo.png" width="600" height="300"> |
 
-
-
 ### YaK Testing
 
 Please see [Setup Instructions](YAK_TESTING.md)
@@ -59,11 +57,10 @@ Please see [Setup Instructions](YAK_TESTING.md)
 
 Please see [Contribution Instructions](YAK_CONTRIBUTION.md)
 
-
-## Project inventory
+## Yak inventory
 
 This project use a dynamic inventory build from the configuration files available in
-`./configuration` directory.
+`./configuration/infrastructure` directory.
 
 You can have a look on the inventory content using the standard `ansible` command:
 
