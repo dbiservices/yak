@@ -45,7 +45,7 @@ It exist 3 way to use YaK Community
 
 | Step | GUI |
 | ------ | ------ |
-| Connect     |  https://yakdemo.dbi.services.com |
+| Connect     |  https://yakdemo.dbi-services.com |
 | Login User:yak Passwd:yak  | <img src="/install/img/YaK_login.png"  width="400" height="400"> |
 | Double-click on "Yak Demo Server" <br> Enter "stardemo aws"|  <img src="/install/img/YaK_demo.png" width="600" height="300"> |
 
