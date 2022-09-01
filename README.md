@@ -45,7 +45,7 @@ It exist 3 way to use YaK Community
 | https://yakdemo.dbi-services.com |
 | User:yak  <br> Passwd:yak  | 
 | <img src="/install/img/YaK_login.png"  width="400" height="300"> |
-| Double-click "Yak Demo Server"| 
+| Double-click "Yak Demo"| 
 | <img src="/install/img/YaK_demo.png" width="400" height="300"> |
 
 ### YaK Testing
