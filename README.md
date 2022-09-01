@@ -40,16 +40,12 @@ It exist 3 way to use YaK Community
    Access our YaK DEMO environment to get a very simple and fast introduction on it !
    Try it, to see how it works in real life 
    
-[Start Demo](https://yakdemo.dbi.services.com)
-
-
-| Step   |
+| Steps   |
 | ------ |
-| Connect     | 
 | https://yakdemo.dbi-services.com |
-| Login  <br> User:yak  <br> Passwd:yak  | 
+| User:yak  <br> Passwd:yak  | 
 | <img src="/install/img/YaK_login.png"  width="400" height="300"> |
-| Double-click "Yak Demo Server" Enter "stardemo aws"| 
+| Double-click "Yak Demo Server"| 
 | <img src="/install/img/YaK_demo.png" width="400" height="300"> |
 
 ### YaK Testing
