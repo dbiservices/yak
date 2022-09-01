@@ -2,4 +2,3 @@
 - include_tasks: "create_{{ os_type }}.yml"
 - include_tasks: post_config.yml
 - include_tasks: post_config_{{ os_type }}.yml
-- include_tasks: return.yml

@@ -13,5 +13,5 @@
   when: number_of_instances | int == 0
 
 - debug:
-    msg: "The instance is already deployed. Exiting gracefully."
+    msg: "The instance already exists. Skipping instance creation..."
   when: number_of_instances | int > 0

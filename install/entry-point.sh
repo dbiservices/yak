@@ -23,7 +23,7 @@ if ! id yak > /dev/null 2>&1; then
     echo "alias cdh='cd ${YAK_USER_HOME}/yak'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdr='cd ${YAK_USER_HOME}/yak/roles'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ${YAK_USER_HOME}/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias startdemo=${YAK_USER_HOME}/yak/configuration/demo_scripts/startdemo.sh" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias startdemo='cd ${YAK_USER_HOME}/yak;${YAK_USER_HOME}/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
     echo "cd ${YAK_USER_HOME}/yak" >> ${YAK_USER_HOME}/.bashrc
     echo 'aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
@@ -69,6 +69,15 @@ if ! id yak > /dev/null 2>&1; then
     if [ "${YAK_ENABLE_SUDO}" = true ]; then
        echo 'yak ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/yak
     fi
+    
+    ## Reset to normal: \033[0m
+    NORM="\033[0m"
+    ## Change Color to White
+    WHITE="\033[1;37m"
+    function whiteLog {
+       MSG="$@"
+       echo  -e "${WHITE}$MSG${NORM} "
+    }
 
     clear
     echo
@@ -80,18 +89,19 @@ if ! id yak > /dev/null 2>&1; then
        mv ${YAK_USER_HOME}/yak/configuration/infrastructure/demo_aws/linux ${YAK_USER_HOME}/yak/configuration/infrastructure/demo_aws/linux-$(hostname -s)
        clear
        echo "==========================================================="
-       echo "As of demo this environment as some restriction"
+       echo 
+       echo " yakhelp to display the help of YaK"
+       echo 
+       echo " As of demo this environment as some restriction"
        echo
-       echo "The servers"
+       echo " The servers"
        echo "       - provisioning allows only instance_type=t3.micro "
        echo "       - are automatically destroyed after 4h"
-       echo "       - are only reachable from the YaK container"
-       echo "            ssh demo/linux"
        echo "       - storage size can't be extended"
        echo
        echo " Disclaimer about usage of YaK"
        echo
-       echo " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
+       whiteLog  " Press \"startdemo AWS\" to start a DEMO deployment on AWS"
        echo
        echo "==========================================================="
    fi

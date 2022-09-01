@@ -25,14 +25,15 @@
 
 - set_fact:
     windows_disks: >
-      {{ windows_disks }} +
-      [
-        {
-          'windows_disk_number': {{ item.windows_disk_number }},
-          'volume_id': 'vol-{{ item.serial_number.split("_")[0][3:] }}',
-          'device_name': '{{ vm_disk|json_query('[?volume_id==`vol-'+item.serial_number.split("_")[0][3:]+'`].device_name|[0]') }}'
-        }
-      ]
+      {{ windows_disks +
+        [
+          {
+            'windows_disk_number': item.windows_disk_number,
+            'volume_id': 'vol-'+item.serial_number.split("_")[0][3:],
+            'device_name': vm_disk|json_query('[?volume_id==`vol-'+item.serial_number.split("_")[0][3:]+'`].device_name|[0]')
+          }
+        ]
+      }}
   with_items: "{{ ansible_disks | json_query('[?partitions[0].drive_letter!=`C`].{serial_number:serial_number,windows_disk_number:number}') }}"
 
 - debug: var=windows_disks
@@ -47,14 +48,15 @@
 # The next task expects this format.
 - set_fact:
     derived_disk_metadata: >
-      {{ derived_disk_metadata }} +
-      [
-        {
-          'drive_letter': '{{ item.drive_letter }}',
-          'partition_label': '{{ item.partition_label }}',
-          'windows_disk_number': {{ windows_disks|json_query('[?device_name==`'+item.device_name+'`].windows_disk_number|[0]')|int }}
-        }
-      ]
+      {{ derived_disk_metadata +
+        [
+          {
+            'drive_letter': item.drive_letter,
+            'partition_label': item.partition_label,
+            'windows_disk_number': windows_disks|json_query('[?device_name==`'+item.device_name+'`].windows_disk_number|[0]')|int
+          }
+        ]
+      }}
   with_items: "{{ volumes }}"
 
 - debug: var=derived_disk_metadata

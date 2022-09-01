@@ -6,22 +6,52 @@
 #
 # PARAMETERS: aws, azure, oci
 #
-# NOTE:
+# NOTE: Test 
 #-------------------------------------------------------------------------------
 # $Author: Herve Schweitzer $
 # $Release: #RELEASE_VERSION 
 #-------------------------------------------------------------------------------
+. /workspace/yak/configuration/demo_scripts/lib_log.sh
+START_TIME=$(date +%s)
+#HUMAN_NOW=$(date +'%d%m%Y_%H%M%S')
+#UUID=$(cat /proc/sys/kernel/random/uuid)
+#mkdir -p .log
+#echo "New VM creation: $HUMAN_NOW" > .log/$UUID.log
 
 # print the usage of this script
-usage()
+function usage()
 {
 	echo
-	echo
-	echo "This script will run a Demo of the YaK for the selected provider"
-	echo 
-	echo "      $ startdemo [aws|azure|oci]"
-	echo
-	echo
+	whiteLog " NAME "
+   echo "   startdemo -  YaK demo"
+   echo ""
+   whiteLog " SYNOPSIS"
+   echo ""
+	echo "   This script will run a Demo of the YaK for AWS"
+	echo "   YaK is build to work for main cloud providers: "
+   echo "   Oracle OCI, Microsoft AZURE and Amazon AWS"
+   echo "   This demo works only for AWS currently"
+   echo ""
+	whiteLog " USAGE:"
+   echo "   startdemo [aws|azure|oci]"
+   echo ""
+	whiteLog " NOTE:"
+	echo "   Only AWS is allowed for this DEMO"
+   echo " "
+   whiteLog " CREDITS:"
+   echo "   Yak is distributed and written by dbi services "
+   echo " "
+
+}
+
+function step_time() {
+
+   local MSG="$@"
+   local END_TIME=$(date +%s)
+   runtime=$(($END_TIME - $START_TIME))
+   runtime_human="$((runtime / 60))m:$((runtime % 60))s"
+#   echo "Duration $runtime_human: $MSG" >> .log/$UUID.log
+
 }
 
 # No parameter provided at all, this can not work
@@ -33,130 +63,177 @@ fi
 scriptname="$(basename $0)"
 dir=`dirname $0`
 
-not_available ()
+function not_available ()
 {
-   echo
-   echo " Yak Demo deployment is currently not available for the OCI and AZURE provider"
-   echo " But it works perfectly, we only need to build a Demo environment as for AWS"    
-   echo
+   echo ""
+   whiteLog " Only AWS is allowed for this DEMO"
+   echo ""
 }
 
 
-start_demo ()
+function start_demo ()
 {
    echo 
-   echo "STEP 1"
-   echo "-------------------------------------------------------------------------------------"
-   echo "         To create a Machine on AWS, an  environment configuration must exist"
-   echo "   In our case we will use the environment DEMO under ./configuration/infrastructure"
+   blueLog "STEP 1#10: Provider description"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   To Provision a machine on AWS, a Cloud provider configuration must exist"
+   echo "   The environment demo_aws is located under ./configuration/infrastructure"
    echo
-   echo "cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml" 
+   greenLog "Executed command: "
+   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml" 
    echo
-   read -p "Press enter to continue"
+   read -p "Press enter to continue: "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml
+   echo
+   read -p "Press enter to continue: "
+   echo
+   step_time "STEP 1"
 
+   blueLog "STEP 2#10: Machine variables"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   The Machine configuration is located under the Provider environment "
+   echo "   ./configuration/infrastructure/demo_aws"
    echo
-   read -p "Press enter to continue"
+   greenLog "Executed command: "
+   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
    echo
-   echo "STEP 2"
-   echo "-------------------------------------------------------------------------------------"
-   echo "       Then a Machine configuration must exist under this environment "
-   echo
-   echo "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
-   echo
-   read -p "Press enter to continue"
+   read -p "Press enter to continue: "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml
-   
    echo
-   read -p "Press enter to continue"
+   read -p "Press enter to continue: "
    echo
-   echo "STEP 3"
-   echo "--------------------------------------------------------------------------------------"
-   echo "    Display the ansible inventory  "
-   echo
-   echo "ansible-inventory --graph" 
-   echo
-   read -p "Press enter to continue"
-   echo
-ansible-inventory --graph
+   step_time "STEP 2"
 
+   blueLog "STEP 3#10: Component variables"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   The Component configuration is located under the Machine configuration"
+   echo "   ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
    echo
-   read -p "Press enter to continue"
+   greenLog "Executed command: "
+   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml" 
    echo
-   echo "STEP 4"
-   echo "--------------------------------------------------------------------------------------"
-   echo "    Display the ansible inventory from your machine  "
+   read -p "Press enter to continue: "
    echo
-   echo "ansible-inventory --host demo_${provider}/linux-$(hostname -s)" 
+   cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
    echo
-   read -p "Press enter to continue"
+   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
    echo
-ansible-inventory --host demo_${provider}/linux-$(hostname -s)
+   read -p "Press enter to continue: "
+   echo
+   step_time "STEP 3"
 
+   blueLog "STEP 4#10. Display the Ansible inventory"
+   whiteLog "--------------------------------------------------------------------------------------"
    echo
-   read -p "Press enter to continue"
+   greenLog "Executed command: "
+   whiteLog "ansible-inventory --graph" 
    echo
-   echo "STEP 5"
-   echo "-------------------------------------------------------------------------------------"
-   echo "         Now you must set your authentification method "
-   echo "  to have the privileges to create and configure the instance" 
-   echo "  In our case it's not mandatory as we set permanent keys"
+   read -p "Press enter to continue: "
    echo
-   echo "export AWS_ACCESS_KEY_ID=ASI********2E7"
-   echo "export AWS_SECRET_ACCESS_KEY=PE************UNaHGu2"
-   echo "export AWS_SESSION_TOKEN=IQoJb3JpZ2luX*******4+vfWexbFF3cKg="
+   ansible-inventory --graph
+   echo
+   read -p "Press enter to continue: "
+   echo
+   step_time "STEP 4"
 
+   blueLog "STEP 5#10. Display the Ansible Host inventory"
+   whiteLog "--------------------------------------------------------------------------------------"
+   echo
+   greenLog "Executed command: "
+   whiteLog "ansible-inventory --host demo_${provider}/linux-$(hostname -s)" 
+   echo
+   read -p "Press enter to continue: "
+   echo
+   ansible-inventory --host demo_${provider}/linux-$(hostname -s)
+   echo
+   read -p "Press enter to continue: "
+   echo
+   step_time "STEP 5"
+
+   blueLog "STEP 6#10. Set the authentification method"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   To have the privileges to create and configure the machine" 
+   echo "   For this DEMO on ${provider} it is done by exporting the ${provider} provided variables"
+   echo
+   greenLog "Executed command: "
+   whiteLog "export AWS_ACCESS_KEY_ID=ASI********2E7"
+   whiteLog "export AWS_SECRET_ACCESS_KEY=PE************UNaHGu2"
+   whiteLog "export AWS_SESSION_TOKEN=IQoJb3JpZ2luX*******4+vfWexbFF3cKg="
    echo 
-   read -p "Press enter to continue"
+   read -p "Press enter to continue: "
    echo
-   echo "STEP 6"
-   echo "-------------------------------------------------------------------------------------"
-   echo "    Now you are ready to create your host including storage configuration"
-   echo
-   echo "ansible-playbook servers/deploy.ymk -e target=demo_${provider}/linux-$(hostname -s)" 
-   echo
-   read -p "Press enter to continue"
-   echo
-ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)
-   
-   echo
-   read -p "Press enter to continue"
-   echo "Last Step"
-   echo "-------------------------------------------------------------------------------------"
-   echo "           you can connect your created server "
-   echo "    and check that the storage is correclty configured"
-   echo "    please exit the session when checked with df -h"
-   echo
-   echo "ssh demo_${provider}/linux-$(hostname -s)" 
-   echo "df -h"
-   echo "exit" 
-   echo
-   read -p "Press enter to continue"
-   echo
-ssh demo_${provider}/linux-$(hostname -s) 
+   step_time "STEP 6"
 
+   blueLog "STEP 7#10. Machine Creation."
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   Now you are ready to create your host including storage configuration"
+   echo
+   greenLog "Executed command: "
+   whiteLog "ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)" 
+   echo
+   read -p "Press enter to continue: "
+   echo
+   ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)
+   echo
+   read -p "Press enter to continue: "
+   step_time "STEP 7"
+
+   blueLog "STEP 8#10. SSH connection to created machine"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   At this step the machine is created and an SSH connection will be made."
+   echo "   Check the machine and the storage if it is correclty configured"
+   whiteLog "   Please "exit" the session when finished."
+   echo
+   greenLog "Executed command: "
+   whiteLog "ssh demo_${provider}/linux-$(hostname -s)" 
+   echo
+   read -p "Press enter to continue: "
+   echo
+   ssh demo_${provider}/linux-$(hostname -s) 
    echo 
-   echo "Cleanup step"
-   echo "-------------------------------------------------------------------------------------"
-   echo "           Now your can decommission your created server "
+   step_time "STEP 8"
+   
+   blueLog "STEP 9#10 SSH connection from your PC"
+   whiteLog "-------------------------------------------------------------------------------------"
+   whiteLog "   If you want to connect from your PC"
+   whiteLog "   You can use the below information, and copying the content of the sshkey file"
    echo
-   echo "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
+   greenLog "Executed command: "
+   whiteLog "cat configuration/infrastructure/.ssh/config" 
    echo
-   read -p "Press enter to continue"
+   read -p "Press enter to continue: "
    echo
-ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
+   cat configuration/infrastructure/.ssh/config
+   echo
+   step_time "STEP 9"
 
+   blueLog "STEP 10#10 Machine Decommissioning."
+   whiteLog "-------------------------------------------------------------------------------------"
+   redLog   "   You can press CTRL-C now if you want to keep the Machine"
+   redLog   "   In any case the Machine will be destroyed in 4h. "
    echo
-   echo "Please close this DEMO session with \"exit\" before leaving"
+   greenLog "Executed command: "
+   whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
+   read -p "Press enter to continue: "
+   echo
+   ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
+   echo
+   step_time "STEP 10"
+
+   blueLog "End."
+   whiteLog "-------------------------------------------------------------------------------------"
+   whiteLog "   Close this DEMO session with \"exit\" before leaving"
+   echo
+   step_time "END"
 }
 
 ###############
 # Main Programm
 ###############
-
+clear
 if [[ $1 == AWS || $1 == aws ]]; then
    provider=aws
    start_demo
@@ -166,7 +243,6 @@ elif [[ $1 == OCI || $1 == oci ]]; then
 elif [[ $1 == AZURE || $1 ==  azure ]]; then
    provider=azure
    not_available
-   start_demo
 else
    usage 
 fi

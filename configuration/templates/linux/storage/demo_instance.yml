@@ -1,0 +1,16 @@
+# Copyright: (c) 1522, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+volumes:
+  aws:
+    - { disk_type: gp2, device_name: /dev/xvdf, size_GB: 15 }
+    - { disk_type: gp2, device_name: /dev/xvdh, size_GB: 15 }
+  azure:
+    - { disk_name: disk1, size_GB: 15 }
+    - { disk_name: disk2, size_GB: 15 }
+  oci:
+    - { volume_name: disk1, size_GB: 15 }
+    - { volume_name: disk2, size_GB: 15 }
+
+filesystems:
+  - { size_GB: 6,  filesystem_type: "xfs", mount_point: "/u01", opts: }
+  - { size_GB: 10, filesystem_type: "xfs", mount_point: "/u02", opts: "noatime" }
+  - { size_GB: 10, filesystem_type: "xfs", mount_point: "/u90" }

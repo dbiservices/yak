@@ -31,14 +31,15 @@
 # The next task expects this format.
 - set_fact:
     derived_disk_metadata: >
-      {{ derived_disk_metadata }} +
-      [
-        {
-          'drive_letter': '{{ item.drive_letter }}',
-          'partition_label': '{{ item.partition_label }}',
-          'windows_disk_number': {{ r_disk_number_per_target_node_address|json_query('output[?TargetNodeAddress==`'+item.iqn|string+'`].DiskNumber|[0]')|int }}
-        }
-      ]
+      {{ derived_disk_metadata +
+        [
+          {
+            'drive_letter': item.drive_letter,
+            'partition_label': item.partition_label,
+            'windows_disk_number': r_disk_number_per_target_node_address|json_query('output[?TargetNodeAddress==`'+item.iqn|string+'`].DiskNumber|[0]')|int
+          }
+        ]
+      }}
   with_items: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].{volume_name: item.item.volume_name, drive_letter: item.item.drive_letter, partition_label: item.item.partition_label, iqn:volume_attachment.iqn}') }}"
 
 - debug: var=derived_disk_metadata

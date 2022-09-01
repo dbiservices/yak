@@ -2,6 +2,9 @@ stages:
 - test
 - build
 
+variables:
+  CI_PRE_CLONE_SCRIPT: umask 0022
+
 test:
   stage: test
   script:
