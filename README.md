@@ -45,9 +45,10 @@ It exist 3 way to use YaK Community
 
 | Step | GUI |
 | ------ | ------ |
-| Start Demo |  https://yakdemo.dbi.services.com |
-| Login  | ./install/YaK_login.png|
-    
+| Connect     |  https://yakdemo.dbi.services.com |
+| Login       | <img src="/install/YaK_login.png" style="height: 100px; width:100px;"/>|
+| Server      | <img src="/install/YaK_server.png" style="height: 100px; width:100px;"/>|
+| Start Demo  | <img src="/install/YaK_demo.png" style="height: 100px; width:100px;"/>|
 
 
 
