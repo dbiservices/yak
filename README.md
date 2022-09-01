@@ -46,7 +46,7 @@ It exist 3 way to use YaK Community
 | User:yak  <br> Passwd:yak  | 
 | <img src="/install/img/YaK_login.png"  width="400" height="400"> |
 | Double-click "Yak Demo"| 
-| <img src="/install/img/YaK_demo.png" width="600" height="250"> |
+| <img src="/install/img/YaK_demo.png" width="600" height="280"> |
 
 ### YaK Testing
 
