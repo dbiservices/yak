@@ -8,7 +8,7 @@
 
 ## Setup
 
-1. pull the Yak Community container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
+1. pull the YaK Community container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
 
 ```bash
 docker pull registry.gitlab.com/yak4all/yak:latest
@@ -31,7 +31,7 @@ If it worked well, you should be inside the container with the YaK Software conf
 ```bash
 $ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
 
-INFO: type 'yakhelp' to display the help of YAK
+INFO: type 'yakhelp' to display the help of YaK
 
 ===========================================================
 
