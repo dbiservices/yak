@@ -12,7 +12,7 @@ Requirements
 Variables
 ---------
 
-This the defaults section 
+This the defaults section
 
 state
 - Define the instance state (present, absent, started, stopped)
@@ -21,7 +21,7 @@ debug:
 - Enable or disable debug mode (true, false)
 
 image_id
-- Define the ID of the Oracle Machine Image to be used
+- Define the ID of the Oracle server image to be used
 
 
 Dependencies

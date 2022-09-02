@@ -1,15 +1,15 @@
-### NEW environment
+# New infrastructure
 
-#### Create NEW environment from an existing example
+## Create new infrastructure from an existing example
 
-To create an NEW environment aws_testing, you can simple copy an NEW template and the adapt all parameters
+To create a new infrastructure aws_testing, you can simply copy a new template, and adapt all parameters:
 
 ```
 mkdir ./configuration/infrastructure/aws_testing
 cp  ./configuration/infrastructure_example/aws_yak_test/variables.yml  ./configuration/infrastructure/aws_testing
 ```
 
-#### Update the variable from the create NEW environment
+## Update the variable from the create new infrastructure
 
 At least the below parameter must be adapted
 - security_group_id
@@ -18,7 +18,6 @@ At least the below parameter must be adapted
 
 ```
 is_cloud_environment: yes
-environment: aws-testing
 operating_system: Oracle Linux 8.3
 provider: aws
 availability_zone: eu-central-1a
@@ -35,18 +34,18 @@ artifacts:
 
 ```
 
-### NEW VirtualMachine
+## New server
 
-#### Create NEW VirtualMachine from a existing template
+### Create a new server from a existing template
 
-To create an NEW VirtualMachine srv01, you can simple copy  existing template and the adapt all parameters
+To create a new server srv01, you can simple copy  existing template and the adapt all parameters
 
 ```
 mkdir ./configuration/infrastructure/aws_testing/srv01
 cp ./configuration/infrastructure_sample/aws_yak_test/srv-linux-test-01/variables.yml ./configuration/infrastructure/aws_testing/srv01
 ```
 
-#### Update the variable from the created NEW VirtualMachine
+### Update the variable from the created new server
 
 At least the below parameter must be adapted
 - hostname

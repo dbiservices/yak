@@ -1,6 +1,6 @@
 # Servers
 
- Take care ! All below playbooks must be executed from the yak home directory /workspace/yak
+ Take care ! All below playbooks must be executed from the YaK home directory /workspace/yak
 
 - [Guidance of the playbooks structure](#guidance-of-the-playbooks-structure)
   - [Server](#server)
