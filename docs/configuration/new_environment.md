@@ -1,15 +1,15 @@
-### NEW environment
+### New environment
 
-#### Create NEW environment from an existing example
+#### Create new environment from an existing example
 
-To create an NEW environment aws_testing, you can simple copy an NEW template and the adapt all parameters
+To create an New environment aws_testing, you can simple copy an New template and the adapt all parameters
 
 ```
 mkdir ./configuration/infrastructure/aws_testing
 cp  ./configuration/infrastructure_example/aws_yak_test/variables.yml  ./configuration/infrastructure/aws_testing
 ```
 
-#### Update the variable from the create NEW environment
+#### Update the variable from the create new environment
 
 At least the below parameter must be adapted
 - security_group_id
@@ -35,18 +35,18 @@ artifacts:
 
 ```
 
-### NEW VirtualMachine
+### New VirtualMachine
 
-#### Create NEW VirtualMachine from a existing template
+#### Create New VirtualMachine from a existing template
 
-To create an NEW VirtualMachine srv01, you can simple copy  existing template and the adapt all parameters
+To create an New VirtualMachine srv01, you can simple copy  existing template and the adapt all parameters
 
 ```
 mkdir ./configuration/infrastructure/aws_testing/srv01
 cp ./configuration/infrastructure_sample/aws_yak_test/srv-linux-test-01/variables.yml ./configuration/infrastructure/aws_testing/srv01
 ```
 
-#### Update the variable from the created NEW VirtualMachine
+#### Update the variable from the created New VirtualMachine
 
 At least the below parameter must be adapted
 - hostname

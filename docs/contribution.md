@@ -8,13 +8,13 @@
 
 ## Setup
 
-1. pull the Yak Community container registry.gitlab.com/yak4all/yak:latest to your workstation
+1. pull the Yak Community container `registry.gitlab.com/yak4all/yak:latest` to your workstation
 
 ```bash
 docker pull registry.gitlab.com/yak4all/yak:latest
 ```
 
-2. Define a local storage with the variable ${MY_LOCAL_YAK_DIR}
+2. Define a local storage with the variable `${MY_LOCAL_YAK_DIR}`
 
 ```bash
 export MY_LOCAL_YAK_DIR=$HOME/GIT/yak

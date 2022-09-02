@@ -34,7 +34,7 @@ Please see [Setup Instructions](docs/quickstart.md)
 You are more than welcome to give us your feedback.
 I hope to welcome many of your here to use and enhance the YaK Community package with new cloud providers and features :-).
 
-Please see [Contribution Instructions](CONTRIBUTION.md)
+Please see [Contribution Instructions](docs/contribution.md)
 
 ## License
 

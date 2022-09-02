@@ -56,16 +56,16 @@ configuration/
 
 ### Create a New environment
 
-[Link to NEW_ENVIRONMENT.md](doc/NEW_ENVIRONMENT.md)
+[Go to the documentation.](new_environment.md)
 
 ### Create your environment/Virtual Machine secrets
 
-[Link to SECRET_MANAGEMENT.md](doc/SECRET_MANAGEMENT.md)
+[Go to the documentation.](secret_management.md)
 
 ### Cloud Provider Authentification
 
-[Link to CLOUD_AUTHENTIFICATION.md](doc/CLOUD_AUTHENTIFICATION.md)
+[Go to the documentation.](cloud_authentication.md)
 
 ### Create Virtual Machine and storage configuration
 
-[Link to ../servers/README.md](../servers/README.md)
+[Link to ../servers/README.md](../servers.md)
