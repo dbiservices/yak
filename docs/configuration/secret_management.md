@@ -1,23 +1,25 @@
 ## Secrets management
-A folder is created for the secrets in the created environement. The customer's private key and public key are stored there in order to connect to AWS.
-- If every VirtualMachine is to use the same key, the secret is only created at the environement level
-- If each VirtualMachine is to use its own keys, the secrets are created under each server directory
 
-### Create secret directory at the environment level
-```
-mkdir ~/yak/configuration/infrastructure/aws_testing/secret
-```
+A folder is created for the secrets in each infrastructure. The customer's private and public keys are stored there to connect to AWS.
 
-### Create secret directory at the VirtualMachine level
+- If all servers will use the same key, the secret is only created at the infrastructure level
+- If each server will use its own key, the secrets are created under each server directory
+
+### Create a "secrets" directory at the infrastructure level
 ```
-mkdir ~/yak/configuration/infrastructure/aws_testing/srv01/secret
+mkdir ~/yak/configuration/infrastructure/aws_testing/secrets
 ```
 
-### Create your secret files 
+### Create a "secrets" directory at the server level
+```
+mkdir ~/yak/configuration/infrastructure/aws_testing/srv01/secrets
+```
+
+### Create your secret files
 The corresponding private/public keys are then stored there. Here is an example of how new keys can be created
 ```
 ssh-keygen -b 4096 -m PEM -t rsa -f ${secret_home}/sshkey -q -N ""
-chmod 600 for private key
+chmod 600 for a private key
 ```
 
 ### Test your inventory after having updated all parameters

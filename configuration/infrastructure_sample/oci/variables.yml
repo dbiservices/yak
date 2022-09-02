@@ -1,11 +1,11 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-is_cloud_environement: yes
+is_cloud_environment: yes
 environment: oci-sandbox
 ansible_user: opc
 operating_system: Oracle-Linux-8.3-2021.05.12-0
 provider: oci
 region_id: eu-zurich-1
-compartment_id: 
-availability_domain: 
-security_list: 
-subnet_id: 
+compartment_id:
+availability_domain:
+security_list:
+subnet_id:

@@ -1,7 +1,7 @@
 azure_virtualmachine
 ====================
 
-Create,start,stop,delete a Linux or Windows Azure Virutal Machine on an existing Network Infrastructure
+Create, start, stop, delete a Linux or Windows Azure server on an existing Network Infrastructure
 
 Requirements
 ------------
@@ -12,7 +12,7 @@ Requirements
 Variables
 ---------
 
-This the defaults section 
+This the defaults section
 
 state
 - Define the instance state (present, absent, started, stopped)

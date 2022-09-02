@@ -80,24 +80,21 @@ ansible-inventory --host aws_dbi_test/srv-linux-test-01
 
 #### the infrastructure folder
 
-In this folder you can describe your infrastructure. You can have multiple
-environments that can span accross different cloud and on-premises infrastructures.
-The general idea is that one environement is on one cloud provider or on-premises
+In this folder, you can describe your infrastructure. You can have multiple
+infrastructures across different cloud and on-premises infrastructures.
+The general idea is that one infrastructure is on one cloud provider or on-premises
 and serves one purpose. Examples:
 
-- oracle_prod_aws: an environment with Oracle databases for production purpose hosted in AWS.
-- weblogic_test_azure: an environment with Weblogic servers for testing purpose hosted in Azure.
-- devservers_gcloud: an environment with development servers hosted in the Google cloud.
+- oracle_prod_aws: an infrastructure with Oracle databases for production purposes hosted in AWS.
+- weblogic_test_azure: an infrastructure with Weblogic servers for testing purposes hosted in Azure.
+- devservers_gcloud: an infrastructure with development servers hosted in the Google cloud.
 - etc.
 
-In each environment, you'll have servers (Ansible managed hosts). You can have one or thousands
+In each infrastructure, you'll have servers (Ansible managed hosts). You can have one or thousands
 or even more servers.
 
 In each server, you'll have none or multiple components. These components will be considered as
-Ansible managed hosts (and can be targeted as Ansible managed hosts). The purpose of this
-is to extend the concept of managed hosts to things like Oracle instance. That means that you
-can then develop playbooks that will target things like Oracle instance instead of a server and you
-can allocate Ansible variables specific to these components without having to build or derive
+Ansible managed hosts (and can be targeted as Ansible managed hosts). This extends the concept of managed hosts to things like Oracle instances. That means you can then develop playbooks that will target things like Oracle instance instead of a server and allocate Ansible variables specific to these components without having to build or derive
 variables in your playbooks. Components can be:
 
 - Oracle instance
@@ -107,7 +104,7 @@ variables in your playbooks. Components can be:
 
 ```bash
 ./configuration/infrastructure
-├── aws_yak_test # An environment that will be used as an Ansible group
+├── aws_yak_test # An infrastructure that will be used as an Ansible group
 │   ├── srvnico-01 # A server that will be used as an Ansible host
 │   │   ├── oraprd01 # A component (in a server) that will be used as an Ansible host
 │   │   │   │        # unless explicitly modified, it will use the same IP as the
@@ -138,7 +135,7 @@ to this `sshkey` key for the current group or host. If the `sshkey` key doesn't 
 then allocate the parent `sshkey` key for the current group or host.
 
 You can store all kind of secrets that make sense for you in the `secrets` directories. If
-you plan to version this `customer` folder in a production environment, you must ignore all
+you plan to version this `customer` folder in a production infrastructure, you must ignore all
 `secrets` folder from being versioned and you should backup those secrets in a secure way.
 
 #### the infrastructure_sample folder
@@ -149,7 +146,7 @@ configuration. It aims to be documentation.
 #### The templates folder
 
 The `templates` folder is used to save and store pre-defined YaK variables that
-describe environments. The goal is to avoid repeting same set of variable in the
+describe infrastructures. The goal is to avoid repeting same set of variable in the
 `customer` folder. This can be organized with the structure of your choice.
 For instance:
 

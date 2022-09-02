@@ -1,6 +1,6 @@
-### Cloud Provider Authentification
+# Cloud Provider Authentication
 
-#### AWS
+## AWS
 
 For AWS you can authenticate you with the AWS CLI or with the below AWS parameters setting
 
@@ -16,7 +16,7 @@ export AWS_ACCESS_KEY_ID="*******"
 export AWS_SECRET_ACCESS_KEY="**********"
 ```
 
-#### Azure
+## Azure
 
 For Azure you can authenticate you with the az CLI or with the below Azure permanent parameters setting
 
@@ -27,7 +27,7 @@ export AZURE_SECRET=*****
 export AZURE_TENANT=*****
 ```
 
-#### OCI
+## OCI
 
 For Oracle you can authenticate you with the oci CLI or with the below OCI user permanent parameters setting
 
