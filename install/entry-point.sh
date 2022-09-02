@@ -17,6 +17,11 @@ if ! id yak > /dev/null 2>&1; then
         useradd -u ${YAK_DEV_UID} -M -d ${YAK_USER_HOME} -g yak -s /bin/bash yak
     fi
 
+    # Environment
+    echo "cd ${YAK_USER_HOME}/yak" >> ${YAK_USER_HOME}/.bashrc
+    echo "export OCI_USE_NAME_AS_IDENTIFIER=true" >> ${YAK_USER_HOME}/.bashrc
+
+    # Alias
     echo "alias ll='ls -latr'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdci='cd ${YAK_USER_HOME}/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdct='cd ${YAK_USER_HOME}/yak/configuration/template'" >> ${YAK_USER_HOME}/.bashrc
@@ -24,7 +29,6 @@ if ! id yak > /dev/null 2>&1; then
     echo "alias cdr='cd ${YAK_USER_HOME}/yak/roles'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ${YAK_USER_HOME}/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias startdemo='cd ${YAK_USER_HOME}/yak;${YAK_USER_HOME}/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
-    echo "cd ${YAK_USER_HOME}/yak" >> ${YAK_USER_HOME}/.bashrc
     echo 'aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'apsdp() { cd ~/yak && ansible-playbook servers/deploy.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc

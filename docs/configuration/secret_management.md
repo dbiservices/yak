@@ -6,17 +6,21 @@ A folder is created for the secrets in each infrastructure. The customer's priva
 - If each server will use its own key, the secrets are created under each server directory
 
 ### Create a "secrets" directory at the infrastructure level
+
 ```
 mkdir ~/yak/configuration/infrastructure/aws_testing/secrets
 ```
 
 ### Create a "secrets" directory at the server level
+
 ```
 mkdir ~/yak/configuration/infrastructure/aws_testing/srv01/secrets
 ```
 
 ### Create your secret files
+
 The corresponding private/public keys are then stored there. Here is an example of how new keys can be created
+
 ```
 ssh-keygen -b 4096 -m PEM -t rsa -f ${secret_home}/sshkey -q -N ""
 chmod 600 for a private key
@@ -42,4 +46,3 @@ dbi@3f2794bb53e4:~/GIT/yak$ ansible-inventory --host aws_testing/srv01
     "ansible_user": "ec2-user",
 . . .
 ```
-
