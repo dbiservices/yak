@@ -16,7 +16,7 @@ The YaK as it's own Ansible dynamic inventory structure, which respect the below
 configuration/
 │
 ├── infrastructure
-│   ├── {environment_name_1}
+│   ├── {infrastructure_name_1}
 │   │   ├── variables.yml
 │   │   ├── {server_name}
 │   │   │   ├── variables.yml
@@ -28,7 +28,7 @@ configuration/
 │   │   │       └── variables.yml
 │   │   └── ...
 │   │
-│   └── {environment_name_2}
+│   └── {infrastructure_name_2}
 │       └── ...
 │
 ├── infrastructure_sample
@@ -54,11 +54,11 @@ configuration/
             `-- sqlserver_instance.yml
 ```
 
-### Create a New environment
+### Create a new infrastructure
 
-[Go to the documentation.](new_environment.md)
+[Go to the documentation.](infrastructure.md)
 
-### Create your environment/Virtual Machine secrets
+### Create your infrastructure/server secrets
 
 [Go to the documentation.](secret_management.md)
 
@@ -66,6 +66,6 @@ configuration/
 
 [Go to the documentation.](cloud_authentication.md)
 
-### Create Virtual Machine and storage configuration
+### Create servers and deploy storage configuration
 
 [Link to ../servers/README.md](../servers.md)

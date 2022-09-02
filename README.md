@@ -1,6 +1,6 @@
 # YaK
 
-Get complete control of your hybrid cloud infrastructure with little expertise. YaK deploys and configures your machines across any public cloud providers and on-premise in the same predictable way.
+Get complete control of your hybrid cloud infrastructure with little expertise. YaK deploys and configures your servers across any public cloud providers and on-premise in the same predictable way.
 
 YaK Community is backed by [dbi-services](http://dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on http://dbi-services.com/en/yak/components.
 
@@ -15,7 +15,7 @@ YaK Community is backed by [dbi-services](http://dbi-services.com). Start free w
 
 ## Demo
 
-Access our YaK DEMO environment to get a straightforward and fast introduction!
+Access our YaK demo environment to get a straightforward and fast introduction!
 Try it, to see how it works in real life.
 
 
