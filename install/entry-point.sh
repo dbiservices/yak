@@ -94,7 +94,7 @@ if ! id yak > /dev/null 2>&1; then
        echo 
        echo " As of demo this environment as some restriction"
        echo
-       echo " The servers"
+       echo " The machine"
        echo "       - provisioning allows only instance_type=t3.micro "
        echo "       - are automatically destroyed after 4h"
        echo "       - storage size can't be extended"
