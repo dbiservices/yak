@@ -20,7 +20,7 @@ docker pull registry.gitlab.com/yak4all/yak:latest
 export MY_LOCAL_YAK_DIR=$HOME/GIT/yak
 ```
 
-3. Clone the Yak repository in your $HOME directory
+3. Clone the YaK repository in your $HOME directory
 
 ```bash
 cd $HOME/GIT
@@ -32,12 +32,12 @@ git clone git@gitlab.com:yak4all/yak.git
 docker run -it --rm -e YAK_ENABLE_SUDO=true --name yak --pull always -v ${HOME}/.ssh:/workspace/.ssh -v ${MY_LOCAL_YAK_DIR}:/workspace/yak registry.gitlab.com/yak4all/yak:latest bash
 ```
 
-If it works you should be inside the container with the Yak repository available for contribution
+If it works you should be inside the container with the YaK repository available for contribution
 
 ```bash
 docker run -it --rm -e YAK_ENABLE_SUDO=true --name yak --pull always -v ${HOME}/.ssh:/workspace/.ssh -v ${MY_LOCAL_YAK_DIR}:/workspace/yak registry.gitlab.com/yak4all/yak:latest bash
 
-INFO: type 'yakhelp' to display the help of YAK
+INFO: type 'yakhelp' to display the help of YaK
 
 yak@d915a92de516:~/yak$ aig
 @all:

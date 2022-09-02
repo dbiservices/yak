@@ -8,7 +8,7 @@
 
 ## Setup
 
-1. pull the Yak Community container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
+1. pull the YaK Community container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
 
 ```bash
 docker pull registry.gitlab.com/yak4all/yak:latest
