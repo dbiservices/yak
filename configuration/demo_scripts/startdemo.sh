@@ -90,9 +90,9 @@ function start_demo ()
    echo
    step_time "STEP 1"
 
-   blueLog "STEP 2#10: Machine variables"
+   blueLog "STEP 2#10: server variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Machine configuration is located under the Provider environment "
+   echo "   The server configuration is located under the Provider environment "
    echo "   ./configuration/infrastructure/demo_aws"
    echo
    greenLog "Executed command: "
@@ -108,7 +108,7 @@ function start_demo ()
 
    blueLog "STEP 3#10: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Component configuration is located under the Machine configuration"
+   echo "   The Component configuration is located under the server configuration"
    echo "   ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
    echo
    greenLog "Executed command: "
@@ -165,7 +165,7 @@ function start_demo ()
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#10. Machine Creation."
+   blueLog "STEP 7#10. server Creation."
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Now you are ready to create your host including storage configuration"
    echo
@@ -209,10 +209,10 @@ function start_demo ()
    read -p "Press enter to continue: "
    step_time "STEP 9"
 
-   blueLog "STEP 10#10 Machine Decommissioning."
+   blueLog "STEP 10#10 server Decommissioning."
    whiteLog "-------------------------------------------------------------------------------------"
-   redLog   "   You can press CTRL-C now if you want to keep the Machine"
-   redLog   "   In any case the Machine will be destroyed in 4h. "
+   redLog   "   You can press CTRL-C now if you want to keep the server"
+   redLog   "   In any case the server will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
