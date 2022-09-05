@@ -5,7 +5,7 @@ ansible_user: azureuser
 provider: azure
 subscription:
     id:
-    name: Azure subscription 1
+    name: Azure subscription Name
 resource_group:
 virtual_network_name:
 subnet_name:
