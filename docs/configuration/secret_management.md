@@ -41,8 +41,8 @@ dbi@3f2794bb53e4:~/GIT/yak$ ansible-inventory --host aws_testing/srv01
 {
     "ami_id": "ami-07e51b655b107cd9b",
     "ansible_host": "172.21.9.156",
-    "ansible_ssh_private_key_file": "/home/dbi/GIT/yak/configuration/infrastructure/aws_testing/secrets/sshkey",
-    "ansible_ssh_public_key_file": "/home/dbi/GIT/yak/configuration/infrastructure/aws_testing/secrets/sshkey.pub",
+    "ansible_ssh_private_key_file": "/workspace/yak/configuration/infrastructure/aws_testing/secrets/sshkey",
+    "ansible_ssh_public_key_file": "/workspace/yak/configuration/infrastructure/aws_testing/secrets/sshkey.pub",
     "ansible_user": "ec2-user",
 . . .
 ```
