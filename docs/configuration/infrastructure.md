@@ -6,7 +6,7 @@ To create a new infrastructure aws_testing, you can simply copy a new template, 
 
 ```
 mkdir ./configuration/infrastructure/aws_testing
-cp  ./configuration/infrastructure_example/aws_yak_test/variables.yml  ./configuration/infrastructure/aws_testing
+cp  ./configuration/infrastructure_sample/aws/variables.yml  ./configuration/infrastructure/aws_testing
 ```
 
 ## Update the variable from the create new infrastructure
@@ -26,12 +26,6 @@ ami_id: ami-0211d10fb4a04824a
 region_id: eu-central-1
 security_group_id: sg-*****
 subnet_id: subnet-**********
-
-artifacts:
-  provider: aws_s3
-  bucket_name: "********"
-  remote_src: true
-
 ```
 
 ## New server
@@ -42,7 +36,7 @@ To create a new server srv01, you can simple copy  existing template and the ada
 
 ```
 mkdir ./configuration/infrastructure/aws_testing/srv01
-cp ./configuration/infrastructure_sample/aws_yak_test/srv-linux-test-01/variables.yml ./configuration/infrastructure/aws_testing/srv01
+cp ./configuration/infrastructure_sample/aws/srv-linux-test-01/variables.yml ./configuration/infrastructure/aws_testing/srv01
 ```
 
 ### Update the variable from the created new server
