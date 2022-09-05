@@ -36,11 +36,11 @@ configuration/
 │       ├── variables.yml
 │       ├── srv-linux-test-01
 │       │   ├── variables.yml
-│       │   └── ORA
+│       │   └── COMP
 │       │       └── variables.yml
 │       ├── srv-win-test-01
 │       │   ├── variables.yml
-│       │   └── WSDBA
+│       │   └── COMP
 │       │       └── variables.yml
 │       └── ...
 ├── templates
