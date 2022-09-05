@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright: (c) 2022, dbi services
+# This file is part of YaK core.
+# Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 
 # Variables
 pattern_to_search='^[ ]?#[ ]?Copyright:[ ]?\(c\)[ ]?[0-9]{4}[ ]?,[ ]?dbi services'
