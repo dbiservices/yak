@@ -1,11 +1,11 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 is_cloud_environment: yes
 environment: aws-testing
-operating_system: Oracle Linux 8.3
 provider: aws
 availability_zone: eu-central-1a
 instance_type: t3.large
-ami_id: ami-0211d10fb4a04824a
+operating_system: OL8.5-x86_64-HVM-2021-11-24
+ami_id: ami-07e51b655b107cd9b
 region_id: eu-central-1
 security_group_id: 
 subnet_id: 
