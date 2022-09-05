@@ -1,4 +1,4 @@
-## Yak Ansible Inventory configuration
+## Yak Core Ansible Inventory configuration
 
 [[_TOC_]]
 
@@ -10,7 +10,7 @@
 
 ### inventory structure
 
-The YaK as it's own Ansible dynamic inventory structure, which respect the below structure
+The YaK Core as it's own Ansible dynamic inventory structure, which respect the below structure
 
 ```
 configuration/
