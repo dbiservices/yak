@@ -117,8 +117,7 @@ function start_demo ()
    read -p "Press enter to continue: "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
-   echo
-   whiteLog "Above configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
+   echo  "Below configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
    echo
    read -p "Press enter to continue: "
    echo
@@ -207,6 +206,7 @@ function start_demo ()
    echo
    cat configuration/infrastructure/.ssh/config
    echo
+   read -p "Press enter to continue: "
    step_time "STEP 9"
 
    blueLog "STEP 10#10 Machine Decommissioning."
