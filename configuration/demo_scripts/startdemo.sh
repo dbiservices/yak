@@ -76,7 +76,7 @@ function start_demo ()
    echo 
    blueLog "STEP 1#10: Provider description"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To Provision a machine on AWS, a Cloud provider configuration must exist"
+   echo "   To Provision a server on AWS, a Cloud provider configuration must exist"
    echo "   The environment demo_aws is located under ./configuration/infrastructure"
    echo
    greenLog "Executed command: "
@@ -153,7 +153,7 @@ function start_demo ()
 
    blueLog "STEP 6#10. Set the authentification method"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To have the privileges to create and configure the machine" 
+   echo "   To have the privileges to create and configure the server" 
    echo "   For this DEMO on ${provider} it is done by exporting the ${provider} provided variables"
    echo
    greenLog "Executed command: "
@@ -179,10 +179,10 @@ function start_demo ()
    read -p "Press enter to continue: "
    step_time "STEP 7"
 
-   blueLog "STEP 8#10. SSH connection to created machine"
+   blueLog "STEP 8#10. SSH connection to created server"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   At this step the machine is created and an SSH connection will be made."
-   echo "   Check the machine and the storage if it is correclty configured"
+   echo "   At this step the server is created and an SSH connection will be made."
+   echo "   Check the server and the storage if it is correclty configured"
    whiteLog "   Please "exit" the session when finished."
    echo
    greenLog "Executed command: "
