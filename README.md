@@ -6,7 +6,7 @@ YaK Community is backed by [dbi-services](http://dbi-services.com). Start free w
 
 ## Principles
 
-- **No lock-in:** YaK is and will stay entirely open-source.
+- **No lock-in:** YaK Core is and will stay entirely open-source.
 - **Extensible:** add any cloud providers.
 - **Modular:** add components to operate any third-party software (Oracle, PostgreSQL, etc).
 - **Simple:** most effortless IT cross cloud provider automation system ever.
@@ -15,7 +15,7 @@ YaK Community is backed by [dbi-services](http://dbi-services.com). Start free w
 
 ## Demo
 
-Access our YaK demo environment to get a straightforward and fast introduction!
+Access our YaK Core demo environment to get a straightforward and fast introduction!
 Try it, to see how it works in real life.
 
 
@@ -34,7 +34,7 @@ Please see [Setup Instructions](docs/quickstart.md)
 ## Contribute
 
 You are more than welcome to give us your feedback.
-I hope to welcome many of your here to use and enhance the YaK Community package with new cloud providers and features :-).
+I hope to welcome many of your here to use and enhance the YaK Core package with new cloud providers and features :-).
 
 Please see [Contribution Instructions](docs/contribution.md)
 
