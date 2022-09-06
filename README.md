@@ -6,6 +6,8 @@ YaK Core is backed by [dbi services](https://www.dbi-services.com). Start free w
 
 ## Principles
 
+The YaK is based on the following principles:
+
 - **No lock-in:** The YaK Core is, and will stay entirely open source.
 - **Extensibility:** add support for any cloud providers.
 - **Modularity:** add components to operate any third-party software (Oracle, PostgreSQL, etc.).
