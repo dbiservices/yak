@@ -19,7 +19,7 @@ Access our YaK Core demo environment to get a straightforward and fast introduct
 Try it, to see how it works in real life.
 
 
-| Step                                                        | 
+| Steps                                                        | 
 | ----------------------------------------------------------- |
 |  Open https://yakdemo.dbi-services.com                           |
 |  Set Username: **yak**   and Password: **yak**  and click on **"Sign in"**   | 
