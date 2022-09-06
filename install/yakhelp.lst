@@ -6,6 +6,7 @@
         cdct            --> Change directory to configuration/template
         cdr             --> Change directory to roles directory
         cdp             --> Change directory to playbooks directory
+        cdcii           --> Change director to yak_dev_infrastructure (internal use only)
 
         ANSIBLE INVENTORY ALIASES
         ##############################################################
@@ -19,3 +20,5 @@
         GENERATE SSH SECRETS 
         ##############################################################
         gen_secret      --> Generate sshkey's under the current directory
+
+       

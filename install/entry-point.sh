@@ -27,6 +27,7 @@ if ! id yak > /dev/null 2>&1; then
     # Alias
     echo "alias ll='ls -latr'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdci='cd ${YAK_USER_HOME}/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdcii='cd ${YAK_USER_HOME}/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdct='cd ${YAK_USER_HOME}/yak/configuration/template'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdh='cd ${YAK_USER_HOME}/yak'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdr='cd ${YAK_USER_HOME}/yak/roles'" >> ${YAK_USER_HOME}/.bashrc
