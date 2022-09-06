@@ -59,4 +59,3 @@ ansible-inventory all --graph
 
 GNU General Public License v3.0 or later
 See COPYING to see the full text.
-

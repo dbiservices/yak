@@ -78,4 +78,3 @@ servers/decommission.yml \
 -e target=<infrastructure>/<server> \
 -e debug=true
 ```
-
