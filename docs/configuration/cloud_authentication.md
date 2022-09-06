@@ -2,7 +2,7 @@
 
 ## AWS
 
-For AWS you can authenticate you with the AWS CLI or with the below AWS parameters setting
+For AWS you can authenticate you with the AWS CLI  programmatic access key variables
 
 - temporary keys(valid some hours only)
 ```
@@ -18,7 +18,7 @@ export AWS_SECRET_ACCESS_KEY="**********"
 
 ## Azure
 
-For Azure you can authenticate you with the az CLI or with the below Azure permanent parameters setting
+For Azure you can authenticate you with the AZ CLI or with the below Azure permanent parameters setting
 
 ```
 export AZURE_SUBSCRIPTION_ID=****
@@ -29,7 +29,7 @@ export AZURE_TENANT=*****
 
 ## OCI
 
-For Oracle you can authenticate you with the oci CLI or with the below OCI user permanent parameters setting
+For Oracle you can authenticate you with the OCI CLI or with the below OCI user permanent parameters setting
 
 ```
 export OCI_USER_ID=****
