@@ -1,4 +1,4 @@
-## Yak Core Ansible Inventory configuration
+## YaK Core Ansible Inventory configuration
 
 [[_TOC_]]
 
@@ -6,7 +6,7 @@
 
 - The inventory will only parse the configuration files available under the directory ./configuration/infrastructure
 - Per default this directory is empty
-- We made you some provider and host templates available under configuration/infrastructure_sample that can be copied and adapted
+- we made you some provider and host templates available under configuration/infrastructure_sample that can be copied and adapted
 
 ### Inventory structure
 
