@@ -22,23 +22,23 @@ START_TIME=$(date +%s)
 function usage()
 {
 	echo
-	whiteLog " NAME "
+	whiteLog " NAME"
    echo "   startdemo -  YaK demo"
    echo ""
-   whiteLog " SYNOPSIS:"
+   whiteLog " SYNOPSIS"
    echo ""
 	echo "   This script will run a demo of the YaK for AWS"
 	echo "   YaK is build to work for main cloud providers: "
    echo "   Oracle OCI, Microsoft AZURE and Amazon AWS"
    echo "   This demo works only for AWS currently"
    echo ""
-	whiteLog " USAGE:"
+	whiteLog " USAGE"
    echo "   startdemo [aws|azure|oci]"
    echo ""
-	whiteLog " NOTE:"
+	whiteLog " NOTE"
 	echo "   Only AWS is allowed for this demo"
    echo " "
-   whiteLog " CREDITS:"
+   whiteLog " CREDITS"
    echo "   YaK is distributed and written by dbi services "
    echo " "
 
