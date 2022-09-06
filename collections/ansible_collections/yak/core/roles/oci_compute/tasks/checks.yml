@@ -1,0 +1,22 @@
+---
+- name: Get OCI instances facts
+  delegate_to: localhost
+  oracle.oci.oci_compute_instance_facts:
+    compartment_id: "{{ compartment_id }}"
+    display_name: "{{ display_name }}"
+  register: r_oci_compute_instance_facts
+
+- debug: var=r_oci_compute_instance_facts
+  delegate_to: localhost
+  when: debug | bool
+
+- name: Filter to get non already terminated instance
+  set_fact:
+    filtered_instance_id: "{{ r_oci_compute_instance_facts|json_query('
+                                instances[?lifecycle_state==`MOVING`
+                                        || lifecycle_state==`STARTING`
+                                        || lifecycle_state==`STOPPING`
+                                        || lifecycle_state==`STOPPED`
+                                        || lifecycle_state==`RUNNING`
+                                ].id') }}"
+  failed_when: filtered_instance_id|length > 1

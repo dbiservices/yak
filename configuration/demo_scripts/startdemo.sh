@@ -2,7 +2,7 @@
 #-------------------------------------------------------------------------------
 # FILE:  startdemo.sh
 #
-# PURPOSE: Script to execute Yak Demo with the different Cloud Provider
+# PURPOSE: Script to execute Yak demo with the different Cloud Provider
 #
 # PARAMETERS: aws, azure, oci
 #
@@ -22,24 +22,24 @@ START_TIME=$(date +%s)
 function usage()
 {
 	echo
-	whiteLog " NAME "
+	whiteLog " NAME"
    echo "   startdemo -  YaK demo"
    echo ""
    whiteLog " SYNOPSIS"
    echo ""
-	echo "   This script will run a Demo of the YaK for AWS"
+	echo "   This script will run a demo of the YaK for AWS"
 	echo "   YaK is build to work for main cloud providers: "
    echo "   Oracle OCI, Microsoft AZURE and Amazon AWS"
    echo "   This demo works only for AWS currently"
    echo ""
-	whiteLog " USAGE:"
+	whiteLog " USAGE"
    echo "   startdemo [aws|azure|oci]"
    echo ""
-	whiteLog " NOTE:"
-	echo "   Only AWS is allowed for this DEMO"
+	whiteLog " NOTE"
+	echo "   Only AWS is allowed for this demo"
    echo " "
-   whiteLog " CREDITS:"
-   echo "   Yak is distributed and written by dbi services "
+   whiteLog " CREDITS"
+   echo "   YaK is distributed and written by dbi services "
    echo " "
 
 }
@@ -66,7 +66,7 @@ dir=`dirname $0`
 function not_available ()
 {
    echo ""
-   whiteLog " Only AWS is allowed for this DEMO"
+   whiteLog " Only AWS is allowed for this demo"
    echo ""
 }
 
@@ -76,7 +76,7 @@ function start_demo ()
    echo 
    blueLog "STEP 1#10: Provider description"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To Provision a machine on AWS, a Cloud provider configuration must exist"
+   echo "   To Provision a server on AWS, a Cloud provider configuration must exist"
    echo "   The environment demo_aws is located under ./configuration/infrastructure"
    echo
    greenLog "Executed command: "
@@ -90,9 +90,9 @@ function start_demo ()
    echo
    step_time "STEP 1"
 
-   blueLog "STEP 2#10: Machine variables"
+   blueLog "STEP 2#10: server variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Machine configuration is located under the Provider environment "
+   echo "   The server configuration is located under the Provider environment "
    echo "   ./configuration/infrastructure/demo_aws"
    echo
    greenLog "Executed command: "
@@ -108,7 +108,7 @@ function start_demo ()
 
    blueLog "STEP 3#10: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Component configuration is located under the Machine configuration"
+   echo "   The Component configuration is located under the server configuration"
    echo "   ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
    echo
    greenLog "Executed command: "
@@ -153,8 +153,8 @@ function start_demo ()
 
    blueLog "STEP 6#10. Set the authentification method"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To have the privileges to create and configure the machine" 
-   echo "   For this DEMO on ${provider} it is done by exporting the ${provider} provided variables"
+   echo "   To have the privileges to create and configure the server" 
+   echo "   For this demo on ${provider} it is done by exporting the ${provider} provided variables"
    echo
    greenLog "Executed command: "
    whiteLog "export AWS_ACCESS_KEY_ID=ASI********2E7"
@@ -165,7 +165,7 @@ function start_demo ()
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#10. Machine Creation."
+   blueLog "STEP 7#10. server Creation."
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Now you are ready to create your host including storage configuration"
    echo
@@ -179,10 +179,10 @@ function start_demo ()
    read -p "Press enter to continue: "
    step_time "STEP 7"
 
-   blueLog "STEP 8#10. SSH connection to created machine"
+   blueLog "STEP 8#10. SSH connection to created server"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   At this step the machine is created and an SSH connection will be made."
-   echo "   Check the machine and the storage if it is correclty configured"
+   echo "   At this step the server is created and an SSH connection will be made."
+   echo "   Check the server and the storage if it is correclty configured"
    whiteLog "   Please "exit" the session when finished."
    echo
    greenLog "Executed command: "
@@ -209,10 +209,10 @@ function start_demo ()
    read -p "Press enter to continue: "
    step_time "STEP 9"
 
-   blueLog "STEP 10#10 Machine Decommissioning."
+   blueLog "STEP 10#10 server Decommissioning."
    whiteLog "-------------------------------------------------------------------------------------"
-   redLog   "   You can press CTRL-C now if you want to keep the Machine"
-   redLog   "   In any case the Machine will be destroyed in 4h. "
+   redLog   "   You can press CTRL-C now if you want to keep the server"
+   redLog   "   In any case the server will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
@@ -225,7 +225,7 @@ function start_demo ()
 
    blueLog "End."
    whiteLog "-------------------------------------------------------------------------------------"
-   whiteLog "   Close this DEMO session with \"exit\" before leaving"
+   whiteLog "   Close this demo session with \"exit\" before leaving"
    echo
    step_time "END"
 }

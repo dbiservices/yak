@@ -3,13 +3,13 @@ hostname: srv-win-test-01
 is_physical_server: no
 host_ip_access: private_ip
 private_ip:
-    mode: manual
-    ip: 172.21.9.158
+    mode: auto
+    ip: 
 public_ip:
     mode: none
     ip:
-operating_system: Windows_Server-2019-English-Full-Base-2022.04.13
-ami_id: ami-0aed02946a88539dc
+operating_system: Microsoft Windows Server 2019 Base 2022.08.10
+ami_id: ami-0c6e3ed6b1dd28a39
 instance_type: t3.large
 os_type: windows
 time_zone: UTC

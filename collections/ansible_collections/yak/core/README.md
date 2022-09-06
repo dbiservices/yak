@@ -73,7 +73,7 @@ default_server_os_type: linux
 ansible-inventory --graph --vars
 
 ## Per hosts
-ansible-inventory --host aws_dbi_test/srv-linux-test-01
+ansible-inventory --host aws_testing/srv-linux-test-01
 ```
 
 ### Inventory structure
@@ -104,8 +104,8 @@ variables in your playbooks. Components can be:
 
 ```bash
 ./configuration/infrastructure
-├── aws_yak_test # An infrastructure that will be used as an Ansible group
-│   ├── srvnico-01 # A server that will be used as an Ansible host
+├── aws_testing # An infrastructure that will be used as an Ansible group
+│   ├── srv-test-01 # A server that will be used as an Ansible host
 │   │   ├── oraprd01 # A component (in a server) that will be used as an Ansible host
 │   │   │   │        # unless explicitly modified, it will use the same IP as the
 │   │   │   │        # parent host.

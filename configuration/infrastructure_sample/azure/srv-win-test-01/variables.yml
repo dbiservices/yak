@@ -4,14 +4,14 @@ is_physical_server: no
 host_ip_access: public_ip
 private_ip:
     mode: auto
-    ip: 172.19.16.5
+    ip: 
 public_ip:
     mode: auto
-    ip: 20.229.99.174
+    ip: 
 os_type: windows
 time_zone: UTC
 #vm_size: Standard_B2ms
-vm_size: Standard_D2as_v5
+vm_size: Standard_D2as_v5 #without tempororary Storage : Issue yak4all/yak#5 
 image:
     offer: WindowsServer
     publisher: MicrosoftWindowsServer

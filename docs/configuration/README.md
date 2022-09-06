@@ -1,16 +1,16 @@
-## Yak Ansible Inventory configuration
+## YaK Core Ansible Inventory configuration
 
 [[_TOC_]]
 
-### inventory parsing
+### Inventory parsing
 
-- the inventory will only parse the configuration files available under the directory ./configuration/infrastructure
-- per default this directory is empty
+- The inventory will only parse the configuration files available under the directory ./configuration/infrastructure
+- Per default this directory is empty
 - We made you some provider and host templates available under configuration/infrastructure_sample that can be copied and adapted
 
-### inventory structure
+### Inventory structure
 
-The YaK as it's own Ansible dynamic inventory structure, which respect the below structure
+The YaK Core as it's own Ansible dynamic inventory structure, which respect the below structure
 
 ```
 configuration/
@@ -20,11 +20,11 @@ configuration/
 │   │   ├── variables.yml
 │   │   ├── {server_name}
 │   │   │   ├── variables.yml
-│   │   │   └── {application}
+│   │   │   └── {component}
 │   │   │       └── variables.yml
 │   │   ├── {server_name}
 │   │   │   ├── variables.yml
-│   │   │   └── {application}
+│   │   │   └── {component}
 │   │   │       └── variables.yml
 │   │   └── ...
 │   │
@@ -36,11 +36,11 @@ configuration/
 │       ├── variables.yml
 │       ├── srv-linux-test-01
 │       │   ├── variables.yml
-│       │   └── ORA
+│       │   └── COMP
 │       │       └── variables.yml
 │       ├── srv-win-test-01
 │       │   ├── variables.yml
-│       │   └── WSDBA
+│       │   └── COMP
 │       │       └── variables.yml
 │       └── ...
 ├── templates

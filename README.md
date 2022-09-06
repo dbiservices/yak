@@ -2,41 +2,44 @@
 
 Get complete control of your hybrid cloud infrastructure with little expertise. YaK deploys and configures your servers across any public cloud providers and on-premise in the same predictable way.
 
-YaK Community is backed by [dbi-services](http://dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on http://dbi-services.com/en/yak/components.
+YaK Core is backed by [dbi services](https://www.dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on https://www.dbi-services.com/en/yak/components.
 
 ## Principles
 
-- **No lock-in:** YaK is and will stay entirely open-source.
-- **Extensible:** add any cloud providers.
-- **Modular:** add components to operate any third-party software (Oracle, PostgreSQL, etc).
-- **Simple:** most effortless IT cross cloud provider automation system ever.
-- **Powerful:** Automate your operations in parallel on cloud providers such as AWS, Azure, and OCI.
-- **Maintainability:** Based on Ansible and fallback on Python when necessary.
+The YaK is based on the following principles:
+
+- **No lock-in:** The YaK Core is, and will stay entirely open source.
+- **Extensibility:** add support for any cloud providers.
+- **Modularity:** add components to operate any third-party software (Oracle, PostgreSQL, etc.).
+- **Simplicity:** most effortless IT cross cloud provider automation system.
+- **Powerfulness:** automate your operations in parallel on cloud providers such as AWS, Azure, and OCI.
+- **Maintainability:** based on Ansible and fallback on Python when necessary.
 
 ## Demo
 
-Access our YaK demo environment to get a straightforward and fast introduction!
+Access our YaK Core demo environment to get a straightforward and fast introduction! <br>
 Try it, to see how it works in real life.
 
-
-| Step                                                        | 
+| Steps                                                        | 
 | ----------------------------------------------------------- |
-|  https://yakdemo.dbi-services.com                           |
-| Login User:yak    Passwd:yak                                   | 
+|  Open https://yakdemo.dbi-services.com                           |
+|  Set Username: **yak**   and Password: **yak**  and click on **"Sign in"**   | 
 | <img src="/install/img/YaK_login.png"  width="300" height="300"> |
-| Double-click on "Yak Demo" an enter "stardemo aws" |
+| Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"** |
 | <img src="/install/img/YaK_demo.png" width="600" height="300">   |
 
 ## Production
+
+You want to install and configure Yak Core for your own Cloud provider environments, then follow the below "Setup Instructions"
 
 Please see [Setup Instructions](docs/quickstart.md)
 
 ## Contribute
 
 You are more than welcome to give us your feedback.
-I hope to welcome many of your here to use and enhance the YaK Community package with new cloud providers and features :-).
+We hope to welcome many of your here to use and enhance the YaK Core package with new cloud providers and features :-).
 
-Please see [Contribution Instructions](docs/contribution.md)
+Please see [Contribution instructions](docs/contribution.md)
 
 ## License
 

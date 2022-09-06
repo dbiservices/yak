@@ -5,10 +5,10 @@ ansible_user: azureuser
 host_ip_access: public_ip
 private_ip:
     mode: auto
-    ip: 172.19.16.4
+    ip: 
 public_ip:
-    mode: manual
-    ip: 20.31.20.144
+    mode: auto
+    ip: 
 vm_size: Standard_B2ms
 image:
     offer: Oracle-Linux

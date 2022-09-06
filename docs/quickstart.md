@@ -8,13 +8,17 @@
 
 ## Setup
 
-1. pull the YaK Community container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
+1. Pull the YaK Core container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
 
 ```bash
 docker pull registry.gitlab.com/yak4all/yak:latest
 ```
 
-2. Define a local storage with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
+2. Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
+=======
+FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
+This container contains all necessary softwares used by YaK Core <br>
+see here for more information : https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile
 
 ```bash
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
@@ -40,7 +44,7 @@ yak@d47a98f30c99:~/yak$
 ## Configuration
 
 Once in the container, you must describe the infrastructure that you wish to begin with.
-To get an example of how to set up a new infrastructure and servers, [go to this page](https://gitlab.com/yak4all/yak/-/blob/main/configuration/README.md).
+To get an example of how to set up a new infrastructure and servers, [go to this page](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
 
 **Note**: This project uses an Ansible dynamic inventory build from the configuration files available in the `./configuration` directory.
 You can have a look at the inventory content using the standard `ansible` command:
