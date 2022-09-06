@@ -17,9 +17,8 @@ The YaK is based on the following principles:
 
 ## Demo
 
-Access our YaK Core demo environment to get a straightforward and fast introduction!
+Access our YaK Core demo environment to get a straightforward and fast introduction! <br>
 Try it, to see how it works in real life.
-
 
 | Steps                                                        | 
 | ----------------------------------------------------------- |
