@@ -29,6 +29,8 @@ Try it, to see how it works in real life.
 
 ## Production
 
+You want to install and use YaK Core on your own computer, then follow the below "Setup Instructions"
+
 Please see [Setup Instructions](docs/quickstart.md)
 
 ## Contribute
