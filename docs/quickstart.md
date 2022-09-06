@@ -44,7 +44,7 @@ yak@d47a98f30c99:~/yak$
 ## Configuration
 
 Once in the container, you must describe the infrastructure that you wish to begin with.<br>
-To get an example of how to set up a new infrastructure and servers, [go to docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
+To get an example of how to set up a new infrastructure and servers, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
 
 **Note**: This project uses an Ansible dynamic inventory build from the configuration files available in the `./configuration` directory.
 You can have a look at the inventory content using the standard `ansible` command:
