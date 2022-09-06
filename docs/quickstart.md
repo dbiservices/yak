@@ -15,7 +15,7 @@ docker pull registry.gitlab.com/yak4all/yak:latest
 ```
 
 2. Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
-=======
+
 FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
 This container contains all necessary softwares used by YaK Core <br>
 see here for more information : https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile
