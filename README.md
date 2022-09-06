@@ -2,16 +2,16 @@
 
 Get complete control of your hybrid cloud infrastructure with little expertise. YaK deploys and configures your servers across any public cloud providers and on-premise in the same predictable way.
 
-YaK Core is backed by [dbi services](http://dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on http://dbi-services.com/en/yak/components.
+YaK Core is backed by [dbi services](https://www.dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on https://www.dbi-services.com/en/yak/components.
 
 ## Principles
 
-- **No lock-in:** YaK Core is and will stay entirely open-source.
-- **Extensible:** add any cloud providers.
-- **Modular:** add components to operate any third-party software (Oracle, PostgreSQL, etc).
-- **Simple:** most effortless IT cross cloud provider automation system ever.
-- **Powerful:** Automate your operations in parallel on cloud providers such as AWS, Azure, and OCI.
-- **Maintainability:** Based on Ansible and fallback on Python when necessary.
+- **No lock-in:** The YaK Core is, and will stay entirely open source.
+- **Extensibility:** add support for any cloud providers.
+- **Modularity:** add components to operate any third-party software (Oracle, PostgreSQL, etc.).
+- **Simplicity:** most effortless IT cross cloud provider automation system.
+- **Powerfulness:** automate your operations in parallel on cloud providers such as AWS, Azure, and OCI.
+- **Maintainability:** based on Ansible and fallback on Python when necessary.
 
 ## Demo
 
