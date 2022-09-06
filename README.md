@@ -2,7 +2,7 @@
 
 Get complete control of your hybrid cloud infrastructure with little expertise. YaK deploys and configures your servers across any public cloud providers and on-premise in the same predictable way.
 
-YaK Community is backed by [dbi-services](http://dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on http://dbi-services.com/en/yak/components.
+YaK Core is backed by [dbi services](http://dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on http://dbi-services.com/en/yak/components.
 
 ## Principles
 
@@ -22,9 +22,9 @@ Try it, to see how it works in real life.
 | Step                                                        | 
 | ----------------------------------------------------------- |
 |  https://yakdemo.dbi-services.com                           |
-| Login User:yak    Passwd:yak                                   | 
+| Login User: yak    Passwd: yak                                   | 
 | <img src="/install/img/YaK_login.png"  width="300" height="300"> |
-| Double-click on "Yak Demo" an enter "stardemo aws" |
+| Double-click on "Yak Demo" and enter "startdemo aws" |
 | <img src="/install/img/YaK_demo.png" width="600" height="300">   |
 
 ## Production
@@ -34,9 +34,9 @@ Please see [Setup Instructions](docs/quickstart.md)
 ## Contribute
 
 You are more than welcome to give us your feedback.
-I hope to welcome many of your here to use and enhance the YaK Core package with new cloud providers and features :-).
+We hope to welcome many of your here to use and enhance the YaK Core package with new cloud providers and features :-).
 
-Please see [Contribution Instructions](docs/contribution.md)
+Please see [Contribution instructions](docs/contribution.md)
 
 ## License
 
