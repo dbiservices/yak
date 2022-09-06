@@ -1,4 +1,4 @@
-        GENERAL ALIASES [YAK]
+        GENERAL ALIASES [YaK]
         ##############################################################
         ll              --> List files in list mode
         cdh             --> Change directory to YaK home
@@ -7,7 +7,7 @@
         cdr             --> Change directory to roles directory
         cdp             --> Change directory to playbooks directory
 
-        ANSIBLE INVENTORY ALIAS
+        ANSIBLE INVENTORY ALIASES
         ##############################################################
         aig             --> Display the inventory graph for all groups
         aig <group>     --> Display the inventory graph for a specific group
@@ -18,4 +18,4 @@
         
         GENERATE SSH SECRETS 
         ##############################################################
-        gen_secret      --> Generate sshkey's under the local directory
+        gen_secret      --> Generate sshkey's under the current directory
