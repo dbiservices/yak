@@ -2,7 +2,7 @@
 #-------------------------------------------------------------------------------
 # FILE:  startdemo.sh
 #
-# PURPOSE: Script to execute Yak Demo with the different Cloud Provider
+# PURPOSE: Script to execute Yak demo with the different Cloud Provider
 #
 # PARAMETERS: aws, azure, oci
 #
@@ -25,9 +25,9 @@ function usage()
 	whiteLog " NAME "
    echo "   startdemo -  YaK demo"
    echo ""
-   whiteLog " SYNOPSIS"
+   whiteLog " SYNOPSIS:"
    echo ""
-	echo "   This script will run a Demo of the YaK for AWS"
+	echo "   This script will run a demo of the YaK for AWS"
 	echo "   YaK is build to work for main cloud providers: "
    echo "   Oracle OCI, Microsoft AZURE and Amazon AWS"
    echo "   This demo works only for AWS currently"
@@ -36,10 +36,10 @@ function usage()
    echo "   startdemo [aws|azure|oci]"
    echo ""
 	whiteLog " NOTE:"
-	echo "   Only AWS is allowed for this DEMO"
+	echo "   Only AWS is allowed for this demo"
    echo " "
    whiteLog " CREDITS:"
-   echo "   Yak is distributed and written by dbi services "
+   echo "   YaK is distributed and written by dbi services "
    echo " "
 
 }
@@ -66,7 +66,7 @@ dir=`dirname $0`
 function not_available ()
 {
    echo ""
-   whiteLog " Only AWS is allowed for this DEMO"
+   whiteLog " Only AWS is allowed for this demo"
    echo ""
 }
 
@@ -154,7 +154,7 @@ function start_demo ()
    blueLog "STEP 6#10. Set the authentification method"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   To have the privileges to create and configure the server" 
-   echo "   For this DEMO on ${provider} it is done by exporting the ${provider} provided variables"
+   echo "   For this demo on ${provider} it is done by exporting the ${provider} provided variables"
    echo
    greenLog "Executed command: "
    whiteLog "export AWS_ACCESS_KEY_ID=ASI********2E7"
@@ -225,7 +225,7 @@ function start_demo ()
 
    blueLog "End."
    whiteLog "-------------------------------------------------------------------------------------"
-   whiteLog "   Close this DEMO session with \"exit\" before leaving"
+   whiteLog "   Close this demo session with \"exit\" before leaving"
    echo
    step_time "END"
 }
