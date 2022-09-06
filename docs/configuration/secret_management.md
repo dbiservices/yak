@@ -46,4 +46,3 @@ dbi@3f2794bb53e4:~/GIT/yak$ ansible-inventory --host aws_testing/srv01
     "ansible_user": "ec2-user",
 . . .
 ```
-

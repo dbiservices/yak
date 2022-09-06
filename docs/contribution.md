@@ -18,6 +18,7 @@ FYI : The YaK Core container will including the pulling from the Yak Env Contain
 This container contains all necessary softwares used by YaK Core <br>
 see here for more information : https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile
 
+
 2. Define a local storage with the variable `${MY_LOCAL_YAK_DIR}`
 
 ```bash
