@@ -14,12 +14,14 @@
 docker pull registry.gitlab.com/yak4all/yak:latest
 ```
 
-FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
+FYI : The YaK Core container will pull the Yak Env docker container image from GitLab container registry `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
 This container contains all necessary softwares used by YaK Core <br>
 see here for more information : https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile
 
 
-2. Define a local storage with the variable `${MY_LOCAL_YAK_DIR}`
+2. Define an environment variable `${MY_LOCAL_YAK_DIR}` as GiT checkout folder
+
+The Yak GiT reposistory needs to be cloned locally in order to be mounted later as a persistent volume within the container
 
 ```bash
 export MY_LOCAL_YAK_DIR=$HOME/GIT/yak
