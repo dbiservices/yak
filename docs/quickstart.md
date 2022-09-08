@@ -32,13 +32,13 @@ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/w
 
 If it worked well, you should be inside the container with the YaK Software configured.
 
-```bash
+```
 $ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
 [...]
-yak@d47a98f30c99:~/yak$ aig
+yak@d47a98f30c99:~/yak$ ansible-inventory --graph
 @all:
   |--@ungrouped:
-yak@d47a98f30c99:~/yak$
+yak@d47a98f30c99:~/yak$ 
 ```
 
 ## Configuration
