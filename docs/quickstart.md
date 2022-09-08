@@ -1,10 +1,12 @@
 # Quickstart
 
-## Requirements
+## Minimum requirements for AWS
 
 - Container management software (e.g. docker).
 - Local directory must exist to map your configuration.
 - Internet access to download the container.
+- AWS infrastructure must exist with private or public ip.
+- AWS credentials
 
 ## 1. Get the container
 
