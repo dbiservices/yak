@@ -241,7 +241,7 @@ ssh aws_testing/srv01
 
 ### 9. Declare your first component
 
-Create a directory under your server `./configuration/infrastructure/aws_testing/srv01/postgres` with your server name:
+Create a directory under your server `./configuration/infrastructure/aws_testing/srv01/postgres` with your component name:
 
 ```
 mkdir ./configuration/infrastructure/aws_testing/srv01/postgres
@@ -261,28 +261,25 @@ component_type: postgresql_instance
 storage: linux/storage/postgresql_instance
 ```
 
-The storage declaration `linux/storage/postgresql_instance` that we need to have on the server:
+**Optional:** You can use another official storage template available in the YaK project:
 
-```yaml
-# File ./configuration/templates/linux/storage/postgresql_instance.yml
-volumes:
-  aws:
-    - { disk_type: gp2, device_name: /dev/xvdf, size_GB: 50 }
-    - { disk_type: gp2, device_name: /dev/xvdh, size_GB: 50 }
-  azure:
-    - { disk_name: disk1, size_GB: 50 }
-    - { disk_name: disk2, size_GB: 50 }
-  oci:
-    - { volume_name: disk1, size_GB: 50 }
-    - { volume_name: disk2, size_GB: 50 }
-
-filesystems:
-  - { size_GB: 4,  filesystem_type: "xfs", mount_point: "/u01", opts: }
-  - { size_GB: 12, filesystem_type: "xfs", mount_point: "/u02", opts: "noatime" }
-  - { size_GB: 24, filesystem_type: "xfs", mount_point: "/u90" }
+```
+$ tree configuration/templates/
+configuration/templates/
+|-- linux
+|   `-- storage
+|       |-- demo_instance.yml
+|       |-- mongodb_instance.yml
+|       |-- oracle_instance.yml
+|       |-- postgresql_instance.yml
+|       |-- sqlserver_instance.yml
+|       `-- weblogic_domain.yml
+`-- windows
+    `-- storage
+        `-- sqlserver_instance.yml
 ```
 
-You should now see your server in the Ansible inventory:
+You should now see your component `aws_testing/srv01/postgres` in the Ansible inventory:
 
 ```
 $ ansible-inventory --graph
@@ -295,12 +292,11 @@ $ ansible-inventory --graph
   |--@servers:
   |  |--aws_testing/srv01
   |--@ungrouped:
-
 ```
 
 ### 10. Deploy the deployment storage requirements
 
-This Ansible playbook will deploy the storage requirements for each component attached to the server.
+This Ansible playbook will deploy the storage requirements for each component attached to the server:
 
 ```
 ansible-playbook servers/deploy.yml -e target=aws_testing/srv01 --tags=requirements
