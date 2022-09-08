@@ -82,11 +82,11 @@ function start_demo ()
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/variables.yml
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    step_time "STEP 1"
 
@@ -98,11 +98,11 @@ function start_demo ()
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/variables.yml
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    step_time "STEP 2"
 
@@ -114,12 +114,12 @@ function start_demo ()
    greenLog "Executed command: "
    whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
-   echo  "Below configuration is based on the template file located on ./configuration/templates/linux/storage/demo_instance.yml"
+   echo  "Below configuration is based on the template file located in ./configuration/templates/linux/storage/demo_instance.yml"
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    step_time "STEP 3"
 
@@ -129,11 +129,11 @@ function start_demo ()
    greenLog "Executed command: "
    whiteLog "ansible-inventory --graph" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    ansible-inventory --graph
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    step_time "STEP 4"
 
@@ -143,11 +143,11 @@ function start_demo ()
    greenLog "Executed command: "
    whiteLog "ansible-inventory --host demo_${provider}/linux-$(hostname -s)" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    ansible-inventory --host demo_${provider}/linux-$(hostname -s)
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    step_time "STEP 5"
 
@@ -161,34 +161,34 @@ function start_demo ()
    whiteLog "export AWS_SECRET_ACCESS_KEY=PE************UNaHGu2"
    whiteLog "export AWS_SESSION_TOKEN=IQoJb3JpZ2luX*******4+vfWexbFF3cKg="
    echo 
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#10. server Creation."
+   blueLog "STEP 7#10. Server creation"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Now you are ready to create your host including storage configuration"
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    step_time "STEP 7"
 
    blueLog "STEP 8#10. SSH connection to created server"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   At this step the server is created and an SSH connection will be made."
-   echo "   Check the server and the storage if it is correclty configured"
-   whiteLog "   Please "exit" the session when finished."
+   echo "   At this step the server is created and an SSH connection will be made"
+   echo "   Check the server and the storage if it is correctly configured"
+   whiteLog "   Please type "exit" and ENTER to close the session when you are done"
    echo
    greenLog "Executed command: "
    whiteLog "ssh demo_${provider}/linux-$(hostname -s)" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    ssh demo_${provider}/linux-$(hostname -s) 
    echo 
@@ -202,22 +202,23 @@ function start_demo ()
    greenLog "Executed command: "
    whiteLog "cat configuration/infrastructure/.ssh/config" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    cat configuration/infrastructure/.ssh/config
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    step_time "STEP 9"
 
-   blueLog "STEP 10#10 server Decommissioning."
+   blueLog "STEP 10#10 Server Decommissioning"
    whiteLog "-------------------------------------------------------------------------------------"
-   redLog   "   You can press CTRL-C now if you want to keep the server"
+   redLog   "   If you Press ENTER the server will be destroyed"
+   redLog   "   But you can press CTRL-C now if you want to keep the server"
    redLog   "   In any case the server will be destroyed in 4h. "
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)" 
    echo
-   read -p "Press enter to continue: "
+   read -p "Press enter to continue "
    echo
    ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo

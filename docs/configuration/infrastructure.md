@@ -1,74 +1,39 @@
-# New infrastructure
+# Infrastructure sample
 
-## Create new infrastructure from an existing example
-
-To create a new infrastructure aws_testing, you can simply copy a new template, and adapt all parameters:
-
-```
-mkdir ./configuration/infrastructure/aws_testing
-cp  ./configuration/infrastructure_sample/aws/variables.yml  ./configuration/infrastructure/aws_testing
-```
-
-## Update the variable from the create new infrastructure
-
-At least the below parameter must be adapted
-- security_group_id
-- subnet_id
-- bucket_name
+YaK Core currently can help you deploying your infrastructure for 3 public Cloud provider as ( OCI, Azure, AWS).
+To help you declaring your new infrastructure we provide you a sample directory for each Cloud provider available under ./configuration_sample
 
 ```
-is_cloud_environment: yes
-operating_system: Oracle Linux 8.3
-provider: aws
-availability_zone: eu-central-1a
-instance_type: t3.large
-ami_id: ami-0211d10fb4a04824a
-region_id: eu-central-1
-security_group_id: sg-*****
-subnet_id: subnet-**********
+yak@ccf94de8138f:~/yak/configuration/infrastructure_sample$ ls -l
+total 32
+drwxr-xr-x 1 yak yak 4096 Sep  6 15:20 aws
+drwxr-xr-x 1 yak yak 4096 Sep  6 15:20 azure
+drwxr-xr-x 1 yak yak 4096 Sep  6 15:20 oci
+drwxr-xr-x 1 yak yak 4096 Sep  6 15:20 secrets
 ```
 
-## New server
+# Infrastructure deployment
 
-### Create a new server from a existing template
+To help you deploying an infrastructure, we have created a **quickstart** for each cloud provider
 
-To create a new server srv01, you can simple copy  existing template and the adapt all parameters
+....
+....
+....
 
-```
-mkdir ./configuration/infrastructure/aws_testing/srv01
-cp ./configuration/infrastructure_sample/aws/srv-linux-test-01/variables.yml ./configuration/infrastructure/aws_testing/srv01
-```
+# Infrastucture parameter
 
-### Update the variable from the created new server
+All parameters defined at the infrastructure level are inherit at the server and component sub level. Therefor don't hesitate to define some default parameters at the infrastructure level. Thus if at the server level no Image ID is provider the default Image from the infrastucture will be used.
 
-At least the below parameter must be adapted
-- hostname
-- host_ip_access: private_ip|public_ip
-- private_ip
-  - mode : manual | auto
-  - ip : ip_address_value | or leave_it_empty_with_auto
-- public_ip
-  - mode : manual | auto | none
-    - ip : ip_address_value | or leave_it_empty_with_auto_or_none
+# Infrastructure ssh key
 
-```
-hostname: srv01
-is_physical_server: no
-ansible_user: ec2-user
-host_ip_access: private_ip
-private_ip:
-   mode: manual
-   ip: ********
-public_ip:
-   mode: none
-   ip:
-operating_system: OL8.5-x86_64-HVM-2021-11-24
-ami_id: ami-07e51b655b107cd9b
-instance_type: t3.large
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-      volume_type: gp2
-      volume_size: 10
-      delete_on_termination: true
-```
+It is only mandatory to have global ssk key under ./configuration/infrastructure/secrets which will be inherit for all  infrastructure and server you will create.
+But you can create an ssh key directory with his key at each level, which will automatically overwrite the default one.
+
+# Infrastucture Authentification
+
+You can set your permanent credentials for all cloud provider in one sessions, thus you can deploy new infrastructure for each provider without making a new Authentification.
+
+
+
+
+
