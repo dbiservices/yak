@@ -3,7 +3,6 @@
 ## Minimum requirements
 
 - Container management software (e.g., docker).
-- Local directory must exist to map your configuration.
 - Internet access to download the container.
 - AWS infrastructure must exist with private or public IP.
 - AWS credentials.
@@ -28,6 +27,7 @@ Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
 
 ```bash
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
+mkdir -p ${MY_LOCAL_CONFIGURATION_DIR}
 ```
 
 Start the container with the below command:
