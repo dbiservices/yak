@@ -239,6 +239,91 @@ Connect via SSH to the server:
 ssh aws_testing/srv01
 ```
 
+### 9. Declare your first component
+
+Create a directory under your server `./configuration/infrastructure/aws_testing/srv01/postgres` with your server name:
+
+```
+mkdir ./configuration/infrastructure/aws_testing/srv01/postgres
+```
+
+Copy component template file located under `./configuration/infrastructure/aws_testing/srv01/postgres`:
+
+```
+cp ./configuration/infrastructure_sample/aws/srv-linux-test-01/COMP/variables.yml ./configuration/infrastructure/aws_testing/srv01/postgres
+```
+
+This component has a type `postgresql_instance` and requires a predefined storage layout `linux/storage/postgresql_instance`:
+
+```yaml
+# File ./configuration/infrastructure/aws_testing/srv01/postgres/variables.yml
+component_type: postgresql_instance
+storage: linux/storage/postgresql_instance
+```
+
+The storage declaration `linux/storage/postgresql_instance` that we need to have on the server:
+
+```yaml
+# File ./configuration/templates/linux/storage/postgresql_instance.yml
+volumes:
+  aws:
+    - { disk_type: gp2, device_name: /dev/xvdf, size_GB: 50 }
+    - { disk_type: gp2, device_name: /dev/xvdh, size_GB: 50 }
+  azure:
+    - { disk_name: disk1, size_GB: 50 }
+    - { disk_name: disk2, size_GB: 50 }
+  oci:
+    - { volume_name: disk1, size_GB: 50 }
+    - { volume_name: disk2, size_GB: 50 }
+
+filesystems:
+  - { size_GB: 4,  filesystem_type: "xfs", mount_point: "/u01", opts: }
+  - { size_GB: 12, filesystem_type: "xfs", mount_point: "/u02", opts: "noatime" }
+  - { size_GB: 24, filesystem_type: "xfs", mount_point: "/u90" }
+```
+
+You should now see your server in the Ansible inventory:
+
+```
+$ ansible-inventory --graph
+@all:
+  |--@aws_testing:
+  |  |--aws_testing/srv01
+  |  |--aws_testing/srv01/postgres
+  |--@postgresql_instance:
+  |  |--aws_testing/srv01/postgres
+  |--@servers:
+  |  |--aws_testing/srv01
+  |--@ungrouped:
+
+```
+
+### 10. Deploy the deployment storage requirements
+
+This Ansible playbook will deploy the storage requirements for each component attached to the server.
+
+```
+ansible-playbook servers/deploy.yml -e target=aws_testing/srv01 --tags=requirements
+```
+
+Once completed, connect via SSH to the server and look at the storage layout:
+
+```
+$ ssh aws_testing/srv01 df -h
+Filesystem            Size  Used Avail Use% Mounted on
+devtmpfs              3.7G     0  3.7G   0% /dev
+tmpfs                 3.7G  8.0K  3.7G   1% /dev/shm
+tmpfs                 3.7G   17M  3.7G   1% /run
+tmpfs                 3.7G     0  3.7G   0% /sys/fs/cgroup
+/dev/nvme0n1p1         10G  1.8G  8.3G  18% /
+tmpfs                 757M     0  757M   0% /run/user/1000
+/dev/mapper/data-u01  4.0G   62M  4.0G   2% /u01
+/dev/mapper/data-u02   12G  119M   12G   1% /u02
+/dev/mapper/data-u90   24G  205M   24G   1% /u90
+```
+
+You are now ready to operate your components on your server!
+
 ## License
 
 GNU General Public License v3.0 or later
