@@ -225,6 +225,20 @@ ansible-playbook servers/deploy.yml -e target=aws_testing/srv01
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/servers.md) about the server deployment possibilities
 
+### 8. Connect to the server
+
+Ping with the Ansible module to ensure the connectivity works:
+
+```
+ansible -m ping aws_testing/srv01
+```
+
+Connect via SSH to the server:
+
+```
+ssh aws_testing/srv01
+```
+
 ## License
 
 GNU General Public License v3.0 or later
