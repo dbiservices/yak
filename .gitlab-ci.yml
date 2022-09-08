@@ -28,7 +28,6 @@ build:
       variables:
         TAG: $CI_COMMIT_TAG
         STATUS_TAG: stable
-
       exists:
         - Dockerfile
 
