@@ -5,12 +5,6 @@ stages:
 variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
 
-test:
-  stage: test
-  script:
-    # TODO run tests on all changes
-    - echo "run test"
-
 build:
   # Use the official docker image.
   image: docker:latest
