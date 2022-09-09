@@ -37,7 +37,35 @@ Playbook Variables
  ```
 Prerequisites
 -------------
+
 The O.S owner & Group of the folder (pv_artifacts_repo.path) on the managed nodes are prerequisites unless Artifacts are managed on Ansible Control Node.
+
+Artifact (repository) structure
+--------------------------------
+
+The Artificat "repository" structure is not fixed at all. Actually, the folder layout supports the concept of flat file versioning for distinct componnents.
+
+For instance to manage Oracle database software major and "minor" release 
+```
+└── rdbms
+    └── oracle
+        ├── AutoUpgrade
+        │   └── 20210721
+        ├── combo_ojvm+db_release_updates
+        │   └── 19c
+        │       └── 220118
+        ├── dmk
+        ├── gold_images
+        │   └── 19c
+        ├── interim_patches
+        │   └── 19c
+        ├── Opatch
+        │   └── 19c
+        │       └── 12.2.0.1.28
+        ├── Pre-Upgrade
+        │   └── 19c
+        └── tools
+```
 
 Example
 -------
