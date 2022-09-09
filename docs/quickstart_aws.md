@@ -9,7 +9,7 @@
 
 ## 1. Get the container
 
-Pull the YaK Core container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
+Pull the YaK Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation:
 
 ```bash
 docker pull registry.gitlab.com/yak4all/yak:latest
