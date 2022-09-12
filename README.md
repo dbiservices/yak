@@ -32,6 +32,55 @@ Try it, to see how it works in real life.
 
 You want to install and configure Yak Core for your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
 
+###  requirements
+
+- Container management software (e.g., docker).
+- Internet access to download the container.
+
+### 1. Get the container
+
+Pull the YaK Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation:
+
+```bash
+docker pull registry.gitlab.com/yak4all/yak:latest
+```
+
+**FYI:** The YaK Core container will include the pulling from the Yak Env
+Container `registry.gitlab.com/yak4all/yakenv:1.0.0`. This container contains
+the required packages used by YaK Core.
+
+[Here are more details](https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile) about the used Docker file.
+
+### 2. Run the container
+
+Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
+
+```bash
+export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
+mkdir -p ${MY_LOCAL_CONFIGURATION_DIR}
+```
+
+Start the container with the below command:
+
+```bash
+docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
+```
+
+If it worked well, you should be inside the container with the YaK software configured:
+
+```
+$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
+[...]
+yak@d47a98f30c99:~/yak$ ansible-inventory --graph
+@all:
+  |--@ungrouped:
+yak@d47a98f30c99:~/yak$
+```
+
+### 3. Declare your infrastructure
+
+You want to configure Yak Core for your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
+
 - [Amazon AWS Quickstart Instructions](docs/quickstart_aws.md)
 - [Microsoft Azure Quickstart Instructions](docs/quickstart_azure.md)
 - [Oracle OCI Quickstart Instructions](docs/quickstart_oci.md)
