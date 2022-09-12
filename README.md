@@ -28,10 +28,10 @@ Try it, to see how it works in real life.
 | Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"** |
 | <img src="/install/img/YaK_demo.png" width="600" height="300">   |
 
-## QuickStart YaK Core
+## Setup YaK Core
 
 You want to install YaK Core own your own environment
-Then follow the setup instruction [Setup instructions](docs/quickstart.md)
+Then follow the setup instruction [Setup instructions](docs/setup.md)
 
 ## Declare your infrastructure
 
