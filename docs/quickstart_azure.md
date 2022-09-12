@@ -25,46 +25,43 @@ vi ./configuration/infrastructure/azure_testing/variables.yml
 
 Adapt at least the below parameter:
 
-- security_group_id
-- subnet_id
+- subscription id
+- resource_group
+- virtual_network_name
+- security_group
+- subnet_name
 
 ```yaml
 # File ./configuration/infrastructure/azure_testing/variables.yml
 is_cloud_environment: yes
-operating_system: Oracle Linux 8.3
+environment: production
+ansible_user: azureuser
 provider: azure
-availability_zone: eu-central-1a
-instance_type: t3.large
-ami_id: ami-0211d10fb4a04824a
-region_id: eu-central-1
-security_group_id: sg-*****
-subnet_id: subnet-**********
+subscription:
+    id:
+    name: Azure subscription Name
+resource_group:
+virtual_network_name:
+subnet_name:
+security_group:
 ```
 
 You should now see your infrastructure in the Ansible inventory:
 
 ```
-$ ansible-inventory --graph --vars
-@all:
-  |--@azure_testing:
-  |  |--{ami_id = ami-07e51b655b107cd9b}
-  |  |--{availability_zone = eu-central-1a}
-  |  |--{environment = azure-testing}
-  |  |--{instance_type = t3.large}
-  |  |--{is_cloud_environment = True}
-  |  |--{operating_system = OL8.5-x86_64-HVM-2021-11-24}
-  |  |--{provider = azure}
-  |  |--{region_id = eu-central-1}
-  |  |--{security_group_id = sg-*****}
-  |  |--{subnet_id = subnet-**********}
-  |--@servers:
-  |--@ungrouped:
-  |--{ansible_winrm_read_timeout_sec = 60}
-  |--{yak_inventory_type = file}
-  |--{yak_local_ssh_config_file = ~/yak/configuration/infrastructure/.ssh/config}
-  |--{yak_secrets_directory = /workspace/yak/configuration/infrastructure/secrets}
+$ ansible-inventory --graph azure_testing--vars
+yak@7c3380657dd5:~/yak$ ansible-inventory --graph azure_testing  --vars
+@azure_testing:
+  |--{ansible_user = azureuser}
+  |--{environment = production}
+  |--{is_cloud_environement = True}
+  |--{provider = azure}
+  |--{resource_group = dbi-testing-yak-rg}
+  |--{security_group = dbi-testing-yak-nsg}
+  |--{subnet_name = dbi-testing-yak-subnet}
+  |--{subscription = {'id': '54752284-75ab-4fbc-a9b0-a40d41894656', 'name': 'Azure subscription 1'}}
+  |--{virtual_network_name = dbi-testing-yak-network}
 ```
-
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/infrastructure.md) about infrastructure declaration.
 
 ### 2. Declare your first server
@@ -95,25 +92,24 @@ Adapt at least the below parameters:
 
 ```yaml
 # File ./configuration/infrastructure/azure_testing/srv01/variables.yml
+vi ./configuration/infrastructure/azure_testing/srv01/variables.yml
 hostname: srv01
 is_physical_server: no
-ansible_user: ec2-user
-host_ip_access: private_ip
+ansible_user: azureuser
+host_ip_access: public_ip
 private_ip:
-   mode: auto
-   ip:
+    mode: auto
+    ip: 
 public_ip:
-   mode: none
-   ip:
-operating_system: OL8.5-x86_64-HVM-2021-11-24
-ami_id: ami-07e51b655b107cd9b
-instance_type: t3.large
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-      volume_type: gp2
-      volume_size: 10
-      delete_on_termination: true
+    mode: auto
+    ip: 
+vm_size: Standard_B2ms
+image:
+    offer: Oracle-Linux
+    publisher: Oracle
+    sku: ol85-lvm
+    version: latest
+
 ```
 
 You should now see your server in the Ansible inventory:
@@ -168,9 +164,11 @@ $ ansible-inventory --host azure_testing/srv01
 Use your AZURE CLI programmatic access key variables:
 
 ```bash
-export AZURE_ACCESS_KEY_ID="*******"
-export AZURE_SECRET_ACCESS_KEY="**********"
-export AZURE_SESSION_TOKEN="***********`
+export AZURE_SUBSCRIPTION_ID=******
+export AZURE_CLIENT_ID=*******
+export AZURE_SECRET=********
+export AZURE_TENANT=**********
+
 ```
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
