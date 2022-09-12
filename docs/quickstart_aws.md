@@ -1,53 +1,11 @@
 # Quickstart for AWS
 
-## Minimum requirements
+### Minimum requirements
 
-- Container management software (e.g., docker).
-- Internet access to download the container.
 - AWS infrastructure must exist with private or public IP.
 - AWS credentials.
 
-## 1. Get the container
-
-Pull the YaK Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation:
-
-```bash
-docker pull registry.gitlab.com/yak4all/yak:latest
-```
-
-**FYI:** The YaK Core container will include the pulling from the Yak Env
-Container `registry.gitlab.com/yak4all/yakenv:1.0.0`. This container contains
-the required packages used by YaK Core.
-
-[Here are more details](https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile) about the used Docker file.
-
-## 2. Run the container
-
-Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
-
-```bash
-export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
-mkdir -p ${MY_LOCAL_CONFIGURATION_DIR}
-```
-
-Start the container with the below command:
-
-```bash
-docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
-```
-
-If it worked well, you should be inside the container with the YaK software configured:
-
-```
-$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
-[...]
-yak@d47a98f30c99:~/yak$ ansible-inventory --graph
-@all:
-  |--@ungrouped:
-yak@d47a98f30c99:~/yak$
-```
-
-## 3. Declare your infrastructure
+### 1. Declare your infrastructure
 
 Once in the container, you can describe the infrastructure you wish to begin with.
 Below is an example of an AWS testing infrastructure name "aws_testing":
@@ -109,7 +67,7 @@ $ ansible-inventory --graph --vars
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/infrastructure.md) about infrastructure declaration.
 
-## 4. Declare your first server
+### 2. Declare your first server
 
 Create a directory under your infrastructure `./configuration/infrastructure/aws_testing` with your server name:
 
@@ -172,7 +130,7 @@ $ ansible-inventory --graph
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md) about server configuration.
 
-### 5. Create your default ssh key
+### 3. Create your default ssh key
 
 This ssh key will be used for your server connection.
 
@@ -205,7 +163,7 @@ $ ansible-inventory --host aws_testing/srv01
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/secret_management.md) about key management.
 
-### 6. Copy your AWS Cloud authentication
+### 4. Copy your AWS Cloud authentication
 
 Use your AWS CLI programmatic access key variables:
 
@@ -217,7 +175,7 @@ export AWS_SESSION_TOKEN="***********`
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
 
-### 7. Deploy your server
+### 5. Deploy your server
 
 ```
 ansible-playbook servers/deploy.yml -e target=aws_testing/srv01
@@ -225,7 +183,7 @@ ansible-playbook servers/deploy.yml -e target=aws_testing/srv01
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/servers.md) about the server deployment possibilities
 
-### 8. Connect to the server
+### 6. Connect to the server
 
 Ping with the Ansible module to ensure the connectivity works:
 
@@ -239,7 +197,7 @@ Connect via SSH to the server:
 ssh aws_testing/srv01
 ```
 
-### 9. Declare your first component
+### 7. Declare your first component
 
 Create a directory under your server `./configuration/infrastructure/aws_testing/srv01/postgres` with your component name:
 
@@ -294,7 +252,7 @@ $ ansible-inventory --graph
   |--@ungrouped:
 ```
 
-### 10. Deploy the deployment storage requirements
+### 8. Deploy the deployment storage requirements
 
 This Ansible playbook will deploy the storage requirements for each component attached to the server:
 
