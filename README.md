@@ -28,15 +28,14 @@ Try it, to see how it works in real life.
 | Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"** |
 | <img src="/install/img/YaK_demo.png" width="600" height="300">   |
 
-## Setup your own YaK Core environment
+## QuickStart YaK Core
 
-You want to install and configure YaK Core for your own Cloud provider environments.
+You want to install YaK Core own your own environment
 Then follow the setup instruction [Setup instructions](docs/quickstart.md)
 
 ## Declare your infrastructure
 
-You already setup your own Yak Core environment
-And want now to setup your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
+You already installed your own Yak Core environment and want now to setup your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
 
 - [Amazon AWS Quickstart Instructions](docs/quickstart_aws.md)
 - [Microsoft Azure Quickstart Instructions](docs/quickstart_azure.md)
