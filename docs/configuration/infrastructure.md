@@ -20,7 +20,7 @@ To help you deploying an infrastructure, we have created a **quickstart** for ea
 ....
 ....
 
-# Infrastucture parameter
+# Infrastructure parameter
 
 All parameters defined at the infrastructure level are inherit at the server and component sub level. Therefor don't hesitate to define some default parameters at the infrastructure level. Thus if at the server level no Image ID is provider the default Image from the infrastucture will be used.
 
