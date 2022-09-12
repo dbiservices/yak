@@ -1,6 +1,6 @@
 # Setup
 
-## Minimum requirements for OCI
+## Minimum requirements
 
 - Container management software (e.g. docker).
 - Local directory must exist to map your configuration.
