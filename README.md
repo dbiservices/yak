@@ -33,10 +33,17 @@ Try it, to see how it works in real life.
 You want to install YaK Core own your own environment
 Then follow the setup instruction [Setup instructions](docs/setup.md)
 
+## Declare your infrastructure
+
+You installed your own Yak Core environment and want now to setup your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
+
+- [Amazon AWS Quickstart Instructions](docs/quickstart_aws.md)
+- [Microsoft Azure Quickstart Instructions](docs/quickstart_azure.md)
+- [Oracle OCI Quickstart Instructions](docs/quickstart_oci.md)
+
 ## Configuration
 
-Once in the container, you must describe the infrastructure that you wish to begin with.<br>
-To get an example of how to set up a new infrastructure and servers, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
+To get more information about the inventory and the infrastructure configuration, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
 
 ## Contribute
 
