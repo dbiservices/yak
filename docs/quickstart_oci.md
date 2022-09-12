@@ -25,20 +25,23 @@ vi ./configuration/infrastructure/oci_testing/variables.yml
 
 Adapt at least the below parameter:
 
-- security_group_id
+- compartment_id
+- availability_domain
+- security_list
 - subnet_id
 
 ```yaml
 # File ./configuration/infrastructure/oci_testing/variables.yml
-is_cloud_environment: yes
-operating_system: Oracle Linux 8.3
+is_cloud_environement: yes
+environment: oci_testing
+ansible_user: opc
+operating_system: Oracle-Linux-8.3-2021.05.12-0
 provider: oci
-availability_zone: eu-central-1a
-instance_type: t3.large
-ami_id: ami-0211d10fb4a04824a
-region_id: eu-central-1
-security_group_id: sg-*****
-subnet_id: subnet-**********
+region_id: eu-zurich-1
+compartment_id: ****
+availability_domain: *****
+security_list: ******
+subnet_id: ******
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -97,23 +100,20 @@ Adapt at least the below parameters:
 # File ./configuration/infrastructure/oci_testing/srv01/variables.yml
 hostname: srv01
 is_physical_server: no
-ansible_user: ec2-user
-host_ip_access: private_ip
+ansible_user: opc
+host_ip_access: public_ip
 private_ip:
-   mode: auto
-   ip:
+    mode: auto
+    ip: 
 public_ip:
-   mode: none
-   ip:
-operating_system: OL8.5-x86_64-HVM-2021-11-24
-ami_id: ami-07e51b655b107cd9b
-instance_type: t3.large
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-      volume_type: gp2
-      volume_size: 10
-      delete_on_termination: true
+    mode: auto
+    ip: 
+operating_system: Oracle-Linux-8.5-2022.01.24-0
+image_id: ocid1.image.oc1.eu-zurich-1.aaaaaaaamtulj4fmm6cx6xq6delggc5jhfoy652lbxxj2xbnzzxik7sgsnva
+shape:
+    name: VM.Standard.E4.Flex
+    memory_in_gbs: 12
+    ocpus: 8
 ```
 
 You should now see your server in the Ansible inventory:
@@ -168,9 +168,11 @@ $ ansible-inventory --host oci_testing/srv01
 Use your OCI CLI programmatic access key variables:
 
 ```bash
-export OCI_ACCESS_KEY_ID="*******"
-export OCI_SECRET_ACCESS_KEY="**********"
-export OCI_SESSION_TOKEN="***********`
+export OCI_USER_ID=*****
+export OCI_USER_FINGERPRINT=*****
+export OCI_TENANCY=*****
+export OCI_REGION=eu-zurich-1
+export OCI_USER_KEY_FILE=$HOME/.ssh/oracleidentitycloudservice.pem
 ```
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
