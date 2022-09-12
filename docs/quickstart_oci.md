@@ -1,74 +1,35 @@
-# Quickstart
+# Quickstart for OCI
 
-## Minimum requirements for OCI
+### Minimum requirements
 
-- Container management software (e.g. docker).
-- Local directory must exist to map your configuration.
-- Internet access to download the container.
-- OCI infrastructure must exist with private or public ip.
-- OCI credentials
+- OCI infrastructure must exist with private or public IP.
+- OCI credentials.
 
-## 1. Get the container
+### 1. Declare your infrastructure
 
-Pull the YaK Core container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
+Once in the container, you can describe the infrastructure you wish to begin with.
+Below is an example of an OCI testing infrastructure name "oci_testing":
 
-```bash
-docker pull registry.gitlab.com/yak4all/yak:latest
-```
-
-FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
-This container contains all necessary softwares used by YaK Core <br>
-
-[Here are more details](https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile) about the used dockerfile
-
-## 2. Run the container
-
-Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
-
-```bash
-export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
-```
-
-Start the container with the below command:
-
-```bash
-docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
-```
-
-If it worked well, you should be inside the container with the YaK Software configured.
-
-```
-$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
-[...]
-yak@d47a98f30c99:~/yak$ ansible-inventory --graph
-@all:
-  |--@ungrouped:
-yak@d47a98f30c99:~/yak$ 
-```
-
-## 3. Declare your infrastructure 
-
-Once in the container, you must describe the infrastructure that you wish to begin with. 
-Below an example for an OCI testing infrastructure name "oci_testing"
-
-Create a directory under ./configuration/infrastructure with your infrastructure name
+Create a directory under `./configuration/infrastructure` with your infrastructure name:
 
 ```
 mkdir ./configuration/infrastructure/oci_testing
 ```
 
-Copy the adaquat template file located under ./configuration/infrastructure_sample
+Copy the adaquat template file located under `./configuration/infrastructure_sample`:
 
 ```
 cp  ./configuration/infrastructure_sample/oci/variables.yml  ./configuration/infrastructure/oci_testing
+vi ./configuration/infrastructure/oci_testing/variables.yml
 ```
 
-Adapt at least the below parameter
+Adapt at least the below parameter:
 
 - security_group_id
 - subnet_id
 
-```
+```yaml
+# File ./configuration/infrastructure/oci_testing/variables.yml
 is_cloud_environment: yes
 operating_system: Oracle Linux 8.3
 provider: oci
@@ -80,24 +41,48 @@ security_group_id: sg-*****
 subnet_id: subnet-**********
 ```
 
-[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/infrastructure.md) about infrastructure declarations
+You should now see your infrastructure in the Ansible inventory:
 
+```
+$ ansible-inventory --graph --vars
+@all:
+  |--@oci_testing:
+  |  |--{ami_id = ami-07e51b655b107cd9b}
+  |  |--{availability_zone = eu-central-1a}
+  |  |--{environment = oci-testing}
+  |  |--{instance_type = t3.large}
+  |  |--{is_cloud_environment = True}
+  |  |--{operating_system = OL8.5-x86_64-HVM-2021-11-24}
+  |  |--{provider = oci}
+  |  |--{region_id = eu-central-1}
+  |  |--{security_group_id = sg-*****}
+  |  |--{subnet_id = subnet-**********}
+  |--@servers:
+  |--@ungrouped:
+  |--{ansible_winrm_read_timeout_sec = 60}
+  |--{yak_inventory_type = file}
+  |--{yak_local_ssh_config_file = ~/yak/configuration/infrastructure/.ssh/config}
+  |--{yak_secrets_directory = /workspace/yak/configuration/infrastructure/secrets}
+```
 
-## 4. Declare your first server
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/infrastructure.md) about infrastructure declaration.
 
-Create a directory under your infrastructure ./configuration/infrastructure/oci_testing with your server name
+### 2. Declare your first server
+
+Create a directory under your infrastructure `./configuration/infrastructure/oci_testing` with your server name:
 
 ```
 mkdir ./configuration/infrastructure/oci_testing/srv01
 ```
 
-Copy the adaquat template file located under ./configuration/infrastructure/oci_testing/srv01
+Copy the adaquat template file located under `./configuration/infrastructure/oci_testing/srv01`:
 
 ```
 cp ./configuration/infrastructure_sample/oci/srv-linux-test-01/variables.yml ./configuration/infrastructure/oci_testing/srv01
+vi ./configuration/infrastructure/oci_testing/srv01/variables.yml
 ```
 
-Adapt at least the below parameters
+Adapt at least the below parameters:
 
 - hostname
 - host_ip_access: private_ip|public_ip
@@ -108,14 +93,15 @@ Adapt at least the below parameters
   - mode : manual | auto | none
     - ip : ip_address_value | or leave_it_empty_with_auto_or_none
 
-```
+```yaml
+# File ./configuration/infrastructure/oci_testing/srv01/variables.yml
 hostname: srv01
 is_physical_server: no
 ansible_user: ec2-user
 host_ip_access: private_ip
 private_ip:
    mode: auto
-   ip: 
+   ip:
 public_ip:
    mode: none
    ip:
@@ -130,40 +116,42 @@ ec2_volumes_params:
       delete_on_termination: true
 ```
 
-[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md) about server configuration
-
-### 5. Create your default ssh key
-
-This ssh key will be used for your server connection
-
-Create a directory secrets under your infrastructure ./configuration/infrastructure/oci_testing 
+You should now see your server in the Ansible inventory:
 
 ```
-mkdir ./configuration/infrastructure/oci_testing/secrets
-```
-
-Generate your default secrets key with the script "gen_secret"
-
-```
-cd ./configuration/infrastructure/oci_testing/secrets
-gen_secret
-```
-
-[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/secret_management.md) about key management
-
-
-### 6. Test your inventory after having updated all parameters
-
-```
-dbi@3f2794bb53e4:~/GIT/yak$ ansible-inventory --graph
+$ ansible-inventory --graph
 @all:
   |--@oci_testing:
   |  |--oci_testing/srv01
   |--@servers:
   |  |--oci_testing/srv01
   |--@ungrouped:
+```
 
-dbi@3f2794bb53e4:~/GIT/yak$ ansible-inventory --host oci_testing/srv01
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md) about server configuration.
+
+### 3. Create your default ssh key
+
+This ssh key will be used for your server connection.
+
+Create a directory `secrets` under your infrastructure `./configuration/infrastructure/oci_testing`:
+
+```
+mkdir ./configuration/infrastructure/oci_testing/secrets
+```
+
+Generate your default SSH key with the script `gen_secret`:
+
+```
+cd ./configuration/infrastructure/oci_testing/secrets
+gen_secret
+cd -
+```
+
+You should now see the SSH key used by your server:
+
+```
+$ ansible-inventory --host oci_testing/srv01
 {
     "ami_id": "ami-07e51b655b107cd9b",
     "ansible_host": "172.21.9.156",
@@ -173,30 +161,122 @@ dbi@3f2794bb53e4:~/GIT/yak$ ansible-inventory --host oci_testing/srv01
 . . .
 ```
 
-[Here are more details](https://gitlab.com/yak4all/yak/-/tree/main/collections/ansible_collections/yak/core) about the inventory
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/secret_management.md) about key management.
 
+### 4. Copy your OCI Cloud authentication
 
-### 7. Put your OCI Cloud authentication 
+Use your OCI CLI programmatic access key variables:
 
-Use your OCI CLI programmatic access key variables 
-
-```
+```bash
 export OCI_ACCESS_KEY_ID="*******"
 export OCI_SECRET_ACCESS_KEY="**********"
 export OCI_SESSION_TOKEN="***********`
 ```
 
-[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
 
-
-### 6. Deploy your server
+### 5. Deploy your server
 
 ```
 ansible-playbook servers/deploy.yml -e target=oci_testing/srv01
 ```
 
-[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/servers.md) about the server deployment possibilities 
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/servers.md) about the server deployment possibilities
 
+### 6. Connect to the server
+
+Ping with the Ansible module to ensure the connectivity works:
+
+```
+ansible -m ping oci_testing/srv01
+```
+
+Connect via SSH to the server:
+
+```
+ssh oci_testing/srv01
+```
+
+### 7. Declare your first component
+
+Create a directory under your server `./configuration/infrastructure/oci_testing/srv01/postgres` with your component name:
+
+```
+mkdir ./configuration/infrastructure/oci_testing/srv01/postgres
+```
+
+Copy component template file located under `./configuration/infrastructure/oci_testing/srv01/postgres`:
+
+```
+cp ./configuration/infrastructure_sample/oci/srv-linux-test-01/COMP/variables.yml ./configuration/infrastructure/oci_testing/srv01/postgres
+```
+
+This component has a type `postgresql_instance` and requires a predefined storage layout `linux/storage/postgresql_instance`:
+
+```yaml
+# File ./configuration/infrastructure/oci_testing/srv01/postgres/variables.yml
+component_type: postgresql_instance
+storage: linux/storage/postgresql_instance
+```
+
+**Optional:** You can use another official storage template available in the YaK project:
+
+```
+$ tree configuration/templates/
+configuration/templates/
+|-- linux
+|   `-- storage
+|       |-- demo_instance.yml
+|       |-- mongodb_instance.yml
+|       |-- oracle_instance.yml
+|       |-- postgresql_instance.yml
+|       |-- sqlserver_instance.yml
+|       `-- weblogic_domain.yml
+`-- windows
+    `-- storage
+        `-- sqlserver_instance.yml
+```
+
+You should now see your component `oci_testing/srv01/postgres` in the Ansible inventory:
+
+```
+$ ansible-inventory --graph
+@all:
+  |--@oci_testing:
+  |  |--oci_testing/srv01
+  |  |--oci_testing/srv01/postgres
+  |--@postgresql_instance:
+  |  |--oci_testing/srv01/postgres
+  |--@servers:
+  |  |--oci_testing/srv01
+  |--@ungrouped:
+```
+
+### 8. Deploy the deployment storage requirements
+
+This Ansible playbook will deploy the storage requirements for each component attached to the server:
+
+```
+ansible-playbook servers/deploy.yml -e target=oci_testing/srv01 --tags=requirements
+```
+
+Once completed, connect via SSH to the server and look at the storage layout:
+
+```
+$ ssh oci_testing/srv01 df -h
+Filesystem            Size  Used Avail Use% Mounted on
+devtmpfs              3.7G     0  3.7G   0% /dev
+tmpfs                 3.7G  8.0K  3.7G   1% /dev/shm
+tmpfs                 3.7G   17M  3.7G   1% /run
+tmpfs                 3.7G     0  3.7G   0% /sys/fs/cgroup
+/dev/nvme0n1p1         10G  1.8G  8.3G  18% /
+tmpfs                 757M     0  757M   0% /run/user/1000
+/dev/mapper/data-u01  4.0G   62M  4.0G   2% /u01
+/dev/mapper/data-u02   12G  119M   12G   1% /u02
+/dev/mapper/data-u90   24G  205M   24G   1% /u90
+```
+
+You are now ready to operate your components on your server!
 
 ## License
 
