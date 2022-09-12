@@ -59,11 +59,6 @@ yak@d915a92de516:~/yak$ aig
 yak@d915a92de516:~/yak
 ```
 
-## Configuration
-
-Once in the container, you must describe the infrastructure that you wish to begin with.<br>
-To get an example of how to set up a new infrastructure and servers, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
-
 ## License
 
 GNU General Public License v3.0 or later

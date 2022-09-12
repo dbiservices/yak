@@ -33,6 +33,11 @@ Try it, to see how it works in real life.
 You want to install YaK Core own your own environment
 Then follow the setup instruction [Setup instructions](docs/setup.md)
 
+## Configuration
+
+Once in the container, you must describe the infrastructure that you wish to begin with.<br>
+To get an example of how to set up a new infrastructure and servers, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
+
 ## Contribute
 
 You are more than welcome to give us your feedback.
