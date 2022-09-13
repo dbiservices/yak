@@ -8,7 +8,7 @@
 
 ## Setup
 
-1. pull the Yak Core container `registry.gitlab.com/yak4all/yak:latest` to your workstation
+1. pull the Yak Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation
 
 ```bash
 docker pull registry.gitlab.com/yak4all/yak:latest
@@ -58,11 +58,6 @@ yak@d915a92de516:~/yak$ aig
   |--@ungrouped:
 yak@d915a92de516:~/yak
 ```
-
-## Configuration
-
-Once in the container, you must describe the infrastructure that you wish to begin with.<br>
-To get an example of how to set up a new infrastructure and servers, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
 
 ## License
 

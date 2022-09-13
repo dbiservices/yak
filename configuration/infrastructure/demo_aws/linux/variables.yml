@@ -3,7 +3,7 @@
 hostname: linux
 is_physical_server: no
 ansible_user: admin
-host_ip_access: private_ip
+host_ip_access: public_ip
 private_ip:
     mode: auto
     ip: 

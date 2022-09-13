@@ -117,7 +117,8 @@ function start_demo ()
    read -p "Press enter to continue "
    echo
    cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
-   echo  "Below configuration is based on the template file located in ./configuration/templates/linux/storage/demo_instance.yml"
+   echo
+   echo  "Above configuration is based on the template file located in ./configuration/templates/linux/storage/demo_instance.yml"
    echo
    read -p "Press enter to continue "
    echo
