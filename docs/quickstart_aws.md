@@ -31,14 +31,11 @@ Adapt at least the below parameter:
 ```yaml
 # File ./configuration/infrastructure/aws_testing/variables.yml
 is_cloud_environment: yes
-operating_system: Oracle Linux 8.3
 provider: aws
 availability_zone: eu-central-1a
-instance_type: t3.large
-ami_id: ami-0211d10fb4a04824a
 region_id: eu-central-1
-security_group_id: sg-*****
-subnet_id: subnet-**********
+security_group_id:
+subnet_id:
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -47,12 +44,8 @@ You should now see your infrastructure in the Ansible inventory:
 $ ansible-inventory --graph --vars
 @all:
   |--@aws_testing:
-  |  |--{ami_id = ami-07e51b655b107cd9b}
   |  |--{availability_zone = eu-central-1a}
-  |  |--{environment = aws-testing}
-  |  |--{instance_type = t3.large}
   |  |--{is_cloud_environment = True}
-  |  |--{operating_system = OL8.5-x86_64-HVM-2021-11-24}
   |  |--{provider = aws}
   |  |--{region_id = eu-central-1}
   |  |--{security_group_id = sg-*****}
@@ -101,13 +94,13 @@ ansible_user: ec2-user
 host_ip_access: private_ip
 private_ip:
    mode: auto
-   ip:
+   ip: 
 public_ip:
-   mode: none
+   mode: auto 
    ip:
 operating_system: OL8.5-x86_64-HVM-2021-11-24
 ami_id: ami-07e51b655b107cd9b
-instance_type: t3.large
+instance_type: t3.medium
 ec2_volumes_params:
   - device_name: /dev/sda1
     ebs:

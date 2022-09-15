@@ -40,10 +40,10 @@ provider: azure
 subscription:
     id:
     name: Azure subscription Name
-resource_group:
-virtual_network_name:
-subnet_name:
-security_group:
+resource_group: dbi-testing-yak-rg
+virtual_network_name: dbi-testing-yak-nsg
+subnet_name: dbi-testing-yak-subnet
+security_group: dbi-testing-yak-nsg
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -59,7 +59,7 @@ yak@7c3380657dd5:~/yak$ ansible-inventory --graph azure_testing  --vars
   |--{resource_group = dbi-testing-yak-rg}
   |--{security_group = dbi-testing-yak-nsg}
   |--{subnet_name = dbi-testing-yak-subnet}
-  |--{subscription = {'id': '54752284-75ab-4fbc-a9b0-a40d41894656', 'name': 'Azure subscription 1'}}
+  |--{subscription = {'id': '54752284-75ab-4fbc-a9b0-*******', 'name': 'Azure subscription'}}
   |--{virtual_network_name = dbi-testing-yak-network}
 ```
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/infrastructure.md) about infrastructure declaration.

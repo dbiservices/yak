@@ -8,10 +8,10 @@
 
 ## 1. Get the container
 
-Pull the YaK Core container `registry.gitlab.com/yak4all/yak:latest` to your workstation:
+Pull the YaK Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation:
 
 ```bash
-docker pull registry.gitlab.com/yak4all/yak:latest
+docker pull registry.gitlab.com/yak4all/yak:stable
 ```
 
 FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
@@ -25,18 +25,19 @@ Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
 
 ```bash
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
+mkdir ${MY_LOCAL_CONFIGURATION_DIR}
 ```
 
 Start the container with the below command:
 
 ```bash
-docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
+docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak bash
 ```
 
 If it worked well, you should be inside the container with the YaK Software configured.
 
 ```
-$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
+$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak bash
 [...]
 yak@d47a98f30c99:~/yak$ ansible-inventory --graph
 @all:
