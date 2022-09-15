@@ -1,5 +1,6 @@
         GENERAL ALIASES [YaK]
         ##############################################################
+
         ll              --> List files in list mode
         cdh             --> Change directory to YaK home
         cdci            --> Change directory to configuration/infrastructure
@@ -10,15 +11,32 @@
 
         ANSIBLE INVENTORY ALIASES
         ##############################################################
+
         aig             --> Display the inventory graph for all groups
+                            cmd : ansible-inventory --graph 
+
+        aigv            --> Display the inventory graph for all groups with the variables
+                            cmd : ansible-inventory --graph --vars
+
         aig <group>     --> Display the inventory graph for a specific group
+                            cmd : ansible-inventory --graph <group>
+
         aih <server>    --> Display the specific server info
+                            cmd : ansible-inventory --host <group/server>
+
         apsdp <server>  --> Deploy a specific server
+                            cmd : ansible-playbook servers/deploy.yml -e target=<group/server> --tags=server
+
         apsr <comp>     --> Apply the components requirements for a specific server
+                            cmd : ansible-playbook servers/deploy.yml -e target=<group/server> --tags=component
+
         apsdc <server>  --> Decommission a specific server
+                            cmd : ansible-playbook servers/decommission.yml -e target=<group/server>
         
         GENERATE SSH SECRETS 
         ##############################################################
+
         gen_secret      --> Generate sshkey's under the current directory
+                            cmd : ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N "";
 
        
