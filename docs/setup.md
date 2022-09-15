@@ -25,6 +25,7 @@ Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
 
 ```bash
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
+mkdir ${MY_LOCAL_CONFIGURATION_DIR}
 ```
 
 Start the container with the below command:
