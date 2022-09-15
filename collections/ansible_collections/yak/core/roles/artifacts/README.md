@@ -3,6 +3,13 @@ Artifacts
 
 Role used to manage Artificats (software binaries); This role manage downloads of files depending on a variable strucuture.
 
+Software delivery
+----------------------
+As of licensing restrictions about software distribution for various editors.
+The download of the Oracle software onto the Artifact repository is left over to each customer.
+
+The software editor licensing conditions must be accepted prior downloading the software.
+
 
 Role Variables (fixed)
 ----------------------
