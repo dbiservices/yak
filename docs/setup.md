@@ -31,13 +31,13 @@ mkdir ${MY_LOCAL_CONFIGURATION_DIR}
 Start the container with the below command:
 
 ```bash
-docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
+docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak bash
 ```
 
 If it worked well, you should be inside the container with the YaK Software configured.
 
 ```
-$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure registry.gitlab.com/yak4all/yak bash
+$ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak bash
 [...]
 yak@d47a98f30c99:~/yak$ ansible-inventory --graph
 @all:
