@@ -24,8 +24,8 @@ This container contains all necessary softwares used by YaK Core <br>
 Define a local directory with the variable `${MY_LOCAL_CONFIGURATION_DIR}`:
 
 ```bash
-export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak
-mkdir ${MY_LOCAL_CONFIGURATION_DIR}
+export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak/inventory
+mkdir -p ${MY_LOCAL_CONFIGURATION_DIR}
 ```
 
 Start the container with the below command:
