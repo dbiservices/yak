@@ -94,9 +94,9 @@ ansible_user: ec2-user
 host_ip_access: private_ip
 private_ip:
    mode: auto
-   ip:
+   ip: 
 public_ip:
-   mode: none
+   mode: auto 
    ip:
 operating_system: OL8.5-x86_64-HVM-2021-11-24
 ami_id: ami-07e51b655b107cd9b
