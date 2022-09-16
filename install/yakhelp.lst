@@ -37,7 +37,7 @@
                              cmd : ansible-playbook servers/decommission.yml -e target=<group/server>
         
         GENERATE SSH SECRETS 
-        ##############################################################
+        ##############################################################################
 
         gen_secret      --> Generate sshkey's under the current directory
                             cmd : ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N "";
