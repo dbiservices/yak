@@ -126,19 +126,21 @@ $ ansible-inventory --graph
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md) about server configuration.
 
-### 3. Create your default ssh key
+### 3. Create your secret
 
-This ssh key will be used for your server connection.
+A SSH key (for Linux) will be used for your server connection. For Windows, you'll need to generate certificate.
 
 Create a directory `secrets` under your infrastructure `./configuration/infrastructure/azure_testing`:
 
-```
+```bash
 mkdir ./configuration/infrastructure/azure_testing/secrets
 ```
 
+#### For Linux (SSH Key)
+
 Generate your default SSH key with the script `gen_secret`:
 
-```
+```bash
 cd ./configuration/infrastructure/azure_testing/secrets
 gen_secret
 cd -
@@ -146,16 +148,42 @@ cd -
 
 You should now see the SSH key used by your server:
 
-```
+```bash
 $ ansible-inventory --host azure_testing/srv01
 {
     "ami_id": "ami-07e51b655b107cd9b",
     "ansible_host": "172.21.9.156",
     "ansible_ssh_private_key_file": "/workspace/yak/configuration/infrastructure/azure_testing/secrets/sshkey",
     "ansible_ssh_public_key_file": "/workspace/yak/configuration/infrastructure/azure_testing/secrets/sshkey.pub",
-    "ansible_user": "ec2-user",
+    "ansible_user": "azureuser",
 . . .
 ```
+
+#### For Windows (Certificate)
+
+```bash
+cd ./configuration/infrastructure/azure_testing/secrets
+
+# Set the name of the local user that will have the key mapped to
+USERNAME="Ansible"
+
+cat > openssl.conf << EOL
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[v3_req_client]
+extendedKeyUsage = clientAuth
+subjectAltName = otherName:1.3.6.1.4.1.311.20.2.3;UTF8:$USERNAME@localhost
+EOL
+
+export OPENSSL_CONF=openssl.conf
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -out cert.pem -outform PEM -keyout cert_key.pem -subj "/CN=$USERNAME" -extensions v3_req_client
+
+rm openssl.conf
+
+cd -
+```
+
+More options on [the Ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html#generate-a-certificate) for Windows managed host.
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/secret_management.md) about key management.
 
