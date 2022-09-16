@@ -1,16 +1,13 @@
-oci_compute
-====================
+# oci_compute
 
-Create,start,stop,delete a Linux or Windows instance on OCI on an existing Network Infrastructure
+Create, start, stop, delete a Linux or Windows instance on OCI on an existing Network Infrastructure.
 
-Requirements
-------------
+## Requirements
 
 - Ansible OCI collection must be installed
 - AZURE Account and Network parameter must be available
 
-Variables
----------
+## Variables
 
 This the defaults section
 
@@ -23,15 +20,18 @@ debug:
 image_id
 - Define the ID of the Oracle server image to be used
 
+## Example Playbook
 
-Dependencies
-------------
-
-n/a
-
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+```yaml
+- include_role:
+    name: yak.core.oci_compute
+  vars:
+    state: present
+    region: "{{ region_id }}"
+    display_name: "{{ machine_name }}"
+    ssh_public_key: "{{ ansible_ssh_public_key_file }}"
+    ssh_private_key: "{{ ansible_ssh_private_key_file }}"
+    winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
+    winrm_user: "{{ ansible_user }}"
+    os_admin_username: "{{ ansible_user }}"
+```
