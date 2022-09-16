@@ -109,7 +109,7 @@ if ! id yak > /dev/null 2>&1; then
        echo "  - are automatically destroyed after 4h"
        echo "  - storage size can't be extended"
        echo
-       echo "Disclaimer:"
+       echo " Disclaimer:"
        echo "    The instances created by the YaK are delivered as is, "
        echo "    dbi-services is not responsible for the use that could be made "
        echo "    of them outside the YaK demonstration environment"
@@ -118,7 +118,9 @@ if ! id yak > /dev/null 2>&1; then
        echo
        echo " This demo will deploy and configure a Debian 11.4 server "
        echo "       Including additional storage on AWS Cloud"
+       echo 
        echo "==========================================================="
+       echo
    fi
 fi
 su - yak --pty -c "$@"
