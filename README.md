@@ -36,7 +36,7 @@ Then follow the setup instruction [Setup instructions](docs/setup.md)
 
 ## Declare your infrastructure
 
-You installed your own Yak Core environment and want now to setup your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
+You installed your own YaK Core environment and want now to setup your own Cloud provider environments, then follow the below corresponding cloud provider "Setup Instructions"
 
 - [Amazon AWS Quickstart Instructions](docs/quickstart_aws.md)
 - [Microsoft Azure Quickstart Instructions](docs/quickstart_azure.md)
