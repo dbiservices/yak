@@ -14,19 +14,22 @@ build:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:${TAG}" --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG} --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA} .
-    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${STATUS_TAG}"
+    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${LATEST_TAG}" "$CI_REGISTRY_IMAGE:${STABLE_TAG}"
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
-    - docker push "$CI_REGISTRY_IMAGE:${STATUS_TAG}"
+    - docker push "$CI_REGISTRY_IMAGE:${LATEST_TAG}"
+    - docker push "$CI_REGISTRY_IMAGE:${STABLE_TAG}"
   # Run this job on tag creation and when a Dockerfile exists
   rules:
     - if: $CI_COMMIT_TAG =~ /^[0-9]*\.[0-9]*\.[0-9].*$/
       variables:
         TAG: $CI_COMMIT_TAG
-        STATUS_TAG: latest
+        LATEST_TAG: latest
+        STABLE_TAG: latest
     - if: $CI_COMMIT_TAG =~ /^STABLE\-[0-9]*\.[0-9]*\.[0-9].*$/
       variables:
         TAG: $CI_COMMIT_TAG
-        STATUS_TAG: stable
+        STABLE_TAG: stable
+        LATEST_TAG: latest
       exists:
         - Dockerfile
 
