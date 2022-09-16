@@ -36,9 +36,10 @@ if ! id yak > /dev/null 2>&1; then
     echo 'aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aigv() { cd ~/yak && ansible-inventory --graph "$1" --vars; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
-    echo 'apsdp() { cd ~/yak && ansible-playbook servers/deploy.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
-    echo 'apsr() { cd ~/yak && ansible-playbook servers/deploy.yml --tag=requirements -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
-    echo 'apsdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
+    echo 'apdp() { cd ~/yak && ansible-playbook servers/deploy.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
+    echo 'apdps() { cd ~/yak && ansible-playbook servers/deploy.yml --tags=server -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
+    echo 'apdpr() { cd ~/yak && ansible-playbook servers/deploy.yml --tags=requirements -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
+    echo 'apdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'gen_secret() { ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N ""; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'yakhelp() { cat /yakhelp.lst | more; }' >> ${YAK_USER_HOME}/.bashrc
 
