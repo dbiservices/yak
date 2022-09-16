@@ -1,6 +1,8 @@
 # WinRM
 
 Role to generate WinRM configuration for Ansible.
+The resulting PowerShell script can then be passed to the cloud-init configuration
+for the first instance startup to configure the remote access properly for Ansible.
 
 ## Role Variables
 

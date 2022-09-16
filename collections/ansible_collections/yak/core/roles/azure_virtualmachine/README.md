@@ -1,15 +1,14 @@
-azure_virtualmachine
-====================
+# azure_virtualmachine
 
-Create, start, stop, delete a Linux or Windows Azure server on an existing Network Infrastructure
+Create, start, stop, delete a Linux or Windows Azure server on an existing Network Infrastructure.
 
-Requirements
+## Requirements
 ------------
 
 - Ansible Azure collection must be installed
 - AZURE Account and Network parameter must be available
 
-Variables
+## Variables
 ---------
 
 This the defaults section
@@ -24,14 +23,17 @@ image_id
 - Define the ID of the Amazon Machine Image (AMI) to be used
 
 
-Dependencies
-------------
+## Example Playbook
 
-n/a
-
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+```yaml
+- include_role:
+    name: yak.core.azure_virtualmachine
+  vars:
+    state: present
+    server_name: "{{ machine_name }}"
+    ssh_public_key: "{{ ansible_ssh_public_key_file }}"
+    ssh_private_key: "{{ ansible_ssh_private_key_file }}"
+    winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
+    winrm_user: "{{ ansible_user }}"
+    os_admin_username: "{{ ansible_user }}"
+```
