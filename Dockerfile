@@ -4,6 +4,9 @@
 
 FROM registry.gitlab.com/yak4all/yakenv:1.0.0
 
+ARG CI_COMMIT_TAG="Default_Value"
+ARG CI_COMMIT_SHORT_SHA="Default_Value"
+
 # COPY Sources
 COPY ./collections /workspace/yak/collections
 COPY ./configuration /workspace/yak/configuration
@@ -20,6 +23,11 @@ COPY ./install/entry-point.sh /entry-point.sh
 COPY ./install/yakhelp.lst /yakhelp.lst
 RUN chmod u+x /entry-point.sh
 RUN chmod ugo+x /yakhelp.lst
+RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG" 
+RUN echo "CI_COMMIT_SHORT_SHA: $CI_COMMIT_SHORT_SHA"
+RUN echo "YaK version: $CI_COMMIT_TAG" > /workspace/yak/.version
+RUN echo "commit short sha: $CI_COMMIT_SHORT_SHA" >> /workspace/yak/.version
+
 ENV LANG en_US.utf8
 
 ENTRYPOINT ["/entry-point.sh"]

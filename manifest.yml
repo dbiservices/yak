@@ -1,8 +1,8 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 # https://semver.org
 version:
-  major: 0
-  minor: 1
+  major: 1
+  minor: 0
   patch: 0
 
 components:
