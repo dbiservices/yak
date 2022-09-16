@@ -25,8 +25,8 @@ RUN chmod u+x /entry-point.sh
 RUN chmod ugo+x /yakhelp.lst
 RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG" 
 RUN echo "CI_COMMIT_SHORT_SHA: $CI_COMMIT_SHORT_SHA"
-RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG" > /workspace/yak/.version
-RUN echo "CI_COMMIT_SHORT_SHA: $CI_COMMIT_SHORT_SHA" >> /workspace/yak/.version
+RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG" > /workspace/yak/version
+RUN echo "CI_COMMIT_SHORT_SHA: $CI_COMMIT_SHORT_SHA" >> /workspace/yak/version
 ENV LANG en_US.utf8
 
 ENTRYPOINT ["/entry-point.sh"]
