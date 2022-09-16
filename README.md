@@ -57,4 +57,3 @@ Please see [Contribution instructions](docs/contribution.md)
 
 GNU General Public License v3.0 or later
 See COPYING to see the full text.
-
