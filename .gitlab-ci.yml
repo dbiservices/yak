@@ -14,7 +14,8 @@ build:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:${TAG}" --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG} --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA} .
-    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${LATEST_TAG}" "$CI_REGISTRY_IMAGE:${STABLE_TAG}"
+    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${LATEST_TAG}" 
+    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${STABLE_TAG}" 
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
     - docker push "$CI_REGISTRY_IMAGE:${LATEST_TAG}"
     - docker push "$CI_REGISTRY_IMAGE:${STABLE_TAG}"
