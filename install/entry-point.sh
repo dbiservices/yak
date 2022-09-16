@@ -105,11 +105,14 @@ if ! id yak > /dev/null 2>&1; then
        echo " As of demo this environment has some restriction"
        echo
        echo " The servers:"
-       echo "       - provisioning allows only instance_type=t3.micro "
-       echo "       - are automatically destroyed after 4h"
-       echo "       - storage size can't be extended"
+       echo "  - provisioning allows only instance_type=t3.micro "
+       echo "  - are automatically destroyed after 4h"
+       echo "  - storage size can't be extended"
        echo
-       echo " Disclaimer about usage of YaK"
+       echo "Disclaimer:"
+       echo "    The instances created by the YaK are delivered as is, "
+       echo "    dbi-services is not responsible for the use that could be made "
+       echo "    of them outside the YaK demonstration environment"
        echo
        whiteLog  " Type \"startdemo aws\" and then press ENTER"
        echo
