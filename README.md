@@ -20,13 +20,13 @@ The YaK is based on the following principles:
 Access our YaK Core demo environment to get a straightforward and fast introduction! <br>
 Try it, to see how it works in real life.
 
-| Steps                                                        | 
-| ----------------------------------------------------------- |
-|  Open https://yakdemo.dbi-services.com in a Web broswer  (Recommendation: Google Chrome)         |
-|  Set Username: **yak**   and Password: **yak**  and click on **"Sign in"**   | 
-| <img src="/install/img/YaK_login.png"  width="300" height="250"> |
-| Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"** |
-| <img src="/install/img/YaK_demo.png" width="600" height="300">   |
+| Steps                                                                                   |
+| --------------------------------------------------------------------------------------- |
+| Open https://yakdemo.dbi-services.com in a Web broswer  (Recommendation: Google Chrome) |
+| Set Username: **yak**   and Password: **yak**  and click on **"Sign in"**               |
+| <img src="/install/img/YaK_login.png"  width="300" height="250">                        |
+| Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"**     |
+| <img src="/install/img/YaK_demo.png" width="600" height="300">                          |
 
 
 ## Get Started - Setup YaK Core
