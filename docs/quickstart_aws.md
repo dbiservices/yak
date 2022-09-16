@@ -12,13 +12,13 @@ Below is an example of an AWS testing infrastructure name "aws_testing":
 
 Create a directory under `./configuration/infrastructure` with your infrastructure name:
 
-```
+```bash
 mkdir ./configuration/infrastructure/aws_testing
 ```
 
 Copy the adaquat template file located under `./configuration/infrastructure_sample`:
 
-```
+```bash
 cp  ./configuration/infrastructure_sample/aws/variables.yml  ./configuration/infrastructure/aws_testing
 vi ./configuration/infrastructure/aws_testing/variables.yml
 ```
@@ -40,7 +40,7 @@ subnet_id:
 
 You should now see your infrastructure in the Ansible inventory:
 
-```
+```bash
 $ ansible-inventory --graph --vars
 @all:
   |--@aws_testing:
@@ -64,13 +64,13 @@ $ ansible-inventory --graph --vars
 
 Create a directory under your infrastructure `./configuration/infrastructure/aws_testing` with your server name:
 
-```
+```bash
 mkdir ./configuration/infrastructure/aws_testing/srv01
 ```
 
 Copy the adaquat template file located under `./configuration/infrastructure/aws_testing/srv01`:
 
-```
+```bash
 cp ./configuration/infrastructure_sample/aws/srv-linux-test-01/variables.yml ./configuration/infrastructure/aws_testing/srv01
 vi ./configuration/infrastructure/aws_testing/srv01/variables.yml
 ```
@@ -94,9 +94,9 @@ ansible_user: ec2-user
 host_ip_access: private_ip
 private_ip:
    mode: auto
-   ip: 
+   ip:
 public_ip:
-   mode: auto 
+   mode: auto
    ip:
 operating_system: OL8.5-x86_64-HVM-2021-11-24
 ami_id: ami-07e51b655b107cd9b
@@ -111,7 +111,7 @@ ec2_volumes_params:
 
 You should now see your server in the Ansible inventory:
 
-```
+```bash
 $ ansible-inventory --graph
 @all:
   |--@aws_testing:
@@ -123,19 +123,21 @@ $ ansible-inventory --graph
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md) about server configuration.
 
-### 3. Create your default ssh key
+### 3. Create your secret
 
-This ssh key will be used for your server connection.
+A SSH key (for Linux) will be used for your server connection. For Windows, you'll need to generate certificate.
 
 Create a directory `secrets` under your infrastructure `./configuration/infrastructure/aws_testing`:
 
-```
+```bash
 mkdir ./configuration/infrastructure/aws_testing/secrets
 ```
 
+#### For Linux (SSH Key)
+
 Generate your default SSH key with the script `gen_secret`:
 
-```
+```bash
 cd ./configuration/infrastructure/aws_testing/secrets
 gen_secret
 cd -
@@ -143,7 +145,7 @@ cd -
 
 You should now see the SSH key used by your server:
 
-```
+```bash
 $ ansible-inventory --host aws_testing/srv01
 {
     "ami_id": "ami-07e51b655b107cd9b",
@@ -153,6 +155,32 @@ $ ansible-inventory --host aws_testing/srv01
     "ansible_user": "ec2-user",
 . . .
 ```
+
+#### For Windows (Certificate)
+
+```bash
+cd ./configuration/infrastructure/aws_testing/secrets
+
+# Set the name of the local user that will have the key mapped to
+USERNAME="Ansible"
+
+cat > openssl.conf << EOL
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[v3_req_client]
+extendedKeyUsage = clientAuth
+subjectAltName = otherName:1.3.6.1.4.1.311.20.2.3;UTF8:$USERNAME@localhost
+EOL
+
+export OPENSSL_CONF=openssl.conf
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -out cert.pem -outform PEM -keyout cert_key.pem -subj "/CN=$USERNAME" -extensions v3_req_client
+
+rm openssl.conf
+
+cd -
+```
+
+More options on [the Ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html#generate-a-certificate) for Windows managed host.
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/secret_management.md) about key management.
 
@@ -180,13 +208,13 @@ ansible-playbook servers/deploy.yml -e target=aws_testing/srv01
 
 Ping with the Ansible module to ensure the connectivity works:
 
-```
+```bash
 ansible -m ping aws_testing/srv01
 ```
 
 Connect via SSH to the server:
 
-```
+```bash
 ssh aws_testing/srv01
 ```
 
@@ -194,13 +222,13 @@ ssh aws_testing/srv01
 
 Create a directory under your server `./configuration/infrastructure/aws_testing/srv01/postgres` with your component name:
 
-```
+```bash
 mkdir ./configuration/infrastructure/aws_testing/srv01/postgres
 ```
 
 Copy component template file located under `./configuration/infrastructure/aws_testing/srv01/postgres`:
 
-```
+```bash
 cp ./configuration/infrastructure_sample/aws/srv-linux-test-01/COMP/variables.yml ./configuration/infrastructure/aws_testing/srv01/postgres
 ```
 
@@ -214,7 +242,7 @@ storage: linux/storage/postgresql_instance
 
 **Optional:** You can use another official storage template available in the YaK project:
 
-```
+```bash
 $ tree configuration/templates/
 configuration/templates/
 |-- linux
@@ -232,7 +260,7 @@ configuration/templates/
 
 You should now see your component `aws_testing/srv01/postgres` in the Ansible inventory:
 
-```
+```bash
 $ ansible-inventory --graph
 @all:
   |--@aws_testing:
@@ -249,13 +277,13 @@ $ ansible-inventory --graph
 
 This Ansible playbook will deploy the storage requirements for each component attached to the server:
 
-```
+```bash
 ansible-playbook servers/deploy.yml -e target=aws_testing/srv01 --tags=requirements
 ```
 
 Once completed, connect via SSH to the server and look at the storage layout:
 
-```
+```bash
 $ ssh aws_testing/srv01 df -h
 Filesystem            Size  Used Avail Use% Mounted on
 devtmpfs              3.7G     0  3.7G   0% /dev
