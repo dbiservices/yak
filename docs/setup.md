@@ -45,3 +45,11 @@ yak@d47a98f30c99:~/yak$ ansible-inventory --graph
 yak@d47a98f30c99:~/yak$ 
 ```
 
+## 3. Appendix
+
+You want to allow sudo as user ROOT in the container, below parameter must be added in the "docker run" command
+
+```
+-e YAK_ENABLE_SUDO=true
+```
+
