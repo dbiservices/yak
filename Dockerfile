@@ -4,6 +4,9 @@
 
 FROM registry.gitlab.com/yak4all/yakenv:1.0.0
 
+ARG CI_COMMIT_TAG="Default_Value"
+ARG CI_COMMIT_SHORT_SHA="Default_Value"
+
 # COPY Sources
 COPY ./collections /workspace/yak/collections
 COPY ./configuration /workspace/yak/configuration
