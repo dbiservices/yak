@@ -35,7 +35,6 @@ Adapt at least the below parameter:
 is_cloud_environement: yes
 environment: oci_testing
 ansible_user: opc
-operating_system: Oracle-Linux-8.3-2021.05.12-0
 provider: oci
 region_id: eu-zurich-1
 compartment_id: ****
@@ -55,7 +54,6 @@ $ ansible-inventory --graph --vars
   |  |--{environment = oci-testing}
   |  |--{instance_type = t3.large}
   |  |--{is_cloud_environment = True}
-  |  |--{operating_system = OL8.5-x86_64-HVM-2021-11-24}
   |  |--{provider = oci}
   |  |--{region_id = eu-central-1}
   |  |--{security_group_id = sg-*****}
