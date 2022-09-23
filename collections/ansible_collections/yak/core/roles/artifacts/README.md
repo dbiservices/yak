@@ -42,7 +42,7 @@ artifacts:
 
 ### From components
 
-- `artifact`: the name of the artifact (can be a relative path).
+- `artifact_files`: a list of the artifact name relative to the bucket name (without the bucket name).
 - `destination_path`: the directory into which to copy the artifact.
 - `destination_owner`: the owner of the artifact at destination.
 - `destination_group`: the group of the artifact at destination (for Linux only).
@@ -79,7 +79,9 @@ For instance to manage Oracle database software major and "minor" release:
   roles:
     - role: yak.core.artifacts
       vars:
-        artifact_files: rdbms/oracle/gold_images/19c/orainstall.zip
+        artifact_files:
+          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+          - rdbms/oracle/dmk/dmk-22-01-unix.zip
         destination_path: /tmp
         destination_owner: oracle
         destination_group: oinstall
