@@ -11,12 +11,23 @@
   ansible.builtin.pip:
     name: boto3
 
+- name: Creates directory layout
+  become: true
+  ansible.builtin.file:
+    path: "{{ destination_path }}/{{ item|dirname }}"
+    state: directory
+    owner: "{{ destination_owner }}"
+    group: "{{ destination_group }}"
+    mode: 0755
+    recurse: yes
+  loop: "{{ artifact_files }}"
+
 - name: Download artifact
   become: true
   amazon.aws.aws_s3:
     bucket: "{{ artifacts.variables.bucket_name }}"
     object: "{{ item }}"
-    dest: "{{ destination_path }}/{{ item|basename }}"
+    dest: "{{ destination_path }}/{{ item }}"
     mode: get
   environment:
     AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
