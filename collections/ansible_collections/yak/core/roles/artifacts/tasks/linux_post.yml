@@ -1,0 +1,7 @@
+---
+- name: Change artifacts ownership and group
+  ansible.builtin.file:
+    path: "{{ destination_path }}/{{ artifact_file|basename }}"
+    owner: "{{ destination_owner }}"
+    group: "{{ destination_group }}"
+...

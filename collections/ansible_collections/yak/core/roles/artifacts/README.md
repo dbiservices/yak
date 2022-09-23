@@ -9,22 +9,43 @@ The role copies artifacts from the artifact provider to the destination instance
 
 - The artifact structures and files must exist.
 - You must have correct credentials and permissions to access artifacts.
-- Per provider requisites:
+- Per artifact provider requisites:
   - `aws_s3`: a bucket named 'yak' and the secret key in environment variables.
   - `azure_storage_blob`: a storage user and a container both named 'yak' and the secret key in environment variables.
   - `oci_object_storage`: a bucket named 'yak' and the secret key in environment variables.
 
-# Variables
+## Variables
 
-- `artifact_provider`: the provider of your artifacts:
+### From configuration
+
+- `artifacts.provider`: the supported provider of your artifacts:
   - `aws_s3`
   - `azure_storage_blob`
   - `oci_object_storage`
+- `artifacts.variables`: dictionary of variables specific to an artifact provider.
+  - `aws_s3`:
+    - `bucket_name`
+  - `azure_storage_blob`:
+    - `storage_account_name`
+    - `container`
+  - `oci_object_storage`:
+    - `bucket_name`
+
+#### Example
+
+```yaml
+artifacts:
+  provider: aws_s3
+  variables:
+    bucket_name: yak-artifacts
+```
+
+### From components
+
 - `artifact`: the name of the artifact (can be a relative path).
 - `destination_path`: the directory into which to copy the artifact.
 - `destination_owner`: the owner of the artifact at destination.
 - `destination_group`: the group of the artifact at destination.
-
 
 ## Artifact (repository) structure
 
@@ -56,11 +77,21 @@ For instance to manage Oracle database software major and "minor" release:
 
 ```yaml
   roles:
-    - role: artifacts
+    - role: yak.core.artifacts
       vars:
-        artifact_provider: aws_s3
         artifact_file: rdbms/oracle/gold_images/19c/orainstall.zip
-        destination_path: /u01/app/install
+        destination_path: /tmp
         destination_owner: oracle
         destination_group: oinstall
+```
+
+## Tests
+
+```bash
+## View all combinations
+ansible-playbook --list-tasks collections/ansible_collections/yak/core/roles/artifacts/tests/test.yml
+## Test all combinations
+ansible-playbook collections/ansible_collections/yak/core/roles/artifacts/tests/test.yml
+## Test one combination
+ansible-playbook collections/ansible_collections/yak/core/roles/artifacts/tests/test.yml --tags=aws_s3_linux
 ```

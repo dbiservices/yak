@@ -1,10 +1,20 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Include vars for artifact provider {{ artifact_provider }}
-  ansible.builtin.include_vars:
-    file: "{{ artifact_provider }}.yaml"
-    name: stuff
+- name: Role needs some variables
+  ansible.builtin.assert:
+    that:
+      - artifacts.provider is defined
+      - artifacts.variables is defined
+      - artifact_file is defined
+      - destination_path is defined
+      - destination_owner is defined
+      - destination_group is defined
+    fail_msg: "Variables not properly set. Please, check instructions in the README.md file of the role."
+    success_msg: "Variables variable properly set."
 
-- name: Include tasks for OS {{ os_type }} with artifact provider {{ artifact_provider }}
-  include_tasks: "{{ artifact_provider }}/{{ os_type }}.yml"
+- name: Include tasks for OS {{ os_type }} with artifact provider {{ artifacts.provider }}
+  include_tasks: "{{ artifacts.provider }}/{{ os_type }}.yml"
+
+- name: Include post tasks for OS {{ os_type }}
+  include_tasks: "{{ os_type }}_post.yml"
 ...
