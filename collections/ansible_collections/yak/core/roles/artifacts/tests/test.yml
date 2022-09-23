@@ -13,8 +13,8 @@
       vars:
         artifact_file: rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
         destination_path: /tmp
-        destination_owner: oracle
-        destination_group: oinstall
+        destination_owner: "{{ ansible_user }}"
+        destination_group: "{{ ansible_user }}"
 
 - name: Test aws_s3 windows
   tags: aws_s3_windows
@@ -29,5 +29,5 @@
       vars:
         artifact_file: rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
         destination_path: C:\Users\Ansible
-        destination_owner: oracle
-        destination_group: oinstall
+        destination_owner: "{{ ansible_user }}"
+        destination_group: ""

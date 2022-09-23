@@ -1,1 +1,11 @@
 ---
+- name: Change artifacts permissions
+  ansible.windows.win_acl:
+    path: "{{ destination_path }}/{{ artifact_file|basename }}"
+    user: "{{ destination_owner }}"
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'None'
+...
