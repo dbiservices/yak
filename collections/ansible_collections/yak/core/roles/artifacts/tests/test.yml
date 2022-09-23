@@ -11,7 +11,9 @@
   roles:
     - name: yak.core.artifacts
       vars:
-        artifact_file: rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+        artifact_files:
+          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+          - rdbms/oracle/dmk/dmk-22-01-unix.zip
         destination_path: /tmp
         destination_owner: "{{ ansible_user }}"
         destination_group: "{{ ansible_user }}"
@@ -27,7 +29,9 @@
   roles:
     - name: yak.core.artifacts
       vars:
-        artifact_file: rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+        artifact_files:
+          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+          - rdbms/oracle/dmk/dmk-22-01-unix.zip
         destination_path: C:\Users\Ansible
         destination_owner: "{{ ansible_user }}"
         destination_group: ""

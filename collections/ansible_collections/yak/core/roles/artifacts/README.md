@@ -45,7 +45,7 @@ artifacts:
 - `artifact`: the name of the artifact (can be a relative path).
 - `destination_path`: the directory into which to copy the artifact.
 - `destination_owner`: the owner of the artifact at destination.
-- `destination_group`: the group of the artifact at destination.
+- `destination_group`: the group of the artifact at destination (for Linux only).
 
 ## Artifact (repository) structure
 
@@ -79,7 +79,7 @@ For instance to manage Oracle database software major and "minor" release:
   roles:
     - role: yak.core.artifacts
       vars:
-        artifact_file: rdbms/oracle/gold_images/19c/orainstall.zip
+        artifact_files: rdbms/oracle/gold_images/19c/orainstall.zip
         destination_path: /tmp
         destination_owner: oracle
         destination_group: oinstall

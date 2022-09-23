@@ -4,10 +4,9 @@
   become: yes
   become_user: "{{ ansible_user }}"
   become_method: runas
-  community.windows.win_psmodule:
-    name: AWS.Tools.Installer
-    state: present
-    accept_license: Yes
+  ansible.windows.win_powershell:
+    script: >
+      Install-Module -Name AWS.Tools.Installer -Force
 
 - name: Download artifact
   become: yes
@@ -15,11 +14,12 @@
   become_method: runas
   ansible.windows.win_powershell:
     script: >
-      Copy-S3Object -BucketName "{{ artifacts.variables.bucket_name }}" -Key "{{ artifact_file }}" -LocalFile "{{ destination_path }}/{{ artifact_file|basename }}"
+      Copy-S3Object -BucketName "{{ artifacts.variables.bucket_name }}" -Key "{{ item }}" -LocalFile "{{ destination_path }}/{{ item|basename }}"
   environment:
       AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
       AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
       AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
   register: r_copy_s3object
   failed_when: r_copy_s3object.error|length > 0
+  loop: "{{ artifact_files }}"
 ...

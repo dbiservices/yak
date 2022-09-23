@@ -15,11 +15,12 @@
   become: true
   amazon.aws.aws_s3:
     bucket: "{{ artifacts.variables.bucket_name }}"
-    object: "{{ artifact_file }}"
-    dest: "{{ destination_path }}/{{ artifact_file|basename }}"
+    object: "{{ item }}"
+    dest: "{{ destination_path }}/{{ item|basename }}"
     mode: get
   environment:
     AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
     AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
     AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+  loop: "{{ artifact_files }}"
 ...

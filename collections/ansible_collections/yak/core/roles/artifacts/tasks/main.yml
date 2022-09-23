@@ -5,7 +5,7 @@
     that:
       - artifacts.provider is defined
       - artifacts.variables is defined
-      - artifact_file is defined
+      - artifact_files is defined
       - destination_path is defined
       - destination_owner is defined
       - destination_group is defined
