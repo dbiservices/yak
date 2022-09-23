@@ -1,28 +1,32 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-# tasks file for artifacts
+# TODO: remove if proven to be enough with per task environment setting
+# - name: Set AWS keys variables
+#   ansible.windows.win_environment:
+#     level: user
+#     variables:
+#       AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+#       AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+#       AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+
 - name: Add PowerShell module AWS Tool packages
   community.windows.win_psmodule:
     name: AWS.Tools.Installer
     state: present
 
-- name: Set AWS keys variables at once (but expires after a while)
-  ansible.windows.win_environment:
-    level: user
-    variables:
-      AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
-      AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
-      AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
-
-- name: Validate S3 bucket connection (Validate credentials)
+- name: Validate S3 bucket reachability
   ansible.windows.win_powershell:
     script: |
       Test-S3Bucket -BucketName "{{ pv_artifacts_repo.bucket_name }}"
+  environment:
+      AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+      AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+      AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
   register: reg_test_connection
   changed_when: false
   failed_when: reg_test_connection.error | length > 0
 
-- name: Create Temp directory "{{ pv_artifacts_repo.path }}"
+- name: Create Temp directory {{ pv_artifacts_repo.path }}
   ansible.windows.win_file:
     path: "{{ pv_artifacts_repo.path }}"
     state: directory

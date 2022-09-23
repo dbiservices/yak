@@ -1,45 +1,34 @@
 # Artifacts
 
-Role used to manage Artificats (software binaries); This role manage downloads of files depending on a variable strucuture.
+Copy any files from an artifact provider (AWS S3, Azure Storage Blob, OCI object storage, etc)
+into an instance at the specified location.
 
-# Playbook Variables
-
-* Artifacts managed through control node:
-
-```yaml
-  vars:
-    - pv_artifacts_repo:
-        provider: ansible_control_node
-        # remote_src = false when Artifacts available on control-node
-        remote_src: false
-        path: "{{ gv_appliance_home }}
-```
-
-* Artifacts managed through AWS s3 bucket:
-
-```yaml
-  vars:
-    - pv_artifacts_repo:
-        provider: aws_s3
-        # AWS S3 blucket name
-        bucket_name: "yak-artifacts"
-        # s3 prefixes are similar to folders (organize data)
-        prefix: "rdbms/oracle"
-        remote_src: true
-        # managed node properties for copied files on managed node
-        path: "/u01/app/oracle/artifacts"
-        owner: "oracle"
-        group: "oinstall"
-```
+The role copies artifacts from the artifact provider to the destination instance (no intermediaries).
 
 ## Prerequisites
 
-The O.S owner & Group of the folder (pv_artifacts_repo.path) on the managed nodes are prerequisites unless Artifacts are managed on Ansible Control Node.
+- The artifact structures and files must exist.
+- You must have correct credentials and permissions to access artifacts.
+- Per provider requisites:
+  - `aws_s3`: a bucket named 'yak' and the secret key in environment variables.
+  - `azure_storage_blob`: a storage user and a container both named 'yak' and the secret key in environment variables.
+  - `oci_object_storage`: a bucket named 'yak' and the secret key in environment variables.
+
+# Variables
+
+- `artifact_provider`: the provider of your artifacts:
+  - `aws_s3`
+  - `azure_storage_blob`
+  - `oci_object_storage`
+- `artifact`: the name of the artifact (can be a relative path).
+- `destination_path`: the directory into which to copy the artifact.
+- `destination_owner`: the owner of the artifact at destination.
+- `destination_group`: the group of the artifact at destination.
+
 
 ## Artifact (repository) structure
 
-The Artificat "repository" structure is not fixed at all. Actually, the folder layout supports the concept of flat file versioning for distinct componnents.
-
+The Artificat "repository" structure is not fixed at all.
 For instance to manage Oracle database software major and "minor" release:
 
 ```
@@ -65,42 +54,13 @@ For instance to manage Oracle database software major and "minor" release:
 
 ## Example
 
-### Playbook
-
 ```yaml
-- name: Download some artificats
-  hosts: dev
-  vars:
-    - pv_artifacts_repo:
-        provider: aws_s3
-        # AWS S3 blucket name
-        bucket_name: "yak-artifacts"
-        # s3 prefixes are similar to folders (organize data)
-        prefix: "rdbms/oracle"
-        remote_src: true
-        # managed node properties for copied files
-        path: "/u01/app/oracle/artifacts"
-        owner: "oracle"
-        group: "oinstall"
-
-    # variable used in role(s): ora_packages
-    - pv_artifacts_list:
-        - "rdbms/oracle/file1.zip"
-        - "rdbms/oracle/file2.zip"
-        - "rdbms/oracle/file3.zip"
-  environment:
-    # variables used in role(s): yak.core.artifacts
-    # only required for artifacts if pv_artifact_repo.provider = aws_s3
-    - AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
-    - AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
-    - AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
   roles:
-    - artifacts
-```
-
-### Command line
-
-```yaml
-ansible-playbook roles/ora_rdbms_base/tests/test.yml
-ansible-playbook roles/artifacts/tests/download_from_aws-s3_to_ansible-control-node.yml
+    - role: artifacts
+      vars:
+        artifact_provider: aws_s3
+        artifact_file: rdbms/oracle/gold_images/19c/orainstall.zip
+        destination_path: /u01/app/install
+        destination_owner: oracle
+        destination_group: oinstall
 ```

@@ -5,7 +5,7 @@
   ansible.builtin.shell:
     cmd: |
      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-     unzip -o awscliv2.zip 
+     unzip -o awscliv2.zip
      ./aws/install --update
     chdir: "/tmp"
     creates: "/usr/local/bin/aws"
@@ -37,7 +37,7 @@
     owner: "{{ pv_artifacts_repo.owner }}"
     group: "{{ pv_artifacts_repo.group }}"
   loop: "{{ reg_bucket_items.s3_keys }}"
-  when: 
+  when:
     - (item | regex_replace( ( item | basename ),'')) is regex('/$')
     - item in pv_artifacts_list
   loop_control:

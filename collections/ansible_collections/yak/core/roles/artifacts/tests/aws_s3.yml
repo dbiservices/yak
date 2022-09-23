@@ -1,0 +1,23 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Test aws_s3 linux
+  hosts: aws_dbi_test/srv-linux-test-01
+  roles:
+    - name: artifacts
+      vars:
+        artifact_provider: aws_s3
+        artifact_file: rdbms/oracle/gold_images/19c/orainstall.zip
+        destination_path: /u01/app/install
+        destination_owner: oracle
+        destination_group: oinstall
+
+- name: Test aws_s3 windows
+  hosts: aws_dbi_test/srv-win-test-01
+  roles:
+    - name: artifacts
+      vars:
+        artifact_provider: aws_s3
+        artifact_file: rdbms/oracle/gold_images/19c/orainstall.zip
+        destination_path: /u01/app/install
+        destination_owner: oracle
+        destination_group: oinstall
