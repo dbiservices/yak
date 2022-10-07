@@ -11,17 +11,6 @@
   ansible.builtin.pip:
     name: boto3
 
-- name: Creates directory layout
-  become: true
-  ansible.builtin.file:
-    path: "{{ destination_path }}/{{ item|dirname }}"
-    state: directory
-    owner: "{{ destination_owner }}"
-    group: "{{ destination_group }}"
-    mode: 0755
-    recurse: yes
-  loop: "{{ artifact_files }}"
-
 - name: Download artifact
   become: true
   amazon.aws.aws_s3:
