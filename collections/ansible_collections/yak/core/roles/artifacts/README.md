@@ -11,7 +11,7 @@ The role copies artifacts from the artifact provider to the destination instance
 - You must have correct credentials and permissions to access artifacts.
 - Per artifact provider requisites:
   - `aws_s3`: a bucket named 'yak' and the secret key in environment variables.
-  - `azure_storage_blob`: a storage user and a container both named 'yak' and the secret key in environment variables.
+  - `azure_storage_blob`: a Blob SAS token in the environement variable `AZURE_AZCOPY_BLOB_SAS_TOKEN` with at least read permissions (can be generated in the GUI).
   - `oci_object_storage`: a bucket named 'yak' and the secret key in environment variables.
 
 ## Variables
@@ -31,13 +31,23 @@ The role copies artifacts from the artifact provider to the destination instance
   - `oci_object_storage`:
     - `bucket_name`
 
-#### Example
+#### Example aws_s3
 
 ```yaml
 artifacts:
   provider: aws_s3
   variables:
     bucket_name: yak-artifacts
+```
+
+#### Example azure_storageblob
+
+```yml
+    artifacts:
+      provider: azure_storageblob
+      variables:
+        storage_account_name: yakartifacts
+        container: yakartifacts
 ```
 
 ### From components
