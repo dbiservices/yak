@@ -8,7 +8,7 @@
   register: r_get_url_azcopy
 
 - debug: var=r_get_url_azcopy.dest
-- debug: var=r_get_url_azcopy.dest[:-7]
+  when: debug|bool
 
 - name: Unarchive azcopy
   ansible.builtin.unarchive:

@@ -1,0 +1,31 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Download azcopy
+  ansible.builtin.win_get_url:
+    url: https://aka.ms/downloadazcopy-v10-windows
+    dest: C:\Users\Ansible\azcopy.zip
+  register: r_get_url_azcopy
+
+- debug: var=r_get_url_azcopy
+  when: debug|bool
+
+- name: Unzip azcopy
+  ansible.builtin.win_unzip:
+    src: C:\Users\Ansible\azcopy.zip
+    dest: C:\Users\Ansible
+    remote_src: yes
+
+- name: Install azcopy
+  ansible.builtin.win_copy:
+    src: C:\Users\Ansible\azcopy_windows_amd64_10.16.1\azcopy.exe
+    dest: C:\Users\Ansible\azcopy.exe
+    remote_src: yes
+
+- name: Copy blob
+  no_log: yes
+  ansible.builtin.win_command: >
+    C:\Users\Ansible\azcopy.exe cp
+    "https://{{ artifacts.variables.storage_account_name }}.blob.core.windows.net/{{ artifacts.variables.container }}/{{ item }}?{{ lookup('env','AZURE_AZCOPY_BLOB_SAS_TOKEN') }}"
+    "{{ destination_path }}/{{ item }}"
+  loop: "{{ artifact_files }}"
+...
