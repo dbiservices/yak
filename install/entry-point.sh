@@ -89,7 +89,6 @@ if ! id yak > /dev/null 2>&1; then
        echo  -e "${WHITE}$MSG${NORM} "
     }
 
-    clear
     echo
     echo "INFO: type 'yakhelp' to display the help of YAK"
     echo
