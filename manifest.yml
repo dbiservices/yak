@@ -16,3 +16,6 @@ components:
     version: master
   - src: git@gitlab.com:dbiservices/yak/yak_components/weblogic_domain.git
     version: master  
+  - src: git@gitlab.com:dbiservices/yak/yak_components/kubernetes_cluster.git
+    version: master
+
