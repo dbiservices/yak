@@ -16,8 +16,6 @@
 
 - include_tasks: create_vnic_details.yml
 
-- debug: var=winrm_script
-
 - name: Create instance
   delegate_to: localhost
   oracle.oci.oci_compute_instance:
