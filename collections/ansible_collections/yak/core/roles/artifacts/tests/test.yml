@@ -18,7 +18,7 @@
         destination_owner: "{{ ansible_user }}"
         destination_group: "{{ ansible_user }}"
 
-- name: Test aws_s3 windows
+- name: Test aws_s3 Windows
   tags: aws_s3_windows
   hosts: aws_dbi_test/srv-win-test-01
   vars:
@@ -55,12 +55,50 @@
         destination_owner: "{{ ansible_user }}"
         destination_group: "{{ ansible_user }}"
 
-- name: Test azure storageblob windows
+- name: Test azure storageblob Windows
   tags: azure_storageblob_windows
   hosts: azure_yak_test/srv-win-test-01
   vars:
     artifacts:
       provider: azure_storageblob
+      variables:
+        storage_account_name: yakartifacts
+        container: yakartifacts
+  roles:
+    - name: yak.core.artifacts
+      vars:
+        artifact_files:
+          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+          - rdbms/oracle/dmk/dmk-22-01-unix.zip
+        destination_path: C:\Users\Ansible
+        destination_owner: "{{ ansible_user }}"
+        destination_group: ""
+
+- name: Test OCI Object Storage linux
+  tags: oci_object_storage_linux
+  hosts: oci_dbi_test/srv-linux-test-01
+  vars:
+    artifacts:
+      provider: oci_object_storage
+      variables:
+        namespace_name: zrbhy7g7atj1
+        bucket_name: dbi-services-yak-artifacts
+  roles:
+    - name: yak.core.artifacts
+      vars:
+        artifact_files:
+          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
+          - rdbms/oracle/dmk/dmk-22-01-unix.zip
+        destination_path: /tmp
+        destination_owner: "{{ ansible_user }}"
+        destination_group: "{{ ansible_user }}"
+
+- name: Test OCI Object Storage Windows
+  tags: oci_storageblob_windows
+  hosts: oci_yak_test/srv-win-test-01
+  vars:
+    artifacts:
+      provider: oci_object_storage
       variables:
         storage_account_name: yakartifacts
         container: yakartifacts
