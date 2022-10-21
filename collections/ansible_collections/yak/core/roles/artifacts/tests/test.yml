@@ -100,8 +100,8 @@
     artifacts:
       provider: oci_object_storage
       variables:
-        storage_account_name: yakartifacts
-        container: yakartifacts
+        namespace_name: zrbhy7g7atj1
+        bucket_name: dbi-services-yak-artifacts
   roles:
     - name: yak.core.artifacts
       vars:
