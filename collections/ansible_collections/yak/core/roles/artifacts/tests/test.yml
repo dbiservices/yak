@@ -95,7 +95,7 @@
 
 - name: Test OCI Object Storage Windows
   tags: oci_storageblob_windows
-  hosts: oci_yak_test/srv-win-test-01
+  hosts: oci_dbi_test/srv-win-test-01
   vars:
     artifacts:
       provider: oci_object_storage

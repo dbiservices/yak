@@ -5,17 +5,41 @@
   become_user: "{{ ansible_user }}"
   become_method: runas
   ansible.windows.win_powershell:
-    script: >
-      Set-ExecutionPolicy RemoteSigned
-      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-      Invoke-WebRequest https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.ps1 -OutFile install.ps1
-      ./install.ps1 -AcceptAllDefaults
+    script: |
+      ### https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm#InstallingCLI__windows
+      ### Full path of the file
+      $file = 'C:\Windows\install.ps1'
+      ### If the file does not exist, install OCI client.
+      if (-not(Test-Path -Path $file -PathType Leaf)) {
+        Set-ExecutionPolicy RemoteSigned
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.ps1 -OutFile install.ps1
+        ./install.ps1 -AcceptAllDefaults
+      }
+
+- name: Create a directory if it does not exist
+  become: true
+  become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.builtin.win_file:
+    path: C:\Users\Ansible\.oci
+    state: directory
+
+- name: Ensure configuration file exists
+  become: true
+  become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.builtin.win_file:
+    path: C:\Users\Ansible\.oci\config
+    state: touch
 
 - name: Copy Key File
   become: true
+  become_user: "{{ ansible_user }}"
+  become_method: runas
   ansible.builtin.copy:
     src: "{{ lookup('env','OCI_USER_KEY_FILE') }}"
-    dest: "C:\Users\{{ ansible_user }}\oci_key"
+    dest: C:\Users\Ansible\.oci\oci_key
 
 - name: Download artifact
   become: yes
@@ -23,15 +47,26 @@
   become_method: runas
   ansible.windows.win_powershell:
     script: >
-      oci os object get --namespace "{{ artifacts.variables.namespace_name }}" --bucket-name "{{ artifacts.variables.bucket_name }}" --name "{{ item }}" --file "{{ destination_path }}/{{ item }}"
+      oci os object get --namespace "{{ artifacts.variables.namespace_name }}" `
+                        --bucket-name "{{ artifacts.variables.bucket_name }}" `
+                        --name "{{ item }}" `
+                        --file "{{ destination_path }}\\{{ item|replace('/','\\') }}"
   environment:
-      OCI_ANSIBLE_AUTH_TYPE  : "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE') }}"
-      OCI_USER_ID            : "{{ lookup('env','OCI_USER_ID') }}"
-      OCI_USER_FINGERPRINT   : "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
-      OCI_TENANCY            : "{{ lookup('env','OCI_TENANCY') }}"
-      OCI_REGION             : "{{ lookup('env','OCI_REGION') }}"
-      OCI_USER_KEY_FILE      : "C:\Users\{{ ansible_user }}\oci_key"
+      OCI_CLI_AUTH            : "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE') }}"
+      OCI_CLI_USER            : "{{ lookup('env','OCI_USER_ID') }}"
+      OCI_CLI_FINGERPRINT     : "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
+      OCI_CLI_TENANCY         : "{{ lookup('env','OCI_TENANCY') }}"
+      OCI_CLI_REGION          : "{{ lookup('env','OCI_REGION') }}"
+      OCI_CLI_KEY_FILE        : C:\Users\Ansible\.oci\oci_key
   register: r_copy_s3object
   failed_when: r_copy_s3object.error|length > 0
   loop: "{{ artifact_files }}"
+
+- name: Remove Key File
+  become: true
+  become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.builtin.win_file:
+    path: C:\Users\Ansible\.oci\oci_key
+    state: absent
 ...

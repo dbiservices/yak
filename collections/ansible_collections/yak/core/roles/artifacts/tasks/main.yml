@@ -12,7 +12,7 @@
     fail_msg: "Variables not properly set. Please, check instructions in the README.md file of the role."
     success_msg: "Variables variable properly set."
 
-- name: Include post tasks for OS {{ os_type }}
+- name: Include pre tasks for OS {{ os_type }}
   include_tasks: "{{ os_type }}_pre.yml"
 
 - name: Include tasks for OS {{ os_type }} with artifact provider {{ artifacts.provider }}
