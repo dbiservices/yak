@@ -5,31 +5,38 @@ into an instance at the specified location.
 
 The role copies artifacts from the artifact provider to the destination instance (no intermediaries).
 
+The role will preserve the target server's artifact path (directory structure). For instance, if you want `rdbms/oracle/dmk/dmk_dbbackup-21-02.zip` in `/tmp`, it will be copied like this: `/tmp/rdbms/oracle/dmk/dmk_dbbackup-21-02.zip`. Same behavior for all providers on Linux and Windows.
+
 ## Prerequisites
 
-- The artifact structures and files must exist.
+- The artifact structures and files must exist in the artifact provider.
 - You must have correct credentials and permissions to access artifacts.
 - Per artifact provider requisites:
   - `aws_s3`: a bucket named 'yak' and the secret key in environment variables.
   - `azure_storage_blob`: a Blob SAS token in the environement variable `AZURE_AZCOPY_BLOB_SAS_TOKEN` with at least read permissions (can be generated in the GUI).
   - `oci_object_storage`: a bucket named 'yak' and the secret key in environment variables.
-
-## Variables
+  - `yak_local_storage`: A local directory in the container with the artifacts. This would most likely be a mount point from the host. The default is `/yak_local_storage,` but you can change the default by changing the environment variable `YAK_LOCAL_STORAGE_PATH` (example: `export YAK_LOCAL_STORAGE_PATH=/yak_local_storage`).
 
 ### From configuration
 
-- `artifacts.provider`: the supported provider of your artifacts:
-  - `aws_s3`
-  - `azure_storage_blob`
-  - `oci_object_storage`
-- `artifacts.variables`: dictionary of variables specific to an artifact provider.
-  - `aws_s3`:
-    - `bucket_name`
-  - `azure_storage_blob`:
-    - `storage_account_name`
-    - `container`
-  - `oci_object_storage`:
-    - `bucket_name`
+The configuration dictionary variable can be stored in the global `variables.yml` file, in an infrastructure `variables.yml` file, or for each server in the server's `variables.yml` file.
+
+- `artifacts`
+  - `provider`: the supported provider of your artifacts:
+    - `aws_s3`
+    - `azure_storage_blob`
+    - `oci_object_storage`
+    - `yak_local_storage`
+  - `variables`: dictionary of variables specific to an artifact provider.
+    - `aws_s3`:
+      - `bucket_name`
+    - `azure_storage_blob`:
+      - `storage_account_name`
+      - `container`
+    - `oci_object_storage`:
+      - `namespace_name`
+      - `bucket_name`
+    - `yak_local_storage`: none
 
 #### Example aws_s3
 
@@ -43,13 +50,31 @@ artifacts:
 #### Example azure_storageblob
 
 ```yml
-    artifacts:
-      provider: azure_storageblob
-      variables:
-        storage_account_name: yakartifacts
-        container: yakartifacts
+artifacts:
+  provider: azure_storageblob
+  variables:
+    storage_account_name: yakartifacts
+    container: yakartifacts
 ```
 
+#### Example azure_storageblob
+
+```yml
+artifacts:
+  provider: oci_object_storage
+  variables:
+    namespace_name: zrbhy7g7atj1
+    bucket_name: dbi-services-yak-artifacts
+```
+
+#### Example yak_local_storage
+
+```yml
+artifacts:
+  provider: azure_storageblob
+  variables:
+    provider: yak_local_storage
+```
 ### From components
 
 - `artifact_files`: a list of the artifact name relative to the bucket name (without the bucket name).
@@ -83,19 +108,9 @@ For instance to manage Oracle database software major and "minor" release:
         └── tools
 ```
 
-## Example
+## Examples
 
-```yaml
-  roles:
-    - role: yak.core.artifacts
-      vars:
-        artifact_files:
-          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
-          - rdbms/oracle/dmk/dmk-22-01-unix.zip
-        destination_path: /tmp
-        destination_owner: oracle
-        destination_group: oinstall
-```
+You have one example for each provider on Linux and Windows in the test file: `collections/ansible_collections/yak/core/roles/artifacts/tests/test.yml`.
 
 ## Tests
 

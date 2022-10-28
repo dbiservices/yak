@@ -1,0 +1,11 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Download artifact
+  become: yes
+  become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.windows.win_copy:
+    src: "{{ lookup('ansible.builtin.env','YAK_LOCAL_STORAGE_PATH', default='/yak_local_storage') }}/{{ item }}"
+    dest: "{{ destination_path }}/{{ item }}"
+  loop: "{{ artifact_files }}"
+...

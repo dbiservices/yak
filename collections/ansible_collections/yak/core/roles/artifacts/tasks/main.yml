@@ -4,13 +4,20 @@
   ansible.builtin.assert:
     that:
       - artifacts.provider is defined
-      - artifacts.variables is defined
       - artifact_files is defined
       - destination_path is defined
       - destination_owner is defined
       - destination_group is defined
     fail_msg: "Variables not properly set. Please, check instructions in the README.md file of the role."
     success_msg: "Variables variable properly set."
+
+- name: Some artifacts providers need variables
+  ansible.builtin.assert:
+    that:
+      - artifacts.variables is defined
+    fail_msg: "Variables not properly set. Please, check instructions in the README.md file of the role."
+    success_msg: "Variables variable properly set."
+  when: artifacts.provider != 'yak_local_storage'
 
 - name: Include pre tasks for OS {{ os_type }}
   include_tasks: "{{ os_type }}_pre.yml"
