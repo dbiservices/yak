@@ -74,9 +74,7 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    # manipulate or modify the state as needed (this is going to be the
-    # part where your module will do what it needs to do)
-    result['message'] = 'goodbye'
+    variables_file_path = ''
 
     for root, dirs, filenames in os.walk('/workspace/yak/configuration/infrastructure'):
         for dir_name in dirs:
@@ -87,7 +85,10 @@ def run_module():
     try:
         variables_file = open(variables_file_path, 'r')
     except Exception as e:
-        raise AnsibleError("Issue while reading variable file '{}': [{}]\n".format(variables_file_path,e))
+        raise AnsibleError(
+            "Issue while reading variable file '{}' of target '{}': [{}]\n"
+            .format(variables_file_path, module.params['target'], e)
+        )
 
     yaml = ruamel.yaml.YAML()
     yaml.indent(mapping=4, sequence=4, offset=2)

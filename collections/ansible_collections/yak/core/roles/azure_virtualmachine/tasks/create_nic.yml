@@ -16,8 +16,9 @@
   when: public_ip.mode == 'manual'
 
 - debug: var=r_azure_rm_publicipaddress_info
-  when: debug|bool
-  when: public_ip.mode == 'manual'
+  when:
+    - debug|bool
+    - public_ip.mode == 'manual'
 
 - set_fact:
     azure_ip_configurations:
