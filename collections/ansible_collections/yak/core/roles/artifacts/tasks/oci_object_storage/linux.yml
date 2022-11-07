@@ -1,0 +1,57 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Install python3-pip
+  become: true
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+
+- name: Install oci
+  become: true
+  ansible.builtin.pip:
+    name: oci
+
+- name: Create a directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: "~/.oci"
+    state: directory
+    mode: '0755'
+
+- name: Ensure configuration file exists
+  ansible.builtin.file:
+    path: "~/.oci/config"
+    state: touch
+    mode: '0600'
+  become: true
+
+- name: Copy Key File
+  become: true
+  ansible.builtin.copy:
+    src: "{{ lookup('env','OCI_USER_KEY_FILE') }}"
+    dest: "~/.oci/key"
+    mode: '0600'
+
+- name: Download artifact
+  become: true
+  oracle.oci.oci_object_storage_object:
+    namespace_name: "{{ artifacts.variables.namespace_name }}"
+    bucket_name: "{{ artifacts.variables.bucket_name }}"
+    object_name: "{{ item }}"
+    force: true
+    dest: "{{ destination_path }}/{{ item }}"
+    ## Authentication data
+    auth_type: "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE') }}"
+    api_user: "{{ lookup('env','OCI_USER_ID') }}"
+    api_user_fingerprint: "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
+    tenancy: "{{ lookup('env','OCI_TENANCY') }}"
+    region: "{{ lookup('env','OCI_REGION') }}"
+    api_user_key_file: "~/.oci/key"
+  loop: "{{ artifact_files }}"
+
+- name: Remove Key File
+  become: true
+  ansible.builtin.file:
+    path: "~/.oci/key"
+    state: absent
+...

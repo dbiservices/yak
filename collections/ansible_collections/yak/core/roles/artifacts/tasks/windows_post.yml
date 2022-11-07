@@ -1,0 +1,12 @@
+---
+- name: Change artifacts permissions
+  ansible.windows.win_acl:
+    path: "{{ destination_path }}/{{ item.split('/')[0] }}"
+    user: "{{ destination_owner }}"
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'InheritOnly'
+  loop: "{{ artifact_files }}"
+...

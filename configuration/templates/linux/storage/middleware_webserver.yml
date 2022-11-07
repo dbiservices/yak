@@ -1,0 +1,15 @@
+volumes:
+  aws:
+    - { disk_type: gp2, device_name: /dev/xvdf, size_GB: 50 }
+    - { disk_type: gp2, device_name: /dev/xvdh, size_GB: 50 }
+  azure:
+    - { disk_name: disk1, size_GB: 50 }
+    - { disk_name: disk2, size_GB: 50 }
+  oci:
+    - { volume_name: disk1, size_GB: 50 }
+    - { volume_name: disk2, size_GB: 50 }
+
+filesystems:
+  - { size_GB: 49, filesystem_type: "xfs", mount_point: "/app" }
+  - { size_GB: 49, filesystem_type: "xfs", mount_point: "/data" }
+

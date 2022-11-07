@@ -117,7 +117,7 @@ if ! id yak > /dev/null 2>&1; then
        echo
        echo " This demo will deploy and configure a Debian 11.4 server "
        echo "       Including additional storage on AWS Cloud"
-       echo 
+       echo
        echo "==========================================================="
        echo
    fi
