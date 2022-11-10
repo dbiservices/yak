@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services 
+# Copyright: (c) 2022, dbi services
 # This file is part of YaK core
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -184,6 +184,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Start populating
         self._populate_infrastructure_global_variables(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
         self._populate_infrastructure_global_secrets(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
+        self.inventory.add_group('infrastructures')
         self._populate_infrastructure(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
 
     def _populate_infrastructure_global_variables(self, path):
@@ -278,6 +279,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self._log_debug('Subinfra detected {}'.format(infrastructure_file[:-1]))
                 self._populate_infrastructure(path=infrastructure_file[:-1])
                 continue
+            group_name = os.path.basename(infrastructure_file[:-1])
             group = os.path.basename(infrastructure_file[:-1])
             group = self.inventory.add_group(group)
             self.inventory.add_child('all', group)
@@ -289,6 +291,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._set_auth_secrets(self.inventory.groups[group],"{}/{}/secrets".format(path,group))
             self.current_provider = \
                 self.inventory.groups[group].vars["provider"]
+
+            self.inventory.add_host('infrastructure/{}'.format(group_name), group='infrastructures')
+            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
+            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
 
             self._add_hosts(path, group)
 
