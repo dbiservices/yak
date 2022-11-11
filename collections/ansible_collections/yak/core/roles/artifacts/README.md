@@ -13,7 +13,7 @@ The role will preserve the target server's artifact path (directory structure). 
 - You must have correct credentials and permissions to access artifacts.
 - Per artifact provider requisites:
   - `aws_s3`: a bucket named 'yak' and the AWS secret keys in environment variables.
-  - `azure_storage_blob`: a Blob SAS token in the environement variable `AZURE_AZCOPY_BLOB_SAS_TOKEN` with at least read permissions (can be generated in the GUI, check the Azure documentation for more information about SAS token).
+  - `azure_storage_blob`: a Blob SAS token in the environement variable `AZURE_AZCOPY_BLOB_SAS_TOKEN` with at least read permissions (can be generated in the GUI, check the [Azure documentation](https://learn.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers) for more information about SAS token and how to get one from the Azure portal).
   - `oci_object_storage`: a bucket named 'yak' and the OCI secret keys in environment variables.
   - `yak_local_storage`: A local directory in the container with the artifacts. This would most likely be a mount point from the host. The default is `/yak_local_storage,` but you can change the default by changing the environment variable `YAK_LOCAL_STORAGE_PATH` (example: `export YAK_LOCAL_STORAGE_PATH=/yak_local_storage`).
 
