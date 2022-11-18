@@ -1,0 +1,56 @@
+---
+- name: Test module yak_inventory_update
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Update private_ip variable
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: azure_yak_test/srv-win-test-01
+      private_ip: 1.1.1.1
+
+  - name: Update public_ip variable
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: azure_yak_test/srv-win-test-01
+      public_ip: 2.2.2.2
+
+  - name: Update IPs variables
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: azure_yak_test/srv-win-test-01
+      private_ip: 3.3.3.3
+      public_ip: 4.4.4.4
+
+  - name: Update infrastructure variables
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: azure_yak_test
+      infrastructure:
+        test_var_text: text variable
+        test_var_list:
+          - list item 1
+          - list item 2
+          - list item 3
+        test_var_dict:
+          dictkey_text:
+            subkey1: text variable
+            subkey2: text variable
+          dictkey_list:
+            subkey1:
+              - list item 1
+              - list item 2
+            subkey2:
+              - list item 1
+              - list item 2
+
+  - name: Test failure when using parameters for different target type
+    ignore_errors: yes
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      target: azure_yak_test/srv-win-test-01
+      private_ip: 3.3.3.3
+      public_ip: 4.4.4.4
+      infrastructure:
+        test_var_text: text variable

@@ -28,13 +28,17 @@ options:
         required: true
         type: str
     private_ip:
-        description: The private IPof the host defined in target.
+        description: The private IP of the host defined in target.
         required: false
         type: str
     public_ip:
-        description: The public IPof the host defined in target.
+        description: The public IP of the host defined in target.
         required: false
         type: str
+    infrastructure:
+        description: Variable to add/update to the infrastructure variables.
+        required: false
+        type: dict
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -45,7 +49,8 @@ def run_module():
     module_args = dict(
         target=dict(type='str', required=True),
         private_ip=dict(type='str', required=False),
-        public_ip=dict(type='str', required=False)
+        public_ip=dict(type='str', required=False),
+        infrastructure=dict(type='dict', required=False)
     )
 
     # seed the result dict in the object
@@ -74,6 +79,12 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
+    # Check params consistency
+    if (module.params['private_ip'] is not None or module.params['public_ip'] is not None ) and \
+        module.params['infrastructure'] is not None:
+        raise AnsibleError("You can't update IP and infrastructure simultaneously because there are different target types.")
+
+    # Find the target variable file
     variables_file_path = ''
 
     for root, dirs, filenames in os.walk('/workspace/yak/configuration/infrastructure'):
@@ -98,7 +109,8 @@ def run_module():
     except Exception as e:
         raise AnsibleError("Issue loading yaml file '{}': [{}]\n".format(variables_file_path,e))
 
-    if module.params['private_ip'] is not None:
+    # Update variable file
+    if module.params['private_ip'] is not None and len(module.params['private_ip']) > 2:
         if 'private_ip' in variables_yml:
             variables_yml["private_ip"]["ip"] = module.params['private_ip']
         else:
@@ -110,6 +122,10 @@ def run_module():
         else:
             variables_yml["public_ip"] = {"mode": "auto", "ip": module.params['public_ip']}
         result['changed'] = True
+    if module.params['infrastructure'] is not None:
+        for variable in module.params['infrastructure']:
+            variables_yml[variable] = module.params['infrastructure'][variable]
+            result['changed'] = True
 
     try:
         variables_file = open(variables_file_path, 'w')
