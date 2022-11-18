@@ -101,8 +101,8 @@
     returned:
       instance: "{{ r_aws.instances[0] }}"
       administrative_ip: "{{ administrative_ip }}"
-      private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
-      public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+      private_ip_address: "{{ r_aws.instances[0].private_ip_address|default(None) }}"
+      public_ip_address: "{{ r_aws.instances[0].public_ip_address|default(None) }}"
       os_admin_username: "{{ os_admin_username }}"
       os_admin_password: "{{ os_admin_password }}"
 
