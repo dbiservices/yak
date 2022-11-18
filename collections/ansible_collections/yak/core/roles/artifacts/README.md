@@ -71,9 +71,7 @@ artifacts:
 
 ```yml
 artifacts:
-  provider: azure_storageblob
-  variables:
-    provider: yak_local_storage
+  provider: yak_local_storage
 ```
 ### From components
 
