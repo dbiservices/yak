@@ -12,6 +12,9 @@
 - name: Get disk facts
   win_disk_facts:
 
+- debug: var=ansible_disks
+  when: debug | bool
+
 - set_fact:
     windows_disks: []
 
