@@ -38,7 +38,7 @@ The configuration dictionary variable can be stored in the global `variables.yml
       - `bucket_name`
     - `yak_local_storage`: none
 
-#### Example aws_s3
+#### Example AWS S3
 
 ```yaml
 artifacts:
@@ -47,7 +47,7 @@ artifacts:
     bucket_name: yak-artifacts
 ```
 
-#### Example azure_storageblob
+#### Example Azure Storageblob
 
 ```yml
 artifacts:
@@ -57,7 +57,7 @@ artifacts:
     container: yakartifacts
 ```
 
-#### Example azure_storageblob
+#### Example OCI Object Storage 
 
 ```yml
 artifacts:
@@ -67,7 +67,7 @@ artifacts:
     bucket_name: dbi-services-yak-artifacts
 ```
 
-#### Example yak_local_storage
+#### Example YaK local Storage 
 
 ```yml
 artifacts:
