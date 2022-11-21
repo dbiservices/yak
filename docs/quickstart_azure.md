@@ -196,7 +196,12 @@ export AZURE_SUBSCRIPTION_ID=******
 export AZURE_CLIENT_ID=*******
 export AZURE_SECRET=********
 export AZURE_TENANT=**********
+```
 
+or you can also use your SSO authentification if configured 
+
+```bash
+az login --tenant <tenant-id-number>
 ```
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
@@ -217,10 +222,16 @@ Ping with the Ansible module to ensure the connectivity works:
 ansible -m ping azure_testing/srv01
 ```
 
-Connect via SSH to the server:
+Connect via SSH to the Linux server:
 
 ```
 ssh azure_testing/srv01
+```
+
+Connect via RDP to the windows server with the provider information on the output of the deployment:
+
+```
+rdp <public_ip/private_ip available in the inventory > Ansible/<generated-password>
 ```
 
 ### 7. Declare your first component
