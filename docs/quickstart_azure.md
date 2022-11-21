@@ -187,7 +187,7 @@ More options on [the Ansible documentation](https://docs.ansible.com/ansible/lat
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/secret_management.md) about key management.
 
-### 4. Copy your AZURE Cloud authentication
+### 4. Set your AZURE Cloud authentication
 
 Use your AZURE CLI programmatic access key variables:
 
