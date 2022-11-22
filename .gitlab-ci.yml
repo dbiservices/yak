@@ -19,17 +19,19 @@ build:
     - docker push "$CI_REGISTRY_IMAGE:${MAIN_TAG}"
   # Run this job on tag creation and when a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+_latest[0-9]*$/
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(latest|LATEST)[0-9]*$/
       variables:
         TAG: $CI_COMMIT_TAG
         MAIN_TAG: latest
-
-    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+_stable[0-9]*$/
+      exists:
+        - Dockerfile
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(stable|STABLE)[0-9]*$/
       variables:
         TAG: $CI_COMMIT_TAG
         MAIN_TAG: stable
-
-    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+_beta[0-9]*$/
+      exists:
+        - Dockerfile
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(beta|BETA)[0-9]*$/
       variables:
         TAG: $CI_COMMIT_TAG
         MAIN_TAG: beta
