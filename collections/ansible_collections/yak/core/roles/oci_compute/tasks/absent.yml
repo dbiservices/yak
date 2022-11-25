@@ -23,7 +23,7 @@
   failed_when: filtered_instance_id|length > 1
 
 - block:
-    - name: Get OCI instances facts
+    - name: Get compute volume attachment facts
       delegate_to: localhost
       oracle.oci.oci_compute_volume_attachment_facts:
         compartment_id: "{{ compartment_id }}"
