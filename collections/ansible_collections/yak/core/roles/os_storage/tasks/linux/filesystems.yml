@@ -22,6 +22,7 @@
     -o uuid
     | egrep  -v '^UUID'
   register: r_fs_uuid
+  changed_when: false
   with_items: "{{ filesystems }}"
 
 - debug: var=r_fs_uuid
