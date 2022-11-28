@@ -34,7 +34,8 @@ Start the container with the below command:
 docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak:stable bash
 ```
 
-Or Generate a script that you can reuse 
+Or Generate a script with an alias that you can reuse 
+
 ```bash
 cat << EOF > yak.sh
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak/inventory 
@@ -48,7 +49,7 @@ docker run -it --rm --name yak --pull always \
 EOF
 chmod +x $HOME/yak.sh
 alias yak=$HOME/yak.sh
-echo "alias yak=$HOME/yak.sh" > $HOME/.bash_profile
+echo "alias yak=$HOME/yak.sh" >> $HOME/.bash_profile
 ```
 
 If it worked well, you should be inside the container with the YaK Software configured.
