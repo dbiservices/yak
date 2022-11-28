@@ -38,7 +38,8 @@ Or Generate a script that you can reuse
 ```bash
 cat << EOF > yak.sh
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak/inventory 
-mkdir -p ${MY_LOCAL_CONFIGURATION_DIR} 
+mkdir -p ${MY_LOCAL_CONFIGURATION_DIR}
+
 docker run -it --rm --name yak --pull always \
            -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure \
            -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) \
