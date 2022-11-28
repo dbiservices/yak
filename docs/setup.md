@@ -38,6 +38,7 @@ Or Generate a script that you can reuse
 ```bash
 cat << EOF > yak.sh
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak/inventory 
+
 mkdir -p ${MY_LOCAL_CONFIGURATION_DIR}
 
 docker run -it --rm --name yak --pull always \
