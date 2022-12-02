@@ -226,31 +226,33 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._log_debug(
             "## _set_auth_secrets => testing: {} | {}"
             .format(target, base_directory))
-        if os.path.exists("{}/sshkey".format(base_directory)):
-            self._log_debug(
-                "## _set_auth_secrets => returns: {}/sshkey"
-                .format(base_directory))
-            target.vars["ansible_ssh_private_key_file"] = \
-                "{}/sshkey".format(base_directory)
-            os.chmod(target.vars["ansible_ssh_private_key_file"], self.secret_permissions)
-            target.vars["ansible_ssh_public_key_file"] = \
-                "{}/sshkey.pub".format(base_directory)
-            target.vars["yak_secrets_directory"] = base_directory
-            if 'os_type' in target.vars:
-                if target.vars["os_type"] == "windows":
-                    target.vars["ansible_user"] = self.windows_ansible_user
-                    target.vars["ansible_connection"] = "winrm"
-                    target.vars["ansible_winrm_transport"] = "certificate"
-                    target.vars["ansible_winrm_server_cert_validation"] = "ignore"
-                    if os.path.exists("{}/cert_key.pem".format(base_directory))  \
-                            and os.path.exists("{}/cert.pem".format(base_directory)):
-                        target.vars["ansible_winrm_cert_pem"] = \
-                            "{}/cert.pem".format(base_directory)
-                        os.chmod(target.vars["ansible_winrm_cert_pem"], self.secret_permissions)
-                        target.vars["ansible_winrm_cert_key_pem"] = \
-                            "{}/cert_key.pem".format(base_directory)
-                        os.chmod(target.vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
-                        target.vars["yak_secrets_directory"] = base_directory
+        if 'os_type' not in target.vars:
+            target.vars["os_type"] = "linux"
+        if target.vars["os_type"] == "linux":
+            if os.path.exists("{}/sshkey".format(base_directory)):
+                self._log_debug(
+                    "## _set_auth_secrets => returns: {}/sshkey"
+                    .format(base_directory))
+                target.vars["ansible_ssh_private_key_file"] = \
+                    "{}/sshkey".format(base_directory)
+                os.chmod(target.vars["ansible_ssh_private_key_file"], self.secret_permissions)
+                target.vars["ansible_ssh_public_key_file"] = \
+                    "{}/sshkey.pub".format(base_directory)
+                target.vars["yak_secrets_directory"] = base_directory
+        if target.vars["os_type"] == "windows":
+            target.vars["ansible_user"] = self.windows_ansible_user
+            target.vars["ansible_connection"] = "winrm"
+            target.vars["ansible_winrm_transport"] = "certificate"
+            target.vars["ansible_winrm_server_cert_validation"] = "ignore"
+            if os.path.exists("{}/cert_key.pem".format(base_directory))  \
+                    and os.path.exists("{}/cert.pem".format(base_directory)):
+                target.vars["ansible_winrm_cert_pem"] = \
+                    "{}/cert.pem".format(base_directory)
+                os.chmod(target.vars["ansible_winrm_cert_pem"], self.secret_permissions)
+                target.vars["ansible_winrm_cert_key_pem"] = \
+                    "{}/cert_key.pem".format(base_directory)
+                os.chmod(target.vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
+                target.vars["yak_secrets_directory"] = base_directory
 
     def check_and_sanitize_infrastructure_variables(self, config):
         config_sanitized = config
