@@ -199,6 +199,7 @@ export OCI_USER_FINGERPRINT=*****
 export OCI_TENANCY=*****
 export OCI_REGION=eu-zurich-1
 export OCI_USER_KEY_FILE=$HOME/.ssh/oracleidentitycloudservice.pem
+export OCI_ANSIBLE_AUTH_TYPE=api_key
 ```
 
 [Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
