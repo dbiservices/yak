@@ -35,6 +35,7 @@
     os_type: "{{ os_type | capitalize }}"
     managed_disk_type: "{{ managed_disk_type }}"
     custom_data: "{{ winrm_script }}"
+    tags: "{{ custom_tags }}"
   register: r_azure
 
 - debug: var=r_azure
