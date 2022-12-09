@@ -1,7 +1,5 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- include_tasks: post_config.yml
-
 - include_tasks: "wait_for_connection_{{ os_type }}.yml"
 
 - name: Return facts to playbook
@@ -12,5 +10,5 @@
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ azure_private_ip }}"
       public_ip_address: "{{ azure_public_ip|default('none') }}"
-      os_admin_username: "{{ os_admin_username }}"
-      os_admin_password: "{{ os_admin_password }}"
+      os_admin_username: "{{ os_admin_username|default('unchanged') }}"
+      os_admin_password: "{{ os_admin_password|default('unchanged') }}"
