@@ -4,3 +4,4 @@
 host_name: localhost
 time_zone: Europe/Zurich
 os_type: linux
+domain_name: local.local

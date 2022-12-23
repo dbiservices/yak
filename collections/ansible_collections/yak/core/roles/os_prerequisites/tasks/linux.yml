@@ -5,6 +5,14 @@
   hostname:
     name: "{{ host_name }}"
 
+- name: Update /etc/hosts with ansible_fqdn
+  become: yes
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ host_name }} {{ host_name }}.{{ domain_name }}"
+    state: present
+  with_items: "{{ groups.all }}"
+
 - name: Set timezone to {{ time_zone }}
   become: yes
   timezone:
