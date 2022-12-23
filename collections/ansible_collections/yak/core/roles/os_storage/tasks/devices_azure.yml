@@ -21,6 +21,7 @@
     managed_by: "{{ vm_name }}"
     os_type: "{{ os_type }}"
     storage_account_type: "{{ storage_account_type }}"
+    tags: "{{ custom_tags }}"
   register: r_azure_rm_manageddisk
   when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[*].name[]|[?contains(@, `'+vm_name+'_'+item.disk_name+'`) == `true`]')|length==0
   with_items: "{{ volumes }}"

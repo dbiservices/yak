@@ -1,17 +1,16 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Wait for the WinRM port to come online on private IP
-  delegate_to: localhost
-  wait_for:
-    port: 5986
-    host: '{{ r_ec2_instance_info.instances[0].private_ip_address }}'
-    timeout: 600
+- set_fact:
+    administrative_ip: '{{ r_ec2_instance_info.instances[0].private_ip_address }}'
   when: host_ip_access == 'private_ip'
 
-- name: Wait for the WinRM port to come online on public IP
-  delegate_to: localhost
-  wait_for:
-    port: 5986
-    host: '{{ r_ec2_instance_info.instances[0].public_ip_address }}'
-    timeout: 600
+- set_fact:
+    administrative_ip: '{{ r_ec2_instance_info.instances[0].public_ip_address }}'
   when: host_ip_access == 'public_ip'
+
+- name: Wait for the OS to be reachable by YaK
+  ansible.builtin.wait_for_connection:
+    delay: 60
+    timeout: 600
+  vars:
+    ansible_host: "{{ administrative_ip }}"

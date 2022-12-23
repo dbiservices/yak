@@ -24,6 +24,17 @@
 
     - include_tasks: "deploy/{{ provider }}.yml"
 
+- name: Update and refresh inventory
+  tags: server
+  strategy: linear # This play must be linear until migration to RDBMS
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - include_tasks: "deploy/update_inventory.yml"
+
     - name: Refresh inventory to ensure IPs are up to date
       ansible.builtin.meta: refresh_inventory
 

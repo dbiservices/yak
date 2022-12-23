@@ -15,7 +15,7 @@ docker pull registry.gitlab.com/yak4all/yak:stable
 ```
 
 FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
-This container contains all necessary softwares used by YaK Core <br>
+This container contains all necessary software used by YaK Core <br>
 
 [Here are more details](https://gitlab.com/yak4all/yakenv/-/blob/main/Dockerfile) about the used dockerfile
 
@@ -34,8 +34,27 @@ Start the container with the below command:
 docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak:stable bash
 ```
 
-If it worked well, you should be inside the container with the YaK Software configured.
+Or Generate a script with an alias "yak" that you can reuse 
 
+```bash
+cat << EOF > yak.sh
+export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak/inventory 
+
+echo  "my dir is : \$MY_LOCAL_CONFIGURATION_DIR"
+
+mkdir -p \$MY_LOCAL_CONFIGURATION_DIR
+
+docker run -it --rm --name yak --pull always \
+           -v \${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure \
+           -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) \
+           registry.gitlab.com/yak4all/yak:stable bash
+EOF
+chmod +x $HOME/yak.sh
+alias yak=$HOME/yak.sh
+echo "alias yak=$HOME/yak.sh" >> $HOME/.bash_profile
+```
+
+If it worked well, you should be inside the container with the YaK Software configured.
 ```
 $ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) registry.gitlab.com/yak4all/yak:stable bash
 [...]
@@ -47,7 +66,7 @@ yak@d47a98f30c99:~/yak$
 
 ## 3. Appendix
 
-You want to allow sudo as user ROOT in the container, below parameter must be added in the "docker run" command
+You want to allow sudo as user ROOT in the container, the parametere below must be added in the "docker run" command
 
 ```
 -e YAK_ENABLE_SUDO=true

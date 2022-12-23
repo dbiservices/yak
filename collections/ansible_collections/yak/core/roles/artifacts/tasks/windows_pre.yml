@@ -1,0 +1,10 @@
+---
+- name: Creates directory layout
+  become: yes
+  become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.builtin.win_file:
+    path: "{{ destination_path }}/{{ item|dirname }}"
+    state: directory
+  loop: "{{ artifact_files }}"
+...

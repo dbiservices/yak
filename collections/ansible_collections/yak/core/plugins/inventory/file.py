@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services 
+# Copyright: (c) 2022, dbi services
 # This file is part of YaK core
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -182,9 +182,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 'default_server_os_type')
 
         # Start populating
-        self._populate_infrastructure_global_variables(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
-        self._populate_infrastructure_global_secrets(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
-        self._populate_infrastructure(path="{}/{}".format(self.configuration_path,self.infrastructure_directory_name))
+        self._populate_infrastructure_global_variables(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
+        self._populate_infrastructure_global_secrets(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
+        self.inventory.add_group('infrastructures')
+        self._populate_infrastructure(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
 
     def _populate_infrastructure_global_variables(self, path):
 
@@ -221,36 +222,35 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"] = "{}/cert_key.pem".format(master_secrets)
                 os.chmod(self.inventory.groups['all'].vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
 
-
     def _set_auth_secrets(self, target, base_directory):
         self._log_debug(
             "## _set_auth_secrets => testing: {} | {}"
             .format(target, base_directory))
+
         if os.path.exists("{}/sshkey".format(base_directory)):
-            self._log_debug(
-                "## _set_auth_secrets => returns: {}/sshkey"
-                .format(base_directory))
-            target.vars["ansible_ssh_private_key_file"] = \
-                "{}/sshkey".format(base_directory)
+            target.vars["ansible_ssh_private_key_file"] = "{}/sshkey".format(base_directory)
             os.chmod(target.vars["ansible_ssh_private_key_file"], self.secret_permissions)
-            target.vars["ansible_ssh_public_key_file"] = \
-                "{}/sshkey.pub".format(base_directory)
+            target.vars["ansible_ssh_public_key_file"] = "{}/sshkey.pub".format(base_directory)
+            os.chmod(target.vars["ansible_ssh_public_key_file"], self.secret_permissions)
             target.vars["yak_secrets_directory"] = base_directory
-            if 'os_type' in target.vars:
+
+        if os.path.exists("{}/cert_key.pem".format(base_directory))  \
+                and os.path.exists("{}/cert.pem".format(base_directory)):
+            target.vars["ansible_winrm_cert_pem"] = "{}/cert.pem".format(base_directory)
+            os.chmod(target.vars["ansible_winrm_cert_pem"], self.secret_permissions)
+            target.vars["ansible_winrm_cert_key_pem"] = "{}/cert_key.pem".format(base_directory)
+            os.chmod(target.vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
+            target.vars["yak_secrets_directory"] = base_directory
+
+        if "target_type" in target.vars:
+            if target.vars["target_type"] == 'server':
                 if target.vars["os_type"] == "windows":
+                    # Set windows ansible vars
                     target.vars["ansible_user"] = self.windows_ansible_user
                     target.vars["ansible_connection"] = "winrm"
                     target.vars["ansible_winrm_transport"] = "certificate"
                     target.vars["ansible_winrm_server_cert_validation"] = "ignore"
-                    if os.path.exists("{}/cert_key.pem".format(base_directory))  \
-                            and os.path.exists("{}/cert.pem".format(base_directory)):
-                        target.vars["ansible_winrm_cert_pem"] = \
-                            "{}/cert.pem".format(base_directory)
-                        os.chmod(target.vars["ansible_winrm_cert_pem"], self.secret_permissions)
-                        target.vars["ansible_winrm_cert_key_pem"] = \
-                            "{}/cert_key.pem".format(base_directory)
-                        os.chmod(target.vars["ansible_winrm_cert_key_pem"], self.secret_permissions)
-                        target.vars["yak_secrets_directory"] = base_directory
+
 
     def check_and_sanitize_infrastructure_variables(self, config):
         config_sanitized = config
@@ -278,17 +278,22 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self._log_debug('Subinfra detected {}'.format(infrastructure_file[:-1]))
                 self._populate_infrastructure(path=infrastructure_file[:-1])
                 continue
+            group_name = os.path.basename(infrastructure_file[:-1])
             group = os.path.basename(infrastructure_file[:-1])
             group = self.inventory.add_group(group)
             self.inventory.add_child('all', group)
 
             # Add group vars
-            group_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path,group))
+            group_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, group))
             infrastructure_variables = self.check_and_sanitize_infrastructure_variables(group_config_yaml)
             self.inventory.groups[group].vars = infrastructure_variables
-            self._set_auth_secrets(self.inventory.groups[group],"{}/{}/secrets".format(path,group))
-            self.current_provider = \
-                self.inventory.groups[group].vars["provider"]
+            self.current_provider = self.inventory.groups[group].vars["provider"]
+            self.inventory.add_host('infrastructure/{}'.format(group_name), group='infrastructures')
+            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
+            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
+
+            # Add ssh key / certificates
+            self._set_auth_secrets(self.inventory.groups[group], "{}/{}/secrets".format(path, group))
 
             self._add_hosts(path, group)
 
@@ -307,7 +312,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_host(host, group=group_server)
 
             # Add host vars
-            host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path,host))
+            host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, host))
             self.inventory.hosts[host].vars = host_config_yaml
 
             # Default variable for hosts
@@ -317,8 +322,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self.inventory.hosts[host].vars["os_type"] = \
                     self.default_server_os_type
 
-            # Add ssh key
-            self._set_auth_secrets(self.inventory.hosts[host],"{}/{}/secrets".format(path,host))
+            # Add ssh key / certificates
+            self._set_auth_secrets(self.inventory.hosts[host], "{}/{}/secrets".format(path, host))
 
             # IPs policy
             # ** When host_ip_access doesn't exists, set default to private
@@ -405,7 +410,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_host(component, group=group)
 
             # Overwrite with component vars
-            component_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path,component))
+            component_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, component))
             self.inventory.hosts[component].vars = {**self.inventory.hosts[host].vars, **component_config_yaml}
 
             # Default variable for components
@@ -413,7 +418,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.hosts[component].vars["target_type"] = 'component'
 
             # Add ansible key file
-            self._set_auth_secrets(self.inventory.hosts[component], "{}/{}/secrets".format(path,component))
+            self._set_auth_secrets(self.inventory.hosts[component], "{}/{}/secrets".format(path, component))
 
             # Add to component_type group
             if 'component_type' in self.inventory.hosts[component].vars:
@@ -428,12 +433,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             # Add storage
             if 'storage' in component_config_yaml:
 
-                storage_config_yaml = self._load_yaml_file(
-                   "{}/templates/{}.yml".format(
-                        self.configuration_path,
-                        component_config_yaml["storage"]
-                    )
+                storage_config_file = "{}/templates/{}.yml".format(
+                    self.configuration_path, component_config_yaml["storage"]
                 )
+
+                storage_config_yaml = self._load_yaml_file(storage_config_file)
 
                 if self.current_provider not in \
                         storage_config_yaml["volumes"]:

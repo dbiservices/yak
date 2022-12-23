@@ -1,0 +1,9 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Download artifact
+  become: true
+  ansible.builtin.copy:
+    src: "{{ local_artifacts_path }}/{{ item }}"
+    dest: "{{ destination_path }}/{{ item }}"
+  loop: "{{ artifact_files }}"
+...

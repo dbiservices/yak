@@ -4,3 +4,4 @@ os_admin_username: azureuser
 managed_disk_type: StandardSSD_LRS
 debug: false
 returned: ""
+custom_tags: "{}"

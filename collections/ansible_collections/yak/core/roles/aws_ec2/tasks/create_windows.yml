@@ -87,11 +87,22 @@
         Name: "{{ server_name }}"
   when: public_ip.mode == 'manual'
 
+- set_fact:
+    administrative_ip: "{{ r_aws.instances[0].private_ip_address }}"
+  when: host_ip_access == 'private_ip'
+
+- set_fact:
+    administrative_ip: "{{ r_aws.instances[0].public_ip_address }}"
+  when: host_ip_access == 'public_ip'
+
 - name: Define return
   delegate_to: localhost
   set_fact:
     returned:
       instance: "{{ r_aws.instances[0] }}"
+      administrative_ip: "{{ administrative_ip }}"
+      private_ip_address: "{{ r_aws.instances[0].private_ip_address|default(None) }}"
+      public_ip_address: "{{ r_aws.instances[0].public_ip_address|default(None) }}"
       os_admin_username: "{{ os_admin_username }}"
       os_admin_password: "{{ os_admin_password }}"
 

@@ -24,6 +24,7 @@
       version: "{{ image.version }}"
     os_type: "{{ os_type | capitalize }}"
     managed_disk_type: "{{ managed_disk_type }}"
+    tags: "{{ custom_tags }}"
   register: r_azure
 
 - debug: var=r_azure
