@@ -15,7 +15,7 @@ The role will preserve the target server's artifact path (directory structure). 
   - `aws_s3`: a bucket named 'yak' and the AWS secret keys in environment variables.
   - `azure_storage_blob`: a Blob SAS token in the environement variable `AZURE_AZCOPY_BLOB_SAS_TOKEN` with at least read permissions (can be generated in the GUI, check the [Azure documentation](https://learn.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers) for more information about SAS token and how to get one from the Azure portal).
   - `oci_object_storage`: a bucket named 'yak' and the OCI secret keys in environment variables.
-  - `yak_local_storage`: A local directory in the container with the artifacts. This would most likely be a mount point from the host. The default is `/yak_local_storage,` but you can change the default by changing the environment variable `YAK_LOCAL_STORAGE_PATH` (example: `export YAK_LOCAL_STORAGE_PATH=/yak_local_storage`).
+  - `yak_local_storage`: A local directory in the container with the artifacts. This would most likely be a mount point from the host. The default is `/yak_local_storage,` but you can change the default by changing the inventory environment variable `artifacts.variables.path`.
 
 ### From configuration
 
@@ -36,7 +36,8 @@ The configuration dictionary variable can be stored in the global `variables.yml
     - `oci_object_storage`:
       - `namespace_name`
       - `bucket_name`
-    - `yak_local_storage`: none
+    - `yak_local_storage`:
+      - `path`: the local path in the container where to find the artifacts.
 
 #### Example AWS S3
 
@@ -57,7 +58,7 @@ artifacts:
     container: yakartifacts
 ```
 
-#### Example OCI Object Storage 
+#### Example OCI Object Storage
 
 ```yml
 artifacts:
@@ -67,11 +68,13 @@ artifacts:
     bucket_name: dbi-services-yak-artifacts
 ```
 
-#### Example YaK local Storage 
+#### Example YaK local Storage
 
 ```yml
 artifacts:
   provider: yak_local_storage
+  variables:
+    path: /yak_local_storage
 ```
 ### From components
 

@@ -3,7 +3,7 @@
 - name: Download artifact
   become: true
   ansible.builtin.copy:
-    src: "{{ lookup('ansible.builtin.env','YAK_LOCAL_STORAGE_PATH', default='/yak_local_storage') }}/{{ item }}"
+    src: "{{ local_artifacts_path }}/{{ item }}"
     dest: "{{ destination_path }}/{{ item }}"
   loop: "{{ artifact_files }}"
 ...

@@ -118,6 +118,8 @@
   vars:
     artifacts:
       provider: yak_local_storage
+      variables:
+        path: /yak_local_storage
   roles:
     - name: yak.core.artifacts
       vars:
@@ -134,6 +136,8 @@
   vars:
     artifacts:
       provider: yak_local_storage
+      variables:
+        path: /yak_local_storage
   roles:
     - name: yak.core.artifacts
       vars:
