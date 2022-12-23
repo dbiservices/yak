@@ -4,9 +4,9 @@ hostname: linux
 is_physical_server: no
 ansible_user: admin
 host_ip_access: public_ip
-operating_system: Debian 11.4
 instance_type: t3.micro
-ami_id: ami-0419c120afb9fd58b
+ami_id: ami-090a0d6a5e7962013
+operating_system: Debian-11.6-amd64-20221219
 private_ip:
     mode: auto
     ip: 
