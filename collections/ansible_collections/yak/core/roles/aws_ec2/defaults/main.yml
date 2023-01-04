@@ -10,6 +10,7 @@ ec2_instance_base_directory: "~/.{{ server_name }}"
 nb_instances: 1
 debug: False
 returned: ""
+custom_tags: {}
 force: False # If the instance exists, delete it before creating it
 image_id: ami-00a205cb8e06c3c4e # Amazon Linux 2 AMI (HVM), SSD Volume Type | 64-bit x86 | Free tier eligible
 instance_type: t3.large

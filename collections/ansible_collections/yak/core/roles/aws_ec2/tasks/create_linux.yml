@@ -42,8 +42,7 @@
     security_group: "{{ security_group_id }}"
     vpc_subnet_id: "{{ subnet_id }}"
     network: "{{ instance_network }}"
-    tags:
-      Name: "{{ server_name }}"
+    tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
   register: r_aws
 
 - debug: var=r_aws
@@ -58,6 +57,7 @@
     name: "{{ server_name }}-eni"
     description: "ENI deployed from YaK for instance {{ server_name }}"
     state: present
+    tags: "{{ custom_tags }}"
 
 - name: Associate manually the EIP to the instance
   delegate_to: localhost
@@ -65,7 +65,6 @@
     region: "{{ region_id }}"
     device_id: "{{ r_aws.instances[0].instance_id }}"
     ip: "{{ public_ip.ip }}"
-    tags:
-        Name: "{{ server_name }}"
+    tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
   when: public_ip.mode == 'manual'
 
