@@ -2,4 +2,5 @@
 ---
 os_admin_username: opc
 debug: false
+custom_tags: {}
 returned: ""

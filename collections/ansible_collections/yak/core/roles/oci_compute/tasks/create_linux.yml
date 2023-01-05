@@ -18,7 +18,8 @@
     subnet_id: "{{ subnet_id }}"
     create_vnic_details: "{{ vnic_details }}"
     preserve_boot_volume: no
-    metadata : { "ssh_authorized_keys" : "{{ lookup('file', ssh_public_key) }}" }
+    metadata : { "ssh_authorized_keys": "{{ lookup('file', ssh_public_key) }}" }
+    freeform_tags : "{{ custom_tags }}"
   register: r_oci_compute_instance_present
 
 - debug: var=r_oci_compute_instance_present

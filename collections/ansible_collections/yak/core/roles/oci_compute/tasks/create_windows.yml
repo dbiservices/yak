@@ -30,6 +30,7 @@
     create_vnic_details: "{{ vnic_details }}"
     preserve_boot_volume: no
     metadata : { "user_data" : "{{ winrm_script|b64encode }}" }
+    freeform_tags : "{{ custom_tags }}"
   register: r_oci_compute_instance_present
 
 - debug: var=r_oci_compute_instance_present

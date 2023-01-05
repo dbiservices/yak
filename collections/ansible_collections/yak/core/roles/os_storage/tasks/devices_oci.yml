@@ -7,6 +7,7 @@
     availability_domain: "{{ availability_domain }}"
     display_name: "{{ vm_name }}_{{ item.volume_name }}"
     size_in_gbs: "{{ item.size_GB }}"
+    freeform_tags : "{{ custom_tags }}"
   with_items: "{{ volumes }}"
   register: r_oci_blockstorage_volume_present
 
