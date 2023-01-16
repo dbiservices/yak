@@ -159,6 +159,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         # Checking configuration_base
         if self.get_option('configuration_base'):
+            self.configuration_base = os.path.abspath(
+                "{}/{}".format(
+                    os.getcwd(),
+                    self.get_option('configuration_base'))
+            )
             self.configuration_path = os.path.abspath(
                 "{}/{}/{}".format(
                     os.getcwd(),
@@ -166,9 +171,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self.configuration_directory_name)
             )
 
+        if not Path(self.configuration_base).is_dir():
+            raise AnsibleError(
+                "Is not a valid configuration_base '{}'."
+                .format(self.configuration_base))
+
         if not Path(self.configuration_path).is_dir():
             raise AnsibleError(
-                "Is not a valid configuration path '{}'."
+                "Is not a valid configuration_path '{}'."
                 .format(self.configuration_path))
 
         # Checking windows ansible user
@@ -184,6 +194,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Start populating
         self._populate_infrastructure_global_variables(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
         self._populate_infrastructure_global_secrets(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
+        self._populate_component_manifests_and_variables()
         self.inventory.add_group('infrastructures')
         self._populate_infrastructure(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
 
@@ -421,14 +432,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._set_auth_secrets(self.inventory.hosts[component], "{}/{}/secrets".format(path, component))
 
             # Add to component_type group
-            if 'component_type' in self.inventory.hosts[component].vars:
-                self.inventory.add_group(
-                    self.inventory.hosts[component].vars["component_type"])
-                self.inventory.add_host(
-                    component,
-                    group=self.inventory.hosts[
-                        component].vars["component_type"]
-                )
+            if 'component_type' not in self.inventory.hosts[component].vars:
+                raise AnsibleError("No 'component_type' for component '{}'.".format(component))
+            self.inventory.add_host(
+                component,
+                group=self.inventory.hosts[
+                    component].vars["component_type"]
+            )
 
             # Add storage
             if 'storage' in component_config_yaml:
@@ -473,3 +483,42 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     # Add template vars to component vars
                     self.inventory.hosts[component].vars[template["name"]] = \
                         template_config_yaml
+
+    def _populate_component_manifests_and_variables(self):
+
+        for component_path in glob.glob("{}/components/*/".format(self.configuration_base)):
+
+            self._log_debug("_populate_component_manifests_and_variables.component_path: {}".format(component_path))
+            component_name = os.path.basename(component_path[:-1])
+            self._log_debug("_populate_component_manifests_and_variables.component_name: {}".format(component_name))
+
+            # Add to component_type group
+            self.inventory.add_group(component_name)
+
+            # variables.yml and variables/*.yml if exists
+            if os.path.exists("{}/variables.yml".format(component_path)):
+                variables_yaml = self._load_yaml_file("{}/variables.yml".format(component_path),warning_only=True)
+                self.inventory.groups[component_name].vars = variables_yaml
+
+            if os.path.exists("{}/variables".format(component_path)):
+                for variables_path in Path("{}/variables".format(component_path)).rglob('*.yml'):
+                    variables_yaml = self._load_yaml_file(variables_path, warning_only=True)
+                    self.inventory.groups[component_name].vars.update(variables_yaml)
+
+            # Add component manifest.yml: must exists
+            if not os.path.exists("{}/manifest.yml".format(component_path)):
+                raise AnsibleError("File manifest.yml not found for component '{}'.".format(component_name))
+
+            manifest_yaml = self._load_yaml_file(
+                "{}/manifest.yml".format(component_path),
+                warning_only=True
+            )
+            self.inventory.groups[component_name].vars["manifest"] = manifest_yaml
+
+            # artifacts_requirements.yml: must exists
+            if os.path.exists("{}/artifacts_requirements.yml".format(component_path)):
+                artifacts_requirements_yaml = self._load_yaml_file(
+                    "{}/artifacts_requirements.yml".format(component_path),
+                    warning_only=True
+                )
+                self.inventory.groups[component_name].vars["artifacts_requirements"] = artifacts_requirements_yaml
