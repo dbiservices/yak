@@ -4,6 +4,7 @@ provider: aws
 vm_name: anonymous
 os_type: linux
 volume_group_name: data
+custom_tags: {}
 volumes:
   - { name: sdb, size_GB: 10, type: gp2 }
   - { name: sdc, size_GB: 10, type: gp2 }
