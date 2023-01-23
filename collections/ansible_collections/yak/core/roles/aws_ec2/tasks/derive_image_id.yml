@@ -1,0 +1,13 @@
+---
+- name: Lookup AMI id
+  delegate_to: localhost
+  amazon.aws.ec2_ami_info:
+    region: "{{ region_id }}"
+    filters:
+      name: "{{ ami_name }}"
+  register: r_ec2_ami_info
+
+- name: Set ami_id variable
+  set_fact:
+    ami_id: "{{ r_ec2_ami_info.images[0].image_id }}"
+...
