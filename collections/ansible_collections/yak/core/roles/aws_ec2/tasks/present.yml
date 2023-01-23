@@ -9,7 +9,6 @@
 - block:
   - include_tasks: set_key_if_not_exists.yml
   - include_tasks: derive_image_id.yml
-    when: ami_name is defined
   - include_tasks: "create_{{ os_type }}.yml"
   - include_tasks: post_config_{{ os_type }}.yml
   when: number_of_instances | int == 0

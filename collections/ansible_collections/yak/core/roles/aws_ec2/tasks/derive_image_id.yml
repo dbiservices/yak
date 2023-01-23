@@ -4,10 +4,21 @@
   amazon.aws.ec2_ami_info:
     region: "{{ region_id }}"
     filters:
-      name: "{{ ami_name }}"
+      name: "{{ ami.name|default('*') }}"
+      owner-id: "{{ ami.owner_id|default('*') }}"
+      image-id: "{{ ami.image_id|default('*') }}"
   register: r_ec2_ami_info
+
+- name: Set amis variable with all AMIs retrieved
+  set_fact:
+    amis: "{{ r_ec2_ami_info|json_query('images[*].image_id')|sort(reverse=True) }}"
+
+- debug: var=amis
+  when: debug|bool
 
 - name: Set ami_id variable
   set_fact:
-    ami_id: "{{ r_ec2_ami_info.images[0].image_id }}"
+    ami_id: "{{ amis[0] }}"
+
+- debug: msg="Will use the AMI id = {{ ami_id }}"
 ...
