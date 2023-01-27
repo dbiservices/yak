@@ -1,5 +1,7 @@
 # YaK
 
+YaK Source Code is managed by GitLab : https://gitlab.com/yak4all/yak/. Here you find only a copy of the project
+
 Get complete control of your hybrid cloud infrastructure with very few expertise. YaK deploys and configures your servers across various public cloud providers and/or on-premise in the same predictable way.
 
 YaK Core is backed by [dbi services](https://www.dbi-services.com). Start free with an open-source license and extend your powers anytime with components to operate third-party software: Oracle, PostgreSQL, etc. More information on https://www.dbi-services.com/products/yak
