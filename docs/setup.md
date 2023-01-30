@@ -37,7 +37,7 @@ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:/w
 Or Generate a script with an alias "yak" that you can reuse 
 
 ```bash
-cat << EOF > yak.sh
+cat << EOF > $HOME/yak.sh
 export MY_LOCAL_CONFIGURATION_DIR=$HOME/yak/inventory 
 
 echo  "my dir is : \$MY_LOCAL_CONFIGURATION_DIR"
