@@ -1,5 +1,15 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- name: Derive total volume need from fS requirement of the composant
+  set_fact:
+    total_volume_gb: "{{ os_storage|json_query('[*][*].min_size_gb|[]')|sum }}"
+
+- debug: var=storage_devices
+
+- name: Derive number of disk needed
+  set_fact:
+    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round | int  }}"
+
 - name: Get the list of existing instances
   delegate_to: localhost
   community.aws.ec2_instance_info:
@@ -19,10 +29,9 @@
   amazon.aws.ec2_vol:
     region: "{{ region_id }}"
     instance: "{{ r_aws.instances[0].instance_id }}"
-    volume_size: "{{ item.size_GB }}"
-    volume_type: "{{ item.disk_type }}"
-    device_name: "{{ item.device_name }}"
+    volume_size: "{{ storage_devices.max_size_gb|int }}"
+    volume_type: "{{ storage_devices.specifications.volume_type }}"
     delete_on_termination: yes
-    tags: "{{ {'Name': item.device_name} | combine(custom_tags) }}"
+    tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_aws_vol
-  with_items: "{{ volumes }}"
+  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"

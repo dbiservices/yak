@@ -45,10 +45,10 @@
     debug: false
   tasks:
 
-    - include_role:
-        name: yak.core.os_prerequisites
-      vars:
-        host_name: "{{ hostname }}"
+    # - include_role:
+    #     name: yak.core.os_prerequisites
+    #   vars:
+    #     host_name: "{{ hostname }}"
 
     - include_role:
         name: yak.core.os_storage

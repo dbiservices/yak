@@ -19,7 +19,7 @@
 
 - name: Re-collect facts after disk addition and ensure expected data is present
   setup:
-  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length > volumes|length
+  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length > number_of_devices|int
   retries: 10
   delay: 5
 

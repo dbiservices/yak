@@ -408,6 +408,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
             # Initiate list of storage
             self.inventory.hosts[host].vars["storages"] = []
+            self.inventory.hosts[host].vars["os_storage"] = []
 
             # Populate components on current host
             self._add_components(path, group, host)
@@ -467,6 +468,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self.inventory.hosts[host].vars["storages"].append(
                     self.inventory.hosts[component].vars["storage"]
                 )
+                # Add manifest.os_storage var to server
+                if 'os_storage' in self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["manifest"]:
+                    self.inventory.hosts[host].vars["os_storage"].append(
+                        self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["manifest"]["os_storage"][self.inventory.hosts[host].vars["os_type"]]
+                    )
 
             # Add template
             if 'templates' in component_config_yaml:
