@@ -5,7 +5,7 @@
   set_fact:
     os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
 
-- name: Call role the generate the winrm_script for user_data
+- name: Call role to generate the winrm_script for user_data
   include_role:
     name: yak.core.winrm
   vars:
