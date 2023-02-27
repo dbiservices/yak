@@ -521,7 +521,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             )
             self.inventory.groups[component_name].vars["manifest"] = manifest_yaml
 
-            # artifacts_requirements.yml: must exists
+            # artifacts_requirements.yml: should exists
             if os.path.exists("{}/artifacts_requirements.yml".format(component_path)):
                 artifacts_requirements_yaml = self._load_yaml_file(
                     "{}/artifacts_requirements.yml".format(component_path),

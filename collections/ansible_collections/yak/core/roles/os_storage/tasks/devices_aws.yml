@@ -1,14 +1,20 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Derive total volume need from fS requirement of the composant
-  set_fact:
-    total_volume_gb: "{{ os_storage|json_query('[*][*].min_size_gb|[]')|sum }}"
+- block:
+  - name: Derive total volume need from fS requirement of the composant
+    set_fact:
+      total_volume_gb: "{{ os_storage|json_query('[*][*].min_size_gb|[]')|sum }}"
 
-- debug: var=storage_devices
+  - debug: var=storage_devices
 
-- name: Derive number of disk needed
-  set_fact:
-    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round | int  }}"
+  - name: Derive number of disk needed
+    set_fact:
+      number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round | int  }}"
+  when: os_type == 'linux'
+
+- block:
+  - debug: msg="TODO"
+  when: os_type == 'windows'
 
 - name: Get the list of existing instances
   delegate_to: localhost
@@ -17,10 +23,10 @@
     filters:
       "tag:Name": "{{ vm_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
-  register: r_aws
-  failed_when: r_aws.instances|length != 1
+  register: r_ec2_instance_info
+  failed_when: r_ec2_instance_info.instances|length != 1
 
-- debug: var=r_aws
+- debug: var=r_ec2_instance_info
   delegate_to: localhost
   when: debug | bool
 
@@ -28,7 +34,7 @@
   delegate_to: localhost
   amazon.aws.ec2_vol:
     region: "{{ region_id }}"
-    instance: "{{ r_aws.instances[0].instance_id }}"
+    instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
     volume_size: "{{ storage_devices.max_size_gb|int }}"
     volume_type: "{{ storage_devices.specifications.volume_type }}"
     delete_on_termination: yes
