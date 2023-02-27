@@ -208,6 +208,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups['all'].vars['yak_local_ssh_config_file'] = self.local_ssh_config_file
         self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
 
+        self.inventory.groups['all'].vars['storage_devices'] = {
+            'min_size_gb': 10,
+            'max_size_gb': 100,
+            'specifications': {}
+        }
+
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
+
     def _populate_infrastructure_global_secrets(self, path):
         master_secrets = "{}/secrets".format(path)
         self._log_debug(master_secrets)

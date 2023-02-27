@@ -28,4 +28,3 @@
     host: "{{ ansible_host }}"
     timeout: 600
   when: os_type == 'windows'
-
