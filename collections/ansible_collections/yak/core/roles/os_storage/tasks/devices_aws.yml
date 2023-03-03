@@ -3,7 +3,7 @@
 - block:
   - name: Derive total volume need from fS requirement of the composant
     set_fact:
-      total_volume_gb: "{{ os_storage|json_query('[*][*].min_size_gb|[]')|sum }}"
+      total_volume_gb: "{{ os_storage|json_query('[*].min_size_gb|[]')|sum }}"
 
   - debug: var=storage_devices
 

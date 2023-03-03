@@ -54,8 +54,6 @@
         name: yak.core.os_storage
       vars:
         vm_name: "{{ machine_name }}"
-        volumes: "{{ storage.volumes }}"
-        filesystems: "{{ storage.filesystems }}"
-      loop: "{{ storages }}"
+      loop: "{{ os_storages }}"
       loop_control:
-        loop_var: storage
+        loop_var: os_storage

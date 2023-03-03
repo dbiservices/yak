@@ -460,7 +460,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["os_storage"][self.inventory.hosts[component].vars["os_type"]]
                 )
 
-            # Add storage (legacy,variable storage)
+            # Add storage (legacy, variable storage)
             if 'storage' in component_config_yaml:
 
                 storage_config_file = "{}/templates/{}.yml".format(
@@ -488,7 +488,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self.inventory.hosts[component].vars["storage"]
                 )
 
-            # Add template
+            # Add template (legacy, replaced by variables)
             if 'templates' in component_config_yaml:
                 for template in component_config_yaml["templates"]:
 

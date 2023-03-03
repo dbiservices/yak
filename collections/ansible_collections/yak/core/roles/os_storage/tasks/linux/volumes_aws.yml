@@ -18,12 +18,10 @@
     filters:
       attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
       "tag:Name": disk*
-  register: ansible_devices
+  register: r_attached_volumes
 
-- debug: var=ansible_devices
+- debug: var=r_attached_volumes
   when: debug | bool
-
-- meta: end_play
 
 - name: Re-collect facts after disk addition and ensure expected data is present
   setup:
@@ -31,39 +29,10 @@
   retries: 10
   delay: 5
 
-- debug: var=ansible_devices
-  when: debug | bool
-
 - set_fact:
-    vm_disk: "{{ r_ec2_instance_info | json_query('instances[0].block_device_mappings[*].{device_name:device_name,volume_id:ebs.volume_id}') }}"
-
-- debug: var=vm_disk
-  when: debug | bool
-
-- set_fact:
-    linux_devices: "{{ ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key') }}"
+    linux_devices: "{{ ansible_devices|dict2items|json_query('[?value.serial==`vol0f67d2344b5367de8`].key') }}"
 
 - debug: var=linux_devices
-  when: debug | bool
-
-- set_fact:
-    mapped_linux_devices: []
-
-- set_fact:
-    mapped_linux_devices: >
-      {{ mapped_linux_devices +
-        [
-          {
-            'linux_device_name': '/dev/'+ item,
-            'volume_id': 'vol-'+ aws_volume[1]
-          }
-        ]
-      }}
-  vars:
-    aws_volume: "{{ ansible_devices|json_query(item+'.links.ids[?contains(@, `Amazon_Elastic_Block`) == `true`]|[0]') | split('vol') }}"
-  with_items: "{{ linux_devices }}"
-
-- debug: var=mapped_linux_devices
   when: debug | bool
 
 - set_fact:
@@ -74,13 +43,12 @@
       {{ merged_list  +
         [
           {
-            'linux_device_name': item.linux_device_name,
-            'volume_id': item.volume_id,
-            'device_name': vm_disk|json_query('[?volume_id == `'+item.volume_id+'`].device_name|[0]')
+            'volume_id': item.id,
+            'device_name': ansible_devices|dict2items|json_query('[?value.serial==`'+item.id|replace("vol-","vol")+'`].key|[0]')
           }
         ]
       }}
-  with_items: "{{ mapped_linux_devices }}"
+  with_items: "{{ r_attached_volumes.volumes }}"
 
 - debug: var=merged_list
   when: debug | bool
@@ -89,8 +57,8 @@
     pvs_list: []
 
 - set_fact:
-    pvs_list: "{{ pvs_list + [ merged_list|json_query('[?device_name == `'+item.device_name+'`].linux_device_name|[0]') ] }}"
-  with_items: "{{ volumes }}"
+    pvs_list: "{{ pvs_list + [ '/dev/' + item.device_name ] }}"
+  with_items: "{{ merged_list }}"
 
 - debug: var=pvs_list
   when: debug | bool

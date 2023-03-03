@@ -9,9 +9,4 @@ os_storage:
         - { min_size_gb: 16, filesystem_type: "xfs", mount_point: "/u02" }
         - { min_size_gb: 10, filesystem_type: "xfs", mount_point: "/u03" }
         - { min_size_gb: 24, filesystem_type: "xfs", mount_point: "/u90" }
-    windows:
-        - { min_size_gb: 60, drive_letter: D, partition_label: data   }
-        - { min_size_gb: 60, drive_letter: E, partition_label: tempdb }
-        - { min_size_gb: 60, drive_letter: F, partition_label: tlog   }
-        - { min_size_gb: 60, drive_letter: G, partition_label: backup }
 
