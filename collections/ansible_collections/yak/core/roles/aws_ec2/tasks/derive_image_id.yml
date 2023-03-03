@@ -1,24 +1,37 @@
 ---
-- name: Lookup AMI id
-  delegate_to: localhost
-  amazon.aws.ec2_ami_info:
-    region: "{{ region_id }}"
-    filters:
-      name: "{{ ami.name|default('*') }}"
-      owner-id: "{{ ami.owner_id|default('*') }}"
-      image-id: "{{ ami.image_id|default('*') }}"
-  register: r_ec2_ami_info
+- block:
 
-- name: Set amis variable with all AMIs retrieved
-  set_fact:
-    amis: "{{ r_ec2_ami_info|json_query('images[*].image_id')|sort(reverse=True) }}"
+  - name: Lookup AMI id
+    delegate_to: localhost
+    amazon.aws.ec2_ami_info:
+      region: "{{ region_id }}"
+      filters:
+        name: "{{ ami.name|default('*') }}"
+        owner-id: "{{ ami.owner_id|default('*') }}"
+        image-id: "{{ ami.image_id|default('*') }}"
+    register: r_ec2_ami_info
 
-- debug: var=amis
-  when: debug|bool
+  - name: Set amis variable with all AMIs retrieved
+    set_fact:
+      amis: "{{ r_ec2_ami_info|json_query('images[*].image_id')|sort(reverse=True) }}"
 
-- name: Set ami_id variable
-  set_fact:
-    ami_id: "{{ amis[0] }}"
+  - debug: var=amis
+    when: debug|bool
 
-- debug: msg="Will use the AMI id = {{ ami_id }}"
+  - name: Verify if result has at least 1 image
+    ansible.builtin.fail:
+      msg: The filter combination used in 'ami' returned no image.
+    when: amis|length == 0
+
+  - name: Set ami_id variable
+    set_fact:
+      image_id: "{{ amis[0] }}"
+
+  when: ami is defined
+
+- set_fact:
+    image_id: "{{ ami_id }}"
+  when: ami_id is defined
+
+- debug: msg="Will use the AMI id = {{ image_id }}"
 ...
