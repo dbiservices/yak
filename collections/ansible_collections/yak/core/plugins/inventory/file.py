@@ -417,7 +417,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
             # Initiate list of storage
             self.inventory.hosts[host].vars["storages"] = []
-            self.inventory.hosts[host].vars["os_storage"] = []
+            self.inventory.hosts[host].vars["os_storages"] = []
 
             # Populate components on current host
             self._add_components(path, group, host)
@@ -450,7 +450,17 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     component].vars["component_type"]
             )
 
-            # Add storage
+            # Add storage (new way with os_storage in component variables)
+            if 'os_storage' in component_config_yaml:
+                self.inventory.hosts[host].vars["os_storages"].append(
+                    component_config_yaml["os_storage"][self.inventory.hosts[component].vars["os_type"]]
+                )
+            elif 'os_storage' in self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars:
+                self.inventory.hosts[host].vars["os_storages"].append(
+                    self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["os_storage"][self.inventory.hosts[component].vars["os_type"]]
+                )
+
+            # Add storage (legacy,variable storage)
             if 'storage' in component_config_yaml:
 
                 storage_config_file = "{}/templates/{}.yml".format(
@@ -477,11 +487,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self.inventory.hosts[host].vars["storages"].append(
                     self.inventory.hosts[component].vars["storage"]
                 )
-                # Add manifest.os_storage var to server
-                if 'os_storage' in self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["manifest"]:
-                    self.inventory.hosts[host].vars["os_storage"].append(
-                        self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["manifest"]["os_storage"][self.inventory.hosts[host].vars["os_type"]]
-                    )
 
             # Add template
             if 'templates' in component_config_yaml:
