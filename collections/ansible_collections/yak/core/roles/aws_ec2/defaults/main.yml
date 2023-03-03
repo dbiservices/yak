@@ -23,9 +23,3 @@ local_ssh_key:
     path: ~/.ssh
     private_key_name: id_rsa
     public_key_name: id_rsa.pub
-volumes_params:
-  - device_name: /dev/sda1
-    volume_type: gp2
-    volume_size: 10
-#volumes: List of additional devices, default no additional devices, example
-  # - { name: sdd, size_GB: 50, type: gp2 }

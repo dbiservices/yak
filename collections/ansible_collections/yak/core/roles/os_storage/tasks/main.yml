@@ -1,5 +1,5 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- include_tasks: devices_{{ provider }}.yml
+- include_tasks: devices_{{ provider }}_{{ os_type }}.yml
 - include_tasks: "{{ os_type }}/main.yml"
 

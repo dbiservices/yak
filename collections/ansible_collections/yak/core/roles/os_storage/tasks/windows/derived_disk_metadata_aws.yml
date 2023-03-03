@@ -39,7 +39,7 @@
 - debug: var=windows_disks
   when: debug | bool
 
-- debug: var=volumes
+- debug: var=os_storage
   when: debug | bool
 
 - set_fact:
@@ -53,11 +53,11 @@
           {
             'drive_letter': item.drive_letter,
             'partition_label': item.partition_label,
-            'windows_disk_number': windows_disks|json_query('[?device_name==`'+item.device_name+'`].windows_disk_number|[0]')|int
+            'windows_disk_number': windows_disks|json_query('[?device_name==`/dev/sd' + item.drive_letter|lower +'`].windows_disk_number|[0]')|int
           }
         ]
       }}
-  with_items: "{{ volumes }}"
+  with_items: "{{ os_storage }}"
 
 - debug: var=derived_disk_metadata
   when: debug | bool

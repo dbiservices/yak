@@ -1,0 +1,28 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get the list of existing instances
+  delegate_to: localhost
+  community.aws.ec2_instance_info:
+    region: "{{ region_id }}"
+    filters:
+      "tag:Name": "{{ vm_name }}"
+      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+  register: r_ec2_instance_info
+  failed_when: r_ec2_instance_info.instances|length != 1
+
+- debug: var=r_ec2_instance_info
+  delegate_to: localhost
+  when: debug | bool
+
+- name: Create and attach the volumes to instance
+  delegate_to: localhost
+  amazon.aws.ec2_vol:
+    region: "{{ region_id }}"
+    instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+    volume_size: "{{ item.min_size_gb|int }}"
+    volume_type: "{{ storage_devices.specifications.volume_type }}"
+    device_name: "/dev/sd{{ item.drive_letter|lower }}"
+    delete_on_termination: yes
+    tags: "{{ {'Name': 'disk_'+item.drive_letter+'_'+item.partition_label} | combine(custom_tags) }}"
+  register: r_aws_vol
+  loop: "{{ os_storage }}"

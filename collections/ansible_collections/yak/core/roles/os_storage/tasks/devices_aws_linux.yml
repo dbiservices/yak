@@ -1,20 +1,14 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- block:
-  - name: Derive total volume need from fS requirement of the composant
-    set_fact:
-      total_volume_gb: "{{ os_storage|json_query('[*].min_size_gb|[]')|sum }}"
+- name: Derive total volume need from fS requirement of the composant
+  set_fact:
+    total_volume_gb: "{{ os_storage|json_query('[*].min_size_gb|[]')|sum }}"
 
-  - debug: var=storage_devices
+- debug: var=storage_devices
 
-  - name: Derive number of disk needed
-    set_fact:
-      number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round | int  }}"
-  when: os_type == 'linux'
-
-- block:
-  - debug: msg="TODO"
-  when: os_type == 'windows'
+- name: Derive number of disk needed
+  set_fact:
+    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round | int  }}"
 
 - name: Get the list of existing instances
   delegate_to: localhost

@@ -38,7 +38,6 @@
     image:
       id: "{{ image_id }}"
     wait: yes
-    #volumes: "{{ volumes_params }}"
     security_group: "{{ security_group_id }}"
     vpc_subnet_id: "{{ subnet_id }}"
     network: "{{ instance_network }}"
