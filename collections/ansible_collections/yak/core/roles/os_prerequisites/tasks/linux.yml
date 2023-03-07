@@ -17,6 +17,24 @@
   timezone:
     name: "{{ time_zone }}"
 
+- name: Install LVM
+  become: yes
+  ansible.builtin.dnf:
+    name: lvm2
+    state: present
+  when:
+    - ansible_distribution == "OracleLinux"
+    - ansible_distribution_major_version|int > 7
+
+- name: Install LVM
+  become: yes
+  ansible.builtin.dnf:
+    name: lvm2
+    state: present
+  when:
+    - ansible_distribution == "RedHat"
+    - ansible_distribution_major_version|int > 7
+
 - name: Update cache (Debian only) # required for LVM and XFS packages installation
   become: yes
   apt:
@@ -30,10 +48,9 @@
     state: present
   when: >
     (
-      ( ansible_os_family == "RedHat" ) or
       ( ansible_os_family == "Suse" ) or
       ( ansible_os_family == "Debian" )
-    ) and ansible_distribution_major_version|int > 7
+    )
 
 - name: Install XFS
   become: yes
