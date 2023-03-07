@@ -33,7 +33,7 @@
   delegate_to: localhost
   amazon.aws.ec2_instance:
     region: "{{ region_id }}"
-    key_name: "{{ ec2_key_name }}"
+    key_name: "{{ machine_name }}"
     instance_type: "{{ instance_type }}"
     image:
       id: "{{ image_id }}"

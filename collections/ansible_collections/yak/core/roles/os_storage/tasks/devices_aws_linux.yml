@@ -8,7 +8,8 @@
 
 - name: Derive number of disk needed
   set_fact:
-    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round | int  }}"
+    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round(0,'ceil') | int  }}"
+    allowed_device_alphabet_letter: "bcdefghijklmnopqrstuvwxyz"
 
 - name: Get the list of existing instances
   delegate_to: localhost
@@ -24,6 +25,9 @@
   delegate_to: localhost
   when: debug | bool
 
+- set_fact:
+    test: "/dev/sd{{ allowed_device_alphabet_letter[1-1:1] }}"
+
 - name: Create and attach the volumes to instance
   delegate_to: localhost
   amazon.aws.ec2_vol:
@@ -31,6 +35,7 @@
     instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
     volume_size: "{{ storage_devices.max_size_gb|int }}"
     volume_type: "{{ storage_devices.specifications.volume_type }}"
+    device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
     delete_on_termination: yes
     tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_aws_vol

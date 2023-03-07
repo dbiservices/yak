@@ -4,4 +4,3 @@
   vars:
     state: absent
     server_name: "{{ machine_name }}"
-    ec2_key_name: "{{ target }}"

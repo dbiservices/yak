@@ -2,4 +2,7 @@
 ---
 - include_tasks: derived_disk_metadata_{{ provider }}.yml
 - include_tasks: partitions.yml
+  when: provider != 'aws'
+- include_tasks: partitions_v2.yml
+  when: provider == 'aws'
 

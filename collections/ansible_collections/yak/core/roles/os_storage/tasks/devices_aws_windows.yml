@@ -23,6 +23,11 @@
     volume_type: "{{ storage_devices.specifications.volume_type }}"
     device_name: "/dev/sd{{ item.drive_letter|lower }}"
     delete_on_termination: yes
-    tags: "{{ {'Name': 'disk_'+item.drive_letter+'_'+item.partition_label} | combine(custom_tags) }}"
+    tags: "{{ {
+                'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
+                'Partition_label': item.partition_label,
+                'Drive_letter': item.drive_letter
+              }
+              | combine(custom_tags) }}"
   register: r_aws_vol
   loop: "{{ os_storage }}"

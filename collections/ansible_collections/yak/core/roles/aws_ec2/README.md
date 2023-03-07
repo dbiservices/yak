@@ -25,7 +25,6 @@ Including an example of how to use your role (for instance, with variables passe
   vars:
     state: present
     server_name: "{{ machine_name }}"
-    ec2_key_name: "{{ machine_name }}"
     image_id: "{{ ami_id }}"
     local_ssh_key:
         path: "{{ ansible_ssh_private_key_file|dirname }}"

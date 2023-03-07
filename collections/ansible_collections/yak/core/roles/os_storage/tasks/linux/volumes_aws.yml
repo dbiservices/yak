@@ -25,46 +25,27 @@
 
 - name: Re-collect facts after disk addition and ensure expected data is present
   setup:
-  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length > number_of_devices|int
+  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length >= number_of_devices|int
   retries: 10
   delay: 5
 
-- set_fact:
-    linux_devices: "{{ ansible_devices|dict2items|json_query('[?value.serial==`vol0f67d2344b5367de8`].key') }}"
-
-- debug: var=linux_devices
+- debug: var=ansible_devices
   when: debug | bool
 
-- set_fact:
-    merged_list: []
+- name: Derive the pv list
+  delegate_to: localhost
+  yak.core.derive_pv_list:
+    provider: "{{ provider }}"
+    os_type: "{{ os_type }}"
+    vol_info: "{{ r_attached_volumes }}"
+    ansible_devices: "{{ ansible_devices }}"
+  register: r_derive_pv_list
 
-- set_fact:
-    merged_list: >
-      {{ merged_list  +
-        [
-          {
-            'volume_id': item.id,
-            'device_name': ansible_devices|dict2items|json_query('[?value.serial==`'+item.id|replace("vol-","vol")+'`].key|[0]')
-          }
-        ]
-      }}
-  with_items: "{{ r_attached_volumes.volumes }}"
-
-- debug: var=merged_list
-  when: debug | bool
-
-- set_fact:
-    pvs_list: []
-
-- set_fact:
-    pvs_list: "{{ pvs_list + [ '/dev/' + item.device_name ] }}"
-  with_items: "{{ merged_list }}"
-
-- debug: var=pvs_list
+- debug: var=r_derive_pv_list
   when: debug | bool
 
 - name: Create a volume group
   become: yes
   lvg:
     vg: "{{ volume_group_name }}"
-    pvs: "{{ pvs_list }}"
+    pvs: "{{ r_derive_pv_list.pv_list }}"
