@@ -60,7 +60,8 @@ $ docker run -it --rm --name yak --pull always -v ${MY_LOCAL_CONFIGURATION_DIR}:
 [...]
 yak@d47a98f30c99:~/yak$ ansible-inventory --graph
 @all:
-  |--@ungrouped:
+  |--@infrastructures:
+  |--@ungrouped:
 yak@d47a98f30c99:~/yak$ 
 ```
 
