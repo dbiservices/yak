@@ -1,4 +1,5 @@
 components/*
+!components/os_storage
 !components/README.md
 configuration/infrastructure/@*
 configuration/infrastructure/.ssh

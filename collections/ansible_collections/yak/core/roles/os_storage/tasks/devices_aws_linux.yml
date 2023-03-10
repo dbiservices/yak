@@ -1,15 +1,6 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Derive total volume need from fS requirement of the composant
-  set_fact:
-    total_volume_gb: "{{ os_storage|json_query('[*].min_size_gb|[]')|sum }}"
-
-- debug: var=storage_devices
-
-- name: Derive number of disk needed
-  set_fact:
-    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round(0,'ceil') | int  }}"
-    allowed_device_alphabet_letter: "bcdefghijklmnopqrstuvwxyz"
+- include_tasks: derive_volumes_need.yml
 
 - name: Get the list of existing instances
   delegate_to: localhost
