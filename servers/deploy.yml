@@ -52,8 +52,6 @@
 
     - include_role:
         name: yak.core.os_storage
-      vars:
-        vm_name: "{{ machine_name }}"
       loop: "{{ os_storages }}"
       loop_control:
         loop_var: os_storage

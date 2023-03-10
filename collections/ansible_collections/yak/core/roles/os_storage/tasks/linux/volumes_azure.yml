@@ -7,7 +7,7 @@
 - name: Get facts by name
   delegate_to: localhost
   azure_rm_virtualmachine_info:
-    name: "{{ vm_name }}"
+    name: "{{ machine_name }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_virtualmachine_info
 
@@ -18,7 +18,7 @@
 
 - set_fact:
     pvs_list: "{{ pvs_list + [ '/dev/disk/azure/scsi1/lun' + item|string ] }}"
-  with_items: "{{ r_azure_rm_virtualmachine_info|json_query('vms[?name==`'+vm_name+'`].data_disks[*].lun|[]') }}"
+  with_items: "{{ r_azure_rm_virtualmachine_info|json_query('vms[?name==`'+machine_name+'`].data_disks[*].lun|[]') }}"
 
 - debug: var=pvs_list
   when: debug | bool

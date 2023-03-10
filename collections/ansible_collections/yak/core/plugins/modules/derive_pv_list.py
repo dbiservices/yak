@@ -20,10 +20,18 @@ version_added: "1.0.0"
 description: This is my longer description explaining my test module.
 
 options:
+    azure_rm_virtualmachine_info:
+        description: the return of module 'azure_rm_virtualmachine_info'
+        required: false
+        type: dict
+    azure_rm_manageddisk_info:
+        description: the return of module 'azure_rm_manageddisk_info'
+        required: false
+        type: dict
     vol_info:
         description: the return of module 'vol_info' filtered
                      by the volume attached by YaK (excluding root volume).
-        required: true
+        required: false
         type: dict
     ansible_devices:
         description: the variable 'ansible_devices' after the re-collection
@@ -50,7 +58,9 @@ options:
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        vol_info=dict(type='dict', required=True),
+        azure_rm_virtualmachine_info=dict(type='dict', required=False),
+        azure_rm_manageddisk_info=dict(type='dict', required=False),
+        vol_info=dict(type='dict', required=False),
         ansible_devices=dict(type='dict', required=False),
         ansible_disks=dict(type='list', required=False),
         provider=dict(type='str', required=True),
@@ -123,7 +133,6 @@ def run_module():
         if module.params["os_type"] == "windows":
             aws_volume = ""
             for disk in module.params["ansible_disks"]:
-                aws_volume = "vol-{}".format(disk["physical_disk"]["serial_number"].split("_")[0][3:])
                 aws_volume = {
                     "windows_disk_number": disk["physical_disk"]["device_id"],
                     "guid": disk["guid"],
@@ -140,7 +149,23 @@ def run_module():
         if module.params["os_type"] == "linux":
             pass
         if module.params["os_type"] == "windows":
-            pass
+            azure_volume = ""
+            for disk in module.params["ansible_disks"]:
+                if "LUN " in disk["location"]:
+                    azure_volume = {
+                        "windows_disk_number": disk["physical_disk"]["device_id"],
+                        "guid": disk["guid"],
+                        "lun_id": disk["location"].split("LUN ")[1]
+                    }
+                    for data_disks in module.params["azure_rm_virtualmachine_info"]["vms"][0]["data_disks"]:
+                        if int(data_disks["lun"]) == int(azure_volume["lun_id"]):
+                            for azure_managed_disk in module.params["azure_rm_manageddisk_info"]["ansible_info"]["azure_managed_disk"]:
+                                if azure_managed_disk["id"].lower() == data_disks["managed_disk_id"].lower():
+                                    azure_volume["drive_letter"] = azure_managed_disk["tags"]["Drive_letter"]
+                                    azure_volume["partition_label"] = azure_managed_disk["tags"]["Partition_label"]
+                                    result["pv_list_extended"].append(azure_volume)
+                                    result["pv_list"].append(azure_volume["drive_letter"])
+
     if module.params["provider"] == "oci":
         if module.params["os_type"] == "linux":
             pass

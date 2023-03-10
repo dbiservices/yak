@@ -4,7 +4,7 @@
   community.aws.ec2_instance_info:
     region: "{{ region_id }}"
     filters:
-      "tag:Name": "{{ vm_name }}"
+      "tag:Name": "{{ machine_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
   register: r_ec2_instance_info
 

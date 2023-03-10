@@ -5,7 +5,7 @@
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ vm_name }}_{{ item.volume_name }}"
+    display_name: "{{ machine_name }}_{{ item.volume_name }}"
     size_in_gbs: "{{ item.size_GB }}"
     freeform_tags : "{{ custom_tags }}"
   with_items: "{{ volumes }}"
@@ -20,7 +20,7 @@
   oracle.oci.oci_compute_instance_facts:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ vm_name }}"
+    display_name: "{{ machine_name }}"
     lifecycle_state: RUNNING
   register: r_oci_compute_instance_facts
   failed_when: r_oci_compute_instance_facts.instances|length == 0

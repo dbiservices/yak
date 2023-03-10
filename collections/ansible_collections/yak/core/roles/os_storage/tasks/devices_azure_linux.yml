@@ -5,7 +5,7 @@
 - name: Check if disks already exist
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
-    name: "{{ vm_name }}_disk{{ item }}"
+    name: "{{ machine_name }}_disk{{ item }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_manageddisk_info
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
@@ -17,15 +17,15 @@
 - name: Create and attach the managed disk to VM
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk:
-    name: "{{ vm_name }}_disk{{ item }}"
+    name: "{{ machine_name }}_disk{{ item }}"
     resource_group: "{{ resource_group }}"
     disk_size_gb: "{{ storage_devices.max_size_gb|int }}"
-    managed_by: "{{ vm_name }}"
+    managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
     storage_account_type: "{{ storage_devices.specifications.storage_account_type }}"
     tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
-  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[*].name[]|[?contains(@, `'+vm_name+'_disk'+item+'`) == `true`]')|length==0
+  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[*].name[]|[?contains(@, `'+machine_name+'_disk'+item+'`) == `true`]')|length==0
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
 
 - debug: var=r_azure_rm_manageddisk

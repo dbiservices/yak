@@ -22,6 +22,7 @@
 
 - debug: var=r_attached_volumes
   when: debug|bool
+
 - debug: var=ansible_disks
   when: debug|bool
 

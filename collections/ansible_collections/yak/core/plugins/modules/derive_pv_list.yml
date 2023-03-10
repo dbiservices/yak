@@ -74,3 +74,45 @@
         os_type: "{{ os_type }}"
         vol_info: "{{ r_attached_volumes }}"
         ansible_disks: "{{ ansible_disks }}"
+
+
+- name: Test module derive_pv_list on AZURE/WINDOWS
+  tags: azure_windows
+  hosts: azure_yak_test/srv-win-test-01
+  gather_facts: no
+  tasks:
+
+    - name: Get azure_rm_virtualmachine_info
+      delegate_to: localhost
+      azure_rm_virtualmachine_info:
+        name: "{{ machine_name }}"
+        resource_group: "{{ resource_group }}"
+      register: r_azure_rm_virtualmachine_info
+
+    - debug: var=r_azure_rm_virtualmachine_info
+
+    - name: Get azure_rm_manageddisk_info
+      delegate_to: localhost
+      azure.azcollection.azure_rm_manageddisk_info:
+        managed_by: "{{ r_azure_rm_virtualmachine_info.vms[0].id }}"
+      register: r_azure_rm_manageddisk_info
+
+    - debug: var=r_azure_rm_manageddisk_info
+
+    - name: Get disk facts
+      win_disk_facts:
+
+    - debug: var=ansible_disks
+
+    - name: Derive the pv list
+      delegate_to: localhost
+      yak.core.derive_pv_list:
+        provider: "{{ provider }}"
+        os_type: "{{ os_type }}"
+        azure_rm_virtualmachine_info: "{{ r_azure_rm_virtualmachine_info }}"
+        azure_rm_manageddisk_info: "{{ r_azure_rm_manageddisk_info }}"
+        ansible_disks: "{{ ansible_disks }}"
+      register: r_derive_pv_list
+
+    - debug: var=r_derive_pv_list
+

@@ -1,7 +1,7 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 provider: aws
-vm_name: anonymous
+machine_name: anonymous
 os_type: linux
 volume_group_name: data
 custom_tags: {}

@@ -6,7 +6,6 @@ instance and create the expected FS layout as described in the storage template.
 
 ## Requirements
 
-- `vm_name`.
 - `volumes` dictionary.
 - `filesystems` dictionary.
 
@@ -16,7 +15,6 @@ instance and create the expected FS layout as described in the storage template.
 - include_role:
     name: yak.core.os_storage
   vars:
-    vm_name: "{{ machine_name }}"
     volumes: "{{ storage.volumes }}"
     filesystems: "{{ storage.filesystems }}"
   loop: "{{ storages }}"
