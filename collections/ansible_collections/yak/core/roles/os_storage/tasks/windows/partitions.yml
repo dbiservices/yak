@@ -1,26 +1,16 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Get disk facts
-  community.windows.win_disk_facts:
-
 - name: Initialize Disks
   win_shell: "Initialize-Disk -Number {{ item.windows_disk_number }}"
-  when: ansible_disks[item.windows_disk_number].guid is none
-  with_items: "{{ derived_disk_metadata }}"
+  when: item.guid is none
+  with_items: "{{ pv_list_extended }}"
 
 - name: Create partitions with max size
   community.windows.win_partition:
     drive_letter: "{{ item.drive_letter }}"
     partition_size: -1
     disk_number: "{{ item.windows_disk_number }}"
-  with_items: "{{ derived_disk_metadata }}"
-
-- name: Get disk facts
-  community.windows.win_disk_facts:
-
-- debug:
-    msg: "{{ ansible_disks[item.windows_disk_number].partitions[0].access_paths }}"
-  with_items: "{{ derived_disk_metadata }}"
+  with_items: "{{ pv_list_extended }}"
 
 - name: Format to NTFS partitions that have no filesystem
   community.windows.win_format:
@@ -28,4 +18,4 @@
     file_system: NTFS
     new_label: "{{ item.partition_label }}"
     full: no
-  with_items: "{{ derived_disk_metadata }}"
+  with_items: "{{ pv_list_extended }}"
