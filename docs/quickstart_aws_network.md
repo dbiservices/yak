@@ -1,0 +1,123 @@
+# Quickstart for AWS
+
+### Minimum requirements
+
+- AWS credentials.
+
+### 1. Declare your infrastructure
+
+Once in the container, you can describe the infrastructure you wish to begin with.
+Below is an example of an AWS testing infrastructure name "aws_testing":
+
+Create a directory under `./configuration/infrastructure` with your infrastructure name:
+
+```bash
+mkdir ./configuration/infrastructure/aws_testing
+```
+
+Copy the adaquat template file located under `./configuration/infrastructure_sample/`:
+
+```bash
+cp  ./configuration/infrastructure_sample/aws_network/variables.yml  ./configuration/infrastructure/aws_testing
+vi ./configuration/infrastructure/aws_testing/variables.yml
+```
+
+Adapt at least the below parameter:
+
+- region_id: 
+- availability_zone: 
+- vpc_name: 
+- vpc_cidr_block: 
+- subnet_list:
+    - az_value: 
+    - subnet_cidr: 
+    - subnet_tag_name: 
+    - nat_gw: yes | no 
+- igw_tag_name: 
+- security_group_name:
+
+The nat_gw variable is optionnal, fill it with yes only if you want a nat gateway linked to your subnet(s)
+
+```yaml
+# File ./configuration/infrastructure/aws_testing/variables.yml
+is_cloud_environment: yes
+provider: aws
+region_id: 
+availability_zone: 
+vpc_name: 
+vpc_cidr_block: 
+subnet_list:
+    - az_value: 
+      subnet_cidr: 
+      subnet_tag_name: 
+      nat_gw: 
+igw_tag_name: 
+security_group_name: 
+ip_list:
+  - 192.168.1.0/32
+  - 172.0.0.1/32
+TCP_ports_security_group_public_IP: 
+  - 22
+  - 80
+  - 443
+TCP_ports_security_group_other_IP: 
+  - 22
+  - 80
+  - 443
+UDP_ports_security_group_public_IP: 
+  - 10050
+  - 10051
+UDP_ports_security_group_other_IP: 
+  - 10050
+  - 10051
+```
+
+You should now see your infrastructure in the Ansible inventory:
+
+```bash
+$ ansible-inventory --graph --vars
+@all:
+  |--@aws_testing:
+  |  |--{availability_zone = ********}
+  |  |--{igw_tag_name = ******}
+  |  |--{is_cloud_environment = True}
+  |  |--{provider = aws}
+  |  |--{region_id = ************}
+  |  |--{security_group_name = ******}
+  |  |--{subnet_list = [{'az_value': ******, 'subnet_cidr': ********, 'subnet_tag_name': *******, 'nat_gw': **}]}
+  |  |--{vpc_cidr_block = *********}
+  |  |--{vpc_name = ********}
+  |--@servers:
+  |--@ungrouped:
+  |--{ansible_winrm_read_timeout_sec = 60}
+  |--{yak_inventory_type = file}
+  |--{yak_local_ssh_config_file = ~/yak/configuration/infrastructure/.ssh/config}
+  |--{yak_secrets_directory = /workspace/yak/configuration/infrastructure/secrets}
+```
+
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/infrastructure.md) about infrastructure declaration.
+
+
+### 2. Copy your AWS Cloud authentication
+
+Use your AWS CLI programmatic access key variables:
+
+```bash
+export AWS_ACCESS_KEY_ID="*******"
+export AWS_SECRET_ACCESS_KEY="**********"
+export AWS_SESSION_TOKEN="***********`
+```
+
+[Here are more details](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/cloud_authentication.md) about the Cloud provider authentification.
+
+### 3. Deploy your infrastructure
+
+```
+ansible-playbook infrastructure/deploy.yml -e target=infrastructure/aws_testing
+```
+
+
+## License
+
+GNU General Public License v3.0 or later
+See COPYING to see the full text.

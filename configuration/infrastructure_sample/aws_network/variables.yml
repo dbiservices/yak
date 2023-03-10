@@ -1,0 +1,32 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+is_cloud_environment: yes
+provider: aws
+region_id: eu-central-1
+availability_zone: eu-central-1a
+vpc_name: 
+vpc_cidr_block: 
+subnet_list:
+    - az_value: 
+      subnet_cidr: 
+      subnet_tag_name: 
+      nat_gw: 
+igw_tag_name: 
+security_group_name: 
+ip_list:
+  - 192.168.1.0/32
+  - 172.0.0.1/32
+TCP_ports_security_group_public_IP: 
+  - 22
+  - 80
+  - 443
+TCP_ports_security_group_other_IP: 
+  - 22
+  - 80
+  - 443
+UDP_ports_security_group_public_IP: 
+  - 10050
+  - 10051
+UDP_ports_security_group_other_IP: 
+  - 10050
+  - 10051

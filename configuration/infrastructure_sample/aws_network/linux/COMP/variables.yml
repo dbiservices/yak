@@ -1,0 +1,4 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# 
+component_type : demo
+storage: linux/storage/demo_instance
