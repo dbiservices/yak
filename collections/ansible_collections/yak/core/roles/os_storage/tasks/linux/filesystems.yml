@@ -4,7 +4,7 @@
   community.general.lvol:
     vg: "{{ volume_group_name }}"
     lv: "{{ item.mount_point | replace('/','') }}"
-    size: "{{ item.min_size_gb }}g"
+    size: "{{ item.size_GB }}g"
     shrink: no
   with_items: "{{ os_storages }}"
 

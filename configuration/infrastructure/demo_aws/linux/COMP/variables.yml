@@ -5,8 +5,8 @@ component_type: os_storage
 # Overwrite "os_storage" from component variables
 os_storage:
     linux:
-        - { min_size_gb: 36, filesystem_type: "xfs", mount_point: "/u01" }
-        - { min_size_gb: 16, filesystem_type: "xfs", mount_point: "/u02" }
-        - { min_size_gb: 10, filesystem_type: "xfs", mount_point: "/u03" }
-        - { min_size_gb: 24, filesystem_type: "xfs", mount_point: "/u90" }
+        - { size_GB: 36, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_GB: 16, filesystem_type: "xfs", mount_point: "/u02" }
+        - { size_GB: 10, filesystem_type: "xfs", mount_point: "/u03" }
+        - { size_GB: 24, filesystem_type: "xfs", mount_point: "/u90" }
 

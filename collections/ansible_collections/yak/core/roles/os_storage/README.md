@@ -10,7 +10,7 @@ instance and create the expected FS layout as described in the storage template.
 
 ```
 storage_devices:
-  min_size_gb: 10   # Valid for Linux
+  size_GB: 10   # Valid for Linux
   max_size_gb: 100  # Valid for Linux
   specifications:   # Valid for Linux and Windows if applicable
     xxxxxxxxxx: xxxxxxxxxxxxxx
@@ -21,12 +21,12 @@ storage_devices:
 ```
 os_storage:  # The variable name `os_storage` is expected by YaK core.
     linux:   # FS for Linux
-        - { min_size_gb: 36, filesystem_type: "xfs", mount_point: "/u01" }
-        - { min_size_gb: 16, filesystem_type: "xfs", mount_point: "/u02" }
-        - { min_size_gb:  8, filesystem_type: "xfs", mount_point: "/u03" }
-        - { min_size_gb:  8, filesystem_type: "xfs", mount_point: "/u04" }
-        - { min_size_gb: 24, filesystem_type: "xfs", mount_point: "/u90" }
+        - { size_GB: 36, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_GB: 16, filesystem_type: "xfs", mount_point: "/u02" }
+        - { size_GB:  8, filesystem_type: "xfs", mount_point: "/u03" }
+        - { size_GB:  8, filesystem_type: "xfs", mount_point: "/u04" }
+        - { size_GB: 24, filesystem_type: "xfs", mount_point: "/u90" }
     windows:  # Disks for windows
-        - { min_size_gb: 5, drive_letter: F, partition_label: data   }
-        - { min_size_gb: 5, drive_letter: G, partition_label: backup }
+        - { size_GB: 5, drive_letter: F, partition_label: data   }
+        - { size_GB: 5, drive_letter: G, partition_label: backup }
 ```

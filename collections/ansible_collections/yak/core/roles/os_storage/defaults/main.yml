@@ -7,7 +7,7 @@ volume_group_name: data
 custom_tags: {}
 
 storage_devices:
-  min_size_gb: 10
+  size_GB: 10
   max_size_gb: 100
   specifications:
     volume_type: gp2

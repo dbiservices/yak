@@ -209,7 +209,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
 
         self.inventory.groups['all'].vars['storage_devices'] = {
-            'min_size_gb': 10,
+            'size_GB': 10,
             'max_size_gb': 100,
             'specifications': {}
         }
@@ -416,7 +416,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 ]['ip']
 
             # Initiate list of storage
-            self.inventory.hosts[host].vars["storages"] = []
             self.inventory.hosts[host].vars["os_storages"] = []
 
             # Populate components on current host
@@ -461,32 +460,21 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 )
 
             # Add storage (legacy, variable storage)
-            if 'storage' in component_config_yaml:
-
+            if 'storage' in component_config_yaml and 'os_storage' not in component_config_yaml:
                 storage_config_file = "{}/templates/{}.yml".format(
                     self.configuration_path, component_config_yaml["storage"]
                 )
-
                 storage_config_yaml = self._load_yaml_file(storage_config_file)
 
-                if self.current_provider not in \
-                        storage_config_yaml["volumes"]:
-                    raise AnsibleError(
-                        "Storage volume for provider '{}' not found in '{}'."
-                        .format(self.current_provider, storage_config_file))
-
                 # Add template vars to component vars
-                self.inventory.hosts[component].vars["storage"] = \
-                    storage_config_yaml
-                self.inventory.hosts[component].vars["storage"]["volumes"] = \
-                    self.inventory.hosts[
-                        component
-                ].vars["storage"]["volumes"][self.current_provider]
+                # Linux
+                if self.inventory.hosts[component].vars["os_type"] == "linux":
+                    self.inventory.hosts[component].vars["os_storage"] = storage_config_yaml["filesystems"]
+                # Windows
+                if self.inventory.hosts[component].vars["os_type"] == "windows":
+                    self.inventory.hosts[component].vars["os_storage"] = storage_config_yaml["volumes"][self.current_provider]
 
-                # Add template var to server
-                self.inventory.hosts[host].vars["storages"].append(
-                    self.inventory.hosts[component].vars["storage"]
-                )
+                self.inventory.hosts[host].vars["os_storages"].append(self.inventory.hosts[component].vars["os_storage"])
 
             # Add template (legacy, replaced by variables)
             if 'templates' in component_config_yaml:
