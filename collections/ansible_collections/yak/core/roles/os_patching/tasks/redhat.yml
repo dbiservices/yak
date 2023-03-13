@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Get packages that can be upgraded
   become: yes
@@ -14,12 +14,12 @@
   ansible.builtin.debug:
     msg: "{{ reg_dnf_output.results | map(attribute='name') | list }}"
   when: reg_dnf_output.results
-  
+
 
 # - name: Request user confirmation
 #   ansible.builtin.pause:
 #     prompt: |
-    
+
 #       *************************************************************************
 #       * The packages listed above will be upgraded. Do you want to continue ? *
 #       * -> Press RETURN to continue.                                          *
@@ -42,7 +42,7 @@
 - name: Display errors if upgrade failed
   ansible.builtin.debug:
     msg: "Packages upgrade failed"
-  when: 
+  when:
     - reg_dnf_output.results
     - reg_upgrade_ok is not defined
 

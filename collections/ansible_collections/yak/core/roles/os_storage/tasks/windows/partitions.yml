@@ -1,16 +1,16 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Initialize Disks
-  win_shell: "Initialize-Disk -Number {{ item.windows_disk_number }}"
-  when: item.guid is none
-  with_items: "{{ pv_list_extended }}"
+- name: Initialize a disk
+  community.windows.win_initialize_disk:
+    disk_number: "{{ item.windows_disk_number }}"
+  loop: "{{ pv_list_extended }}"
 
 - name: Create partitions with max size
   community.windows.win_partition:
     drive_letter: "{{ item.drive_letter }}"
     partition_size: -1
     disk_number: "{{ item.windows_disk_number }}"
-  with_items: "{{ pv_list_extended }}"
+  loop: "{{ pv_list_extended }}"
 
 - name: Format to NTFS partitions that have no filesystem
   community.windows.win_format:
@@ -18,4 +18,4 @@
     file_system: NTFS
     new_label: "{{ item.partition_label }}"
     full: no
-  with_items: "{{ pv_list_extended }}"
+  loop: "{{ pv_list_extended }}"

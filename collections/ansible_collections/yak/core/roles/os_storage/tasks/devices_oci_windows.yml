@@ -1,15 +1,20 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Create volume
   delegate_to: localhost
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ machine_name }}_{{ item.volume_name }}"
-    size_in_gbs: "{{ item.size_GB }}"
-    freeform_tags : "{{ custom_tags }}"
-  with_items: "{{ volumes }}"
+    display_name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
+    size_in_gbs: "{{ storage_devices.max_size_gb|int }}"
+    freeform_tags : "{{ {
+                          'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
+                          'Partition_label': item.partition_label,
+                          'Drive_letter': item.drive_letter
+                        }
+                        | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
+  loop: "{{ os_storage }}"
 
 - debug: var=r_oci_blockstorage_volume_present
   delegate_to: localhost
@@ -36,9 +41,10 @@
     type: iscsi
     instance_id: "{{ r_oci_compute_instance_facts.instances[0].id }}"
     volume_id: "{{ item.volume.id }}"
-  with_items: "{{ r_oci_blockstorage_volume_present.results }}"
+  loop: "{{ r_oci_blockstorage_volume_present.results }}"
   register: r_oci_blockstorage_volume_attachment
 
 - debug: var=r_oci_blockstorage_volume_attachment
   delegate_to: localhost
   when: debug | bool
+

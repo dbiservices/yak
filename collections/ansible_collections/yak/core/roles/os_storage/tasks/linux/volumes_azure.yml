@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 # IMPORTANT: On Azure, the only way to make a link between machine disks and
 # their device mapping in the VM is by checking the value LUN number of the
 # Azure VM and to match it with the path /dev/disk/azure/scsi1/lun{LUN number}

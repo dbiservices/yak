@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services
+# Copyright: (c) 2023, dbi services
 # This file is part of YaK core.
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 ARG CI_COMMIT_TAG="Default_Value"
@@ -23,7 +23,7 @@ COPY ./install/entry-point.sh /entry-point.sh
 COPY ./install/yakhelp.lst /yakhelp.lst
 RUN chmod u+x /entry-point.sh
 RUN chmod ugo+x /yakhelp.lst
-RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG" 
+RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG"
 RUN echo "CI_COMMIT_SHORT_SHA: $CI_COMMIT_SHORT_SHA"
 RUN echo "YaK version: $CI_COMMIT_TAG" > /workspace/yak/.version
 RUN echo "commit short sha: $CI_COMMIT_SHORT_SHA" >> /workspace/yak/.version

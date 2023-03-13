@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Check target type
   tags: always
@@ -45,10 +45,10 @@
     debug: false
   tasks:
 
-    - include_role:
-        name: yak.core.os_prerequisites
-      vars:
-        host_name: "{{ hostname }}"
+    # - include_role:
+    #     name: yak.core.os_prerequisites
+    #   vars:
+    #     host_name: "{{ hostname }}"
 
     - include_role:
         name: yak.core.os_storage
