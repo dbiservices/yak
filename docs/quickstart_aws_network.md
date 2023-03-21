@@ -18,7 +18,7 @@ Create a directory under `./configuration/infrastructure` with your infrastructu
 mkdir ./configuration/infrastructure/aws_testing
 ```
 
-Copy the adaquat template file located under `./configuration/infrastructure_sample/`:
+Copy the adequat template file located under `./configuration/infrastructure_sample/`:
 
 ```bash
 cp  ./configuration/infrastructure_sample/aws_network/variables.yml  ./configuration/infrastructure/aws_testing
@@ -146,7 +146,7 @@ export AWS_SESSION_TOKEN="***********`
 ### 3. Deploy your infrastructure
 
 ```
-ansible-playbook infrastructure/deploy.yml -e target=infrastructure/aws_testing
+ansible-playbook infrastructures/deploy.yml -e target=infrastructure/aws_testing
 ```
 
 
