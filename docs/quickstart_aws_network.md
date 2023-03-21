@@ -40,7 +40,7 @@ Adapt the below parameter:
 
 The nat_gw variable is optionnal, fill it with yes only if you want a nat gateway linked to your subnet(s).  
 **A nat gateway MUST be created in a PUBLIC subnet.**  
-The nat_target varaible must be filled with the name of the **PRIVATE** subnet you want to link to the nat gateway, if you want one.
+The **nat_target** variable must be filled with the name of the **PRIVATE** subnet you want to link to the nat gateway, if you want one.
 
 
 ```yaml
@@ -103,13 +103,18 @@ You should now see your infrastructure in the Ansible inventory:
 $ ansible-inventory --graph --vars
 @all:
   |--@aws_testing:
+  |  |--{TCP_ports_security_group_other_IP = [22, 80, 443]}
+  |  |--{TCP_ports_security_group_public_IP = [22, 80, 443]}
+  |  |--{UDP_ports_security_group_other_IP = [10050, 10051]}
+  |  |--{UDP_ports_security_group_public_IP = [10050, 10051]}
   |  |--{availability_zone = ********}
   |  |--{igw_tag_name = ******}
+  |  |--{ip_list = ['192.168.1.0/32', '172.0.0.1/32']}
   |  |--{is_cloud_environment = True}
   |  |--{provider = aws}
   |  |--{region_id = ************}
   |  |--{security_group_name = ******}
-  |  |--{subnet_list = [{'az_value': ******, 'subnet_cidr': ********, 'subnet_tag_name': *******, 'nat_gw': **}]}
+  |  |--{subnet_list = [{'az_value': ******, 'subnet_cidr': ********, 'subnet_tag_name': *******, 'nat_gw': **}],[...]}
   |  |--{vpc_cidr_block = *********}
   |  |--{vpc_name = ********}
   |--@servers:
