@@ -31,28 +31,53 @@ Adapt at least the below parameter:
 - subnet_list:
     - az_value: 
     - subnet_cidr: 
-    - subnet_tag_name: 
+    - subnet_tag_name:
+    - public: yes | no 
     - nat_gw: yes | no 
+    - nat_target: 
 - igw_tag_name: 
 - security_group_name:
 
-The nat_gw variable is optionnal, fill it with yes only if you want a nat gateway linked to your subnet(s)
+The nat_gw variable is optionnal, fill it with yes only if you want a nat gateway linked to your subnet(s). 
+**A nat gateway MUST be created in a PUBLIC subnet**
+The nat_target varaible must be filled with the name of the **PRIVATE** subnet you want to link to the nat gateway, if you want one.
+
 
 ```yaml
 # File ./configuration/infrastructure/aws_testing/variables.yml
 is_cloud_environment: yes
 provider: aws
-region_id: 
-availability_zone: 
-vpc_name: 
-vpc_cidr_block: 
+region_id: eu-central-1
+availability_zone: eu-central-1a
+vpc_name: yak_vpc_test
+vpc_cidr_block: 10.10.0.0/16
 subnet_list:
-    - az_value: 
-      subnet_cidr: 
-      subnet_tag_name: 
-      nat_gw: 
-igw_tag_name: 
-security_group_name: 
+    - az_value: eu-central-1a
+      subnet_cidr: 10.10.1.0/24
+      subnet_tag_name: yak_subnet_public_1
+      public: "yes"
+      nat_gw: "yes"
+      nat_target: /
+    - az_value: eu-central-1a
+      subnet_cidr: 10.10.2.0/24
+      subnet_tag_name: yak_subnet_private_1
+      public: "no"
+      nat_gw: "no"
+      nat_target: yak_subnet_private_1
+    - az_value: eu-central-1b
+      subnet_cidr: 10.10.3.0/24
+      subnet_tag_name: yak_subnet_public_2
+      public: "no"
+      nat_gw: "no"
+      nat_target: /
+    - az_value: eu-central-1b
+      subnet_cidr: 10.10.4.0/24
+      subnet_tag_name: yak_subnet_private_2
+      public: "no"
+      nat_gw: "no"
+      nat_target: /
+igw_tag_name: yak_igw_test
+security_group_name: yak_sg
 ip_list:
   - 192.168.1.0/32
   - 172.0.0.1/32

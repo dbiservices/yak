@@ -35,15 +35,25 @@
   loop: "{{ subnet_list }}"
   register: vpc_subnet_delete
 
-- name: delete route table
+- name: delete public route table
   delegate_to: localhost
   amazon.aws.ec2_vpc_route_table:
     vpc_id: "{{ vpc_id }}"
     region: "{{ region_id }}"
-    route_table_id: "{{ route_table_id }}"
+    route_table_id: "{{ public_route_table_id }}"
     lookup: id
     state: absent
-  register: route_table_delete
+  register: public_route_table_delete
+
+- name: delete private route table
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region_id }}"
+    route_table_id: "{{ private_route_table_id }}"
+    lookup: id
+    state: absent
+  register: private_route_table_delete
 
 - name: delete vpc
   delegate_to: localhost
@@ -54,6 +64,3 @@
     purge_cidrs: true
     state: absent
   register: vpc_delete
-
-
-

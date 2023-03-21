@@ -5,7 +5,7 @@
   delegate_to: localhost
   register: public_ip
 
-- name: Yak VPC creation test
+- name: YaK VPC creation test
   delegate_to: localhost
   ec2_vpc_net:
     name: "{{ vpc_name }}"
@@ -13,7 +13,7 @@
     region: "{{ region_id }}"
   register: yak_VPC
 
-- name: Yak subnet creation test
+- name: YaK subnet creation test
   delegate_to: localhost
   ec2_vpc_subnet:
     state: present
@@ -24,10 +24,20 @@
     tags:
       Name: "{{ item.subnet_tag_name }}"
       Nat: "{{ item.nat_gw }}"
+      Public: "{{ item.public }}"
+      Target: "{{ item.nat_target }}"
   loop: "{{ subnet_list }}"
   register: yak_subnet
 
-- name: Yak Internet gateway creation
+- name: Associate public subnets 
+  delegate_to: localhost
+  ec2_vpc_subnet_info:
+    region: "{{ region_id}}"
+    filters:
+      "tag:Public": "yes"
+  register: subnet_facts
+
+- name: YaK Internet gateway creation
   delegate_to: localhost
   ec2_vpc_igw:
     vpc_id: "{{ yak_VPC.vpc.id }}"
@@ -36,22 +46,6 @@
     tags:
       Name: "{{ igw_tag_name }}"
   register: yak_igw
-
-- name: Set up subnet route table
-  delegate_to: localhost
-  amazon.aws.ec2_vpc_route_table:
-    vpc_id: "{{ yak_VPC.vpc.id }}"
-    region: "{{ region_id }}"
-    tags:
-      Name: ade_yak_route_table
-    subnets:
-      - "{{ item.subnet.id }}"
-    routes:
-      - dest: 0.0.0.0/0
-        gateway_id: "{{ yak_igw.gateway_id }}"
-  with_items: "{{yak_subnet.results}}" 
-  when: (item.subnet.tags.Nat == "no" )  
-  register: yak_route_table
 
 - name: Create new nat gateway with an EIP
   delegate_to: localhost
@@ -67,7 +61,46 @@
   when: (item.subnet.tags.Nat == "yes" ) 
   register: yak_nat_gateway
 
-- name: Yak security group creation
+- name: Gather nat gateway info
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_nat_gateway_info:
+    region: "{{ region_id}}"
+    filters:
+      "vpc-id": "{{ yak_VPC.vpc.id }}"
+      "state" : "available"
+  register: nat_gateway_facts
+
+- name: Create a public route table
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    tags:
+      Name: yak_route_table
+    subnets:
+      "{{ subnet_facts.subnets | map(attribute='id') | list}}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ yak_igw.gateway_id }}"
+  register: yak_public_route_table
+
+- name: Create private route tables
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    tags:
+      Name: route_table_"{{item.subnet.tags.Name}}"
+    subnets:
+      - "{{ item.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ nat_gateway_facts.result | map(attribute='nat_gateway_id') | first }}"
+  loop: "{{yak_subnet.results}}" 
+  when: (item.subnet.tags.Public == "no") and (item.subnet.tags.Target ==  item.subnet.tags.Name)
+  register: yak_private_route_table
+
+- name: YaK security group creation
   delegate_to: localhost
   amazon.aws.ec2_group:
     name: "{{ security_group_name }}"
