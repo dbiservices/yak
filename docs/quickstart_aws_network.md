@@ -7,7 +7,7 @@
 ### 1. Declare your infrastructure
 
 Once in the container, you can describe the infrastructure you wish to begin with.
-Below is an example of an AWS testing infrastructure name "aws_testing":
+Below is an example of an AWS testing infrastructure named "aws_testing":
 
 Create a directory under `./configuration/infrastructure` with your infrastructure name:
 
@@ -22,7 +22,7 @@ cp  ./configuration/infrastructure_sample/aws_network/variables.yml  ./configura
 vi ./configuration/infrastructure/aws_testing/variables.yml
 ```
 
-Adapt at least the below parameter:
+Adapt the below parameter:
 
 - region_id: 
 - availability_zone: 
@@ -38,8 +38,8 @@ Adapt at least the below parameter:
 - igw_tag_name: 
 - security_group_name:
 
-The nat_gw variable is optionnal, fill it with yes only if you want a nat gateway linked to your subnet(s). 
-**A nat gateway MUST be created in a PUBLIC subnet**
+The nat_gw variable is optionnal, fill it with yes only if you want a nat gateway linked to your subnet(s).  
+**A nat gateway MUST be created in a PUBLIC subnet.**  
 The nat_target varaible must be filled with the name of the **PRIVATE** subnet you want to link to the nat gateway, if you want one.
 
 
