@@ -6,6 +6,9 @@
 
 ### 1. Declare your infrastructure
 
+**DISCLAIMER**: Infrastructure deployment will only work the exact example given is this documentation, improvements will be coming soon.
+
+
 Once in the container, you can describe the infrastructure you wish to begin with.
 Below is an example of an AWS testing infrastructure named "aws_testing":
 
