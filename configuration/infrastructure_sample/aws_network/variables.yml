@@ -1,0 +1,52 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+is_cloud_environment: yes
+provider: aws
+region_id: eu-central-1
+availability_zone: eu-central-1a
+vpc_name: yak_vpc_test
+vpc_cidr_block: 10.10.0.0/16
+subnet_list:
+    - az_value: eu-central-1a
+      subnet_cidr: 10.10.1.0/24
+      subnet_tag_name: yak_subnet_public_1
+      public: "yes"
+      nat_target: /
+      nat_gw: "yes"
+    - az_value: eu-central-1a
+      subnet_cidr: 10.10.2.0/24
+      subnet_tag_name: yak_subnet_private_1
+      public: "no"
+      nat_gw: "no"
+      nat_target: yak_subnet_private_1
+    - az_value: eu-central-1b
+      subnet_cidr: 10.10.3.0/24
+      subnet_tag_name: yak_subnet_public_2
+      nat_target: /
+      public: "yes"
+      nat_gw: "no"
+    - az_value: eu-central-1b
+      subnet_cidr: 10.10.4.0/24
+      subnet_tag_name: yak_subnet_private_2
+      nat_target: /
+      public: "no"
+      nat_gw: "no"
+igw_tag_name: yak_igw_test
+security_group_name: yak_sg
+ip_list:
+  - 192.168.1.0/32
+  - 172.0.0.1/32
+TCP_ports_security_group_public_IP: 
+  - 22
+  - 80
+  - 443
+TCP_ports_security_group_other_IP: 
+  - 22
+  - 80
+  - 443
+UDP_ports_security_group_public_IP: 
+  - 10050
+  - 10051
+UDP_ports_security_group_other_IP: 
+  - 10050
+  - 10051

@@ -1,0 +1,4 @@
+- include_role:
+    name: yak.core.azure_infrastructure
+  vars:
+    state: absent

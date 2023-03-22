@@ -1,0 +1,134 @@
+---
+- name: Get my public IP
+  ipify_facts:
+    timeout: 20
+  delegate_to: localhost
+  register: public_ip
+
+- name: YaK VPC creation test
+  delegate_to: localhost
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr_block }}"
+    region: "{{ region_id }}"
+  register: yak_VPC
+
+- name: YaK subnet creation test
+  delegate_to: localhost
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    az: "{{ item.az_value }}"
+    cidr: "{{ item.subnet_cidr }}"
+    tags:
+      Name: "{{ item.subnet_tag_name }}"
+      Nat: "{{ item.nat_gw }}"
+      Public: "{{ item.public }}"
+      Target: "{{ item.nat_target }}"
+  loop: "{{ subnet_list }}"
+  register: yak_subnet
+
+- name: Associate public subnets 
+  delegate_to: localhost
+  ec2_vpc_subnet_info:
+    region: "{{ region_id}}"
+    filters:
+      "tag:Public": "yes"
+  register: subnet_facts
+
+- name: YaK Internet gateway creation
+  delegate_to: localhost
+  ec2_vpc_igw:
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    state: present
+    tags:
+      Name: "{{ igw_tag_name }}"
+  register: yak_igw
+
+- name: Create new nat gateway with an EIP
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_nat_gateway:
+    state: present
+    subnet_id: "{{ item.subnet.id }}"
+    wait: true
+    region: "{{ region_id }}"
+    if_exist_do_not_create: true
+    tags:
+      Name: "Nat gateway for {{ item.subnet.tags.Name }}"
+  with_items: "{{yak_subnet.results }}"
+  when: (item.subnet.tags.Nat == "yes" ) 
+  register: yak_nat_gateway
+
+- name: Gather nat gateway info
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_nat_gateway_info:
+    region: "{{ region_id}}"
+    filters:
+      "vpc-id": "{{ yak_VPC.vpc.id }}"
+      "state" : "available"
+  register: nat_gateway_facts
+
+- name: Create a public route table
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    tags:
+      Name: yak_route_table
+    subnets:
+      "{{ subnet_facts.subnets | map(attribute='id') | list}}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ yak_igw.gateway_id }}"
+  register: yak_public_route_table
+
+- name: Create private route tables
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    tags:
+      Name: route_table_"{{item.subnet.tags.Name}}"
+    subnets:
+      - "{{ item.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ nat_gateway_facts.result | map(attribute='nat_gateway_id') | first }}"
+  loop: "{{yak_subnet.results}}" 
+  when: (item.subnet.tags.Public == "no") and (item.subnet.tags.Target ==  item.subnet.tags.Name)
+  register: yak_private_route_table
+
+- name: YaK security group creation
+  delegate_to: localhost
+  amazon.aws.ec2_group:
+    name: "{{ security_group_name }}"
+    description: "Yak Security group for {{ vpc_name }}"
+    vpc_id: "{{ yak_VPC.vpc.id }}"
+    region: "{{ region_id }}"
+    tags:
+      Name: "{{ security_group_name }}"
+    rules:
+      - proto: TCP
+        ports: "{{ TCP_ports_security_group_public_IP }}"
+        cidr_ip: "{{ ipify_public_ip  + '/' + '32' }}"
+        rule_desc: allow access 
+      - proto: TCP
+        ports: "{{ TCP_ports_security_group_other_IP }}"
+        cidr_ip: "{{ ip_list }}"
+        rule_desc: allow access 
+      - proto: UDP
+        ports: "{{ UDP_ports_security_group_public_IP }}"
+        cidr_ip: "{{ ipify_public_ip  + '/' + '32' }}"
+        rule_desc: allow access 
+      - proto: UDP
+        ports: "{{ UDP_ports_security_group_other_IP }}"
+        cidr_ip: "{{ ip_list }}"
+        rule_desc: allow access
+      - proto: icmp
+        icmp_type: -1
+        icmp_code: -1
+        cidr_ip: "{{ ipify_public_ip  + '/' + '32' }}"
+        rule_desc: allow access ICMP
+  register: yak_security_group
