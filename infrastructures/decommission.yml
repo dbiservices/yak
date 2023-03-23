@@ -1,0 +1,15 @@
+---
+- name: Delete infrastructure
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - delegate_to: localhost
+      ansible.builtin.assert:
+        that:
+          - target_type == 'infrastructure'
+        msg: "This playbook can only run on 'infrastructure' target type. Current is '{{ target_type }}'."
+
+    - include_tasks: "decommission/{{ provider }}.yml"

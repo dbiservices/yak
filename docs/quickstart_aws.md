@@ -2,7 +2,7 @@
 
 ### Minimum requirements
 
-- AWS infrastructure must exist with private or public IP.
+- AWS infrastructure must exist with private or public IP. [Tutorial to create your own infrastructure here](https://gitlab.com/yak4all/yak/-/blob/main/docs/quickstart_aws_network.md)
 - AWS credentials.
 
 ### 1. Declare your infrastructure

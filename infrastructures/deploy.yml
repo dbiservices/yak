@@ -1,0 +1,57 @@
+---
+- name: Check target type
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+
+    - delegate_to: localhost
+      ansible.builtin.assert:
+        that:
+          - target_type == 'infrastructure'
+        msg: "This playbook can only run on 'infrastructure' target type. Current is '{{ target_type }}'."
+
+- name: Deploy infrastructure
+  tags: infrastructure
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+    - include_tasks: "deploy/{{ provider }}.yml"
+    - debug: var=yak_route_table
+    - name: Update infrastructure variables
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        target: aws_infrastructure
+        infrastructure:
+          vpc_id: "{{ yak_VPC.vpc.id }}"
+          security_group_id: "{{ yak_security_group.group_id }}"
+          nat_gateway_id: "{{ yak_nat_gateway.results[1].nat_gateway_id }}"
+          route_table_id: "{{ yak_route_table.results[0].route_table.route_table_id }}"
+          subnet_list:
+              - az_value: "{{yak_subnet.results[0].item.az_value}}"
+                subnet_cidr: "{{yak_subnet.results[0].item.subnet_cidr}}"
+                subnet_tag_name: "{{yak_subnet.results[0].item.subnet_tag_name}}"
+                subnet_id: "{{ yak_subnet.results[0].subnet.id }}"
+              - az_value: "{{yak_subnet.results[1].item.az_value}}"
+                subnet_cidr: "{{yak_subnet.results[1].item.subnet_cidr}}"
+                subnet_tag_name: "{{yak_subnet.results[1].item.subnet_tag_name}}"
+                subnet_id: "{{ yak_subnet.results[1].subnet.id }}"
+              - az_value: "{{yak_subnet.results[2].item.az_value}}"
+                subnet_cidr: "{{yak_subnet.results[2].item.subnet_cidr}}"
+                subnet_tag_name: "{{yak_subnet.results[2].item.subnet_tag_name}}"
+                subnet_id: "{{ yak_subnet.results[2].subnet.id }}"
+              - az_value: "{{yak_subnet.results[3].item.az_value}}"
+                subnet_cidr: "{{yak_subnet.results[3].item.subnet_cidr}}"
+                subnet_tag_name: "{{yak_subnet.results[3].item.subnet_tag_name}}"
+                subnet_id: "{{ yak_subnet.results[3].subnet.id }}"  
+#       target: azure_infrastructure
+#       infrastructure:
+#         resource_group: "{{ resource_group }}"
+#         virtual_network_name: "{{ virtual_network_name }}"
+#         subnet_name: "{{ subnet_name }}"
+#         security_group: "{{ security_group }}"
+

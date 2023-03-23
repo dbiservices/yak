@@ -1,0 +1,66 @@
+- name: "Delete security group by its id"
+  delegate_to: localhost
+  amazon.aws.ec2_group:
+    region: "{{ region_id }}"
+    group_id: "{{ security_group_id }}"
+    state: absent
+  register: vpc_sg_delete
+
+- name: Delete nat gateway and release EIP.
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_nat_gateway:
+    state: absent
+    nat_gateway_id: "{{ nat_gateway_id}}"
+    release_eip: true
+    wait: true
+    wait_timeout: 300
+    region: "{{ region_id }}"
+  register: nat_gw_delete
+
+- name: delete internet gateway
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_igw:
+    state: absent
+    region: "{{ region_id }}"
+    vpc_id: "{{ vpc_id }}"
+  register: vpc_igw_delete
+
+- name: delete subnet in a vpc
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_subnet:
+    state: absent
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region_id }}"
+    cidr: "{{ item.subnet_cidr }}"
+  loop: "{{ subnet_list }}"
+  register: vpc_subnet_delete
+
+- name: delete public route table
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region_id }}"
+    route_table_id: "{{ public_route_table_id }}"
+    lookup: id
+    state: absent
+  register: public_route_table_delete
+
+- name: delete private route table
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region_id }}"
+    route_table_id: "{{ private_route_table_id }}"
+    lookup: id
+    state: absent
+  register: private_route_table_delete
+
+- name: delete vpc
+  delegate_to: localhost
+  amazon.aws.ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    region: "{{ region_id }}"
+    cidr_block: "{{ vpc_cidr_block }}"
+    purge_cidrs: true
+    state: absent
+  register: vpc_delete
