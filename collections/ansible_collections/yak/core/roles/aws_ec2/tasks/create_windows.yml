@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Set password for Windows Admin account
   no_log: true
@@ -50,12 +50,11 @@
   delegate_to: localhost
   amazon.aws.ec2_instance:
     region: "{{ region_id }}"
-    key_name: "{{ ec2_key_name }}"
+    key_name: "{{ machine_name }}"
     instance_type: "{{ instance_type }}"
     image:
       id: "{{ image_id }}"
     wait: yes
-    volumes: "{{ volumes_params }}"
     security_group: "{{ security_group_id }}"
     vpc_subnet_id: "{{ subnet_id }}"
     network: "{{ instance_network }}"

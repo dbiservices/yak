@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - set_fact:
     iscsi_commands: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].volume_attachment.iscsi_attach_commands|[]') }}"
@@ -26,12 +26,12 @@
 - debug: var=r_disk_number_per_target_node_address
 
 - set_fact:
-    derived_disk_metadata: []
+    pv_list_extended: []
 
 # The next task expects this format.
 - set_fact:
-    derived_disk_metadata: >
-      {{ derived_disk_metadata +
+    pv_list_extended: >
+      {{ pv_list_extended +
         [
           {
             'drive_letter': item.drive_letter,
@@ -42,6 +42,5 @@
       }}
   with_items: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].{volume_name: item.item.volume_name, drive_letter: item.item.drive_letter, partition_label: item.item.partition_label, iqn:volume_attachment.iqn}') }}"
 
-- debug: var=derived_disk_metadata
+- debug: var=pv_list_extended
   when: debug | bool
-

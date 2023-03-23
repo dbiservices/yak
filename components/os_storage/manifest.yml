@@ -1,0 +1,12 @@
+# The manifest file is used:
+#  - By the CI pipeline to check and validate all possible options of the component playbooks on all certified OS.
+#  - By the YaK GUI to display information to the user and generates forms with basic check.
+
+version:                                   # Version of the component accoring to standard https://semver.org
+  major: ${YAK_COMP_MAJOR_RELEASE}
+  minor: ${YAK_COMP_MINOR_RELEASE}
+  patch: ${YAK_COMP_PATCH_REL_NBR}
+
+dependencies:                              # Here goes the dependencies of the component
+    yak_major_version: 0                   # yak_major_version: this indicates to which version of YaK this component has been tested and validated.
+

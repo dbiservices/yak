@@ -1,0 +1,12 @@
+---
+os_storage:
+    linux:
+        - { size_GB: 36, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_GB: 16, filesystem_type: "xfs", mount_point: "/u02" }
+        - { size_GB:  8, filesystem_type: "xfs", mount_point: "/u03" }
+        - { size_GB:  8, filesystem_type: "xfs", mount_point: "/u04" }
+        - { size_GB: 24, filesystem_type: "xfs", mount_point: "/u90" }
+    windows:
+        - { size_GB: 5, drive_letter: F, partition_label: data   }
+        - { size_GB: 5, drive_letter: G, partition_label: backup }
+...

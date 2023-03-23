@@ -1,88 +1,51 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 - name: Gather information about instance
   delegate_to: localhost
   community.aws.ec2_instance_info:
     region: "{{ region_id }}"
     filters:
-      "tag:Name": "{{ vm_name }}"
+      "tag:Name": "{{ machine_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
   register: r_ec2_instance_info
 
 - debug: var=r_ec2_instance_info
   when: debug | bool
 
-- set_fact:
-    vm_disk: "{{ r_ec2_instance_info | json_query('instances[0].block_device_mappings[*].{device_name:device_name,volume_id:ebs.volume_id}') }}"
+- name: Get volume(s) info from EC2 Instance
+  delegate_to: localhost
+  amazon.aws.ec2_vol_info:
+    region: "{{ region_id }}"
+    filters:
+      attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+      "tag:Name": disk*
+  register: r_attached_volumes
 
-- debug: var=vm_disk
+- debug: var=r_attached_volumes
   when: debug | bool
 
 - name: Re-collect facts after disk addition and ensure expected data is present
   setup:
-  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length > volumes|length
+  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length >= number_of_devices|int
   retries: 10
   delay: 5
 
 - debug: var=ansible_devices
   when: debug | bool
 
-- set_fact:
-    linux_devices: "{{ ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key') }}"
+- name: Derive the pv list
+  delegate_to: localhost
+  yak.core.derive_pv_list:
+    provider: "{{ provider }}"
+    os_type: "{{ os_type }}"
+    vol_info: "{{ r_attached_volumes }}"
+    ansible_devices: "{{ ansible_devices }}"
+  register: r_derive_pv_list
 
-- debug: var=linux_devices
-  when: debug | bool
-
-- set_fact:
-    mapped_linux_devices: []
-
-- set_fact:
-    mapped_linux_devices: >
-      {{ mapped_linux_devices +
-        [
-          {
-            'linux_device_name': '/dev/'+ item,
-            'volume_id': 'vol-'+ aws_volume[1]
-          }
-        ]
-      }}
-  vars:
-    aws_volume: "{{ ansible_devices|json_query(item+'.links.ids[?contains(@, `Amazon_Elastic_Block`) == `true`]|[0]') | split('vol') }}"
-  with_items: "{{ linux_devices }}"
-
-- debug: var=mapped_linux_devices
-  when: debug | bool
-
-- set_fact:
-    merged_list: []
-
-- set_fact:
-    merged_list: >
-      {{ merged_list  +
-        [
-          {
-            'linux_device_name': item.linux_device_name,
-            'volume_id': item.volume_id,
-            'device_name': vm_disk|json_query('[?volume_id == `'+item.volume_id+'`].device_name|[0]')
-          }
-        ]
-      }}
-  with_items: "{{ mapped_linux_devices }}"
-
-- debug: var=merged_list
-  when: debug | bool
-
-- set_fact:
-    pvs_list: []
-
-- set_fact:
-    pvs_list: "{{ pvs_list + [ merged_list|json_query('[?device_name == `'+item.device_name+'`].linux_device_name|[0]') ] }}"
-  with_items: "{{ volumes }}"
-
-- debug: var=pvs_list
+- debug: var=r_derive_pv_list
   when: debug | bool
 
 - name: Create a volume group
   become: yes
   lvg:
     vg: "{{ volume_group_name }}"
-    pvs: "{{ pvs_list }}"
+    pvs: "{{ r_derive_pv_list.pv_list }}"

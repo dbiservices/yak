@@ -1,11 +1,10 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 # defaults file for aws
 state: started
 os_type: linux
 os_admin_username: ec2-user
 server_name: "test-srv-01"
-ec2_key_name: "{{ server_name }}"
 ec2_instance_base_directory: "~/.{{ server_name }}"
 nb_instances: 1
 debug: False
@@ -23,9 +22,3 @@ local_ssh_key:
     path: ~/.ssh
     private_key_name: id_rsa
     public_key_name: id_rsa.pub
-volumes_params:
-  - device_name: /dev/sda1
-    volume_type: gp2
-    volume_size: 10
-#volumes: List of additional devices, default no additional devices, example
-  # - { name: sdd, size_GB: 50, type: gp2 }

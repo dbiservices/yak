@@ -101,12 +101,6 @@ public_ip:
 operating_system: OL8.5-x86_64-HVM-2021-11-24
 ami_id: ami-07e51b655b107cd9b
 instance_type: t3.medium
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-      volume_type: gp2
-      volume_size: 10
-      delete_on_termination: true
 ```
 
 You should now see your server in the Ansible inventory:

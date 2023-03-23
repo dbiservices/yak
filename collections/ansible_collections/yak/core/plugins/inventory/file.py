@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services
+# Copyright: (c) 2023, dbi services
 # This file is part of YaK core
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -208,6 +208,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups['all'].vars['yak_local_ssh_config_file'] = self.local_ssh_config_file
         self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
 
+        self.inventory.groups['all'].vars['storage_devices'] = {
+            'size_GB': 10,
+            'max_size_gb': 100,
+            'specifications': {}
+        }
+
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
+
     def _populate_infrastructure_global_secrets(self, path):
         master_secrets = "{}/secrets".format(path)
         self._log_debug(master_secrets)
@@ -407,7 +416,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 ]['ip']
 
             # Initiate list of storage
-            self.inventory.hosts[host].vars["storages"] = []
+            self.inventory.hosts[host].vars["os_storages"] = []
 
             # Populate components on current host
             self._add_components(path, group, host)
@@ -440,35 +449,34 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     component].vars["component_type"]
             )
 
-            # Add storage
-            if 'storage' in component_config_yaml:
+            # Add storage (new way with os_storage in component variables)
+            if 'os_storage' in component_config_yaml:
+                self.inventory.hosts[host].vars["os_storages"].append(
+                    component_config_yaml["os_storage"][self.inventory.hosts[component].vars["os_type"]]
+                )
+            elif 'os_storage' in self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars:
+                self.inventory.hosts[host].vars["os_storages"].append(
+                    self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["os_storage"][self.inventory.hosts[component].vars["os_type"]]
+                )
 
+            # Add storage (legacy, variable storage)
+            if 'storage' in component_config_yaml and 'os_storage' not in component_config_yaml:
                 storage_config_file = "{}/templates/{}.yml".format(
                     self.configuration_path, component_config_yaml["storage"]
                 )
-
                 storage_config_yaml = self._load_yaml_file(storage_config_file)
 
-                if self.current_provider not in \
-                        storage_config_yaml["volumes"]:
-                    raise AnsibleError(
-                        "Storage volume for provider '{}' not found in '{}'."
-                        .format(self.current_provider, storage_config_file))
-
                 # Add template vars to component vars
-                self.inventory.hosts[component].vars["storage"] = \
-                    storage_config_yaml
-                self.inventory.hosts[component].vars["storage"]["volumes"] = \
-                    self.inventory.hosts[
-                        component
-                ].vars["storage"]["volumes"][self.current_provider]
+                # Linux
+                if self.inventory.hosts[component].vars["os_type"] == "linux":
+                    self.inventory.hosts[component].vars["os_storage"] = storage_config_yaml["filesystems"]
+                # Windows
+                if self.inventory.hosts[component].vars["os_type"] == "windows":
+                    self.inventory.hosts[component].vars["os_storage"] = storage_config_yaml["volumes"][self.current_provider]
 
-                # Add template var to server
-                self.inventory.hosts[host].vars["storages"].append(
-                    self.inventory.hosts[component].vars["storage"]
-                )
+                self.inventory.hosts[host].vars["os_storages"].append(self.inventory.hosts[component].vars["os_storage"])
 
-            # Add template
+            # Add template (legacy, replaced by variables)
             if 'templates' in component_config_yaml:
                 for template in component_config_yaml["templates"]:
 
@@ -515,7 +523,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             )
             self.inventory.groups[component_name].vars["manifest"] = manifest_yaml
 
-            # artifacts_requirements.yml: must exists
+            # artifacts_requirements.yml: should exists
             if os.path.exists("{}/artifacts_requirements.yml".format(component_path)):
                 artifacts_requirements_yaml = self._load_yaml_file(
                     "{}/artifacts_requirements.yml".format(component_path),

@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Update apt cache
   become: true
@@ -10,7 +10,7 @@
 # apt module doesn't have a parameter to list available updates
 - name: Get packages that can be upgraded
   become: true
-  shell: | 
+  shell: |
     apt list --upgradable
   register: reg_apt_output
   changed_when: false
@@ -25,7 +25,7 @@
 # - name: Request user confirmation
 #   ansible.builtin.pause:
 #     prompt: |
-    
+
 #       *************************************************************************
 #       * The packages listed above will be upgraded. Do you want to continue ? *
 #       * -> Press RETURN to continue.                                          *

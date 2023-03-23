@@ -1,0 +1,118 @@
+---
+- name: Test module derive_pv_list on AWS/LINUX
+  tags: aws_linux
+  hosts: aws_dbi_test/srv-linux-test-01
+  gather_facts: no
+  tasks:
+
+    - name: Gather information about instance
+      delegate_to: localhost
+      community.aws.ec2_instance_info:
+        region: "{{ region_id }}"
+        filters:
+          "tag:Name": "{{ machine_name }}"
+          instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+      register: r_ec2_instance_info
+
+    - name: Get volume(s) info from EC2 Instance
+      delegate_to: localhost
+      amazon.aws.ec2_vol_info:
+        region: "{{ region_id }}"
+        filters:
+          attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+          "tag:Name": disk*
+      register: r_attached_volumes
+
+    - name: Re-collect facts after disk addition and ensure expected data is present
+      setup:
+
+    - debug: var=r_attached_volumes
+    - debug: var=ansible_devices
+
+    - name: Derive the pv list
+      delegate_to: localhost
+      yak.core.derive_pv_list:
+        provider: "{{ provider }}"
+        os_type: "{{ os_type }}"
+        vol_info: "{{ r_attached_volumes }}"
+        ansible_devices: "{{ ansible_devices }}"
+
+- name: Test module derive_pv_list on AWS/WINDOWS
+  tags: aws_windows
+  hosts: aws_dbi_test/srv-win-test-01
+  gather_facts: no
+  tasks:
+
+    - name: Gather information about instance
+      delegate_to: localhost
+      community.aws.ec2_instance_info:
+        region: "{{ region_id }}"
+        filters:
+          "tag:Name": "{{ machine_name }}"
+          instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+      register: r_ec2_instance_info
+
+    - name: Get volume(s) info from EC2 Instance
+      delegate_to: localhost
+      amazon.aws.ec2_vol_info:
+        region: "{{ region_id }}"
+        filters:
+          attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+          "tag:Name": disk*
+      register: r_attached_volumes
+
+    - name: Re-collect facts after disk addition and ensure expected data is present
+      community.windows.win_disk_facts:
+
+    - debug: var=r_attached_volumes
+    - debug: var=ansible_disks
+
+    - name: Derive the pv list
+      delegate_to: localhost
+      yak.core.derive_pv_list:
+        provider: "{{ provider }}"
+        os_type: "{{ os_type }}"
+        vol_info: "{{ r_attached_volumes }}"
+        ansible_disks: "{{ ansible_disks }}"
+
+
+- name: Test module derive_pv_list on AZURE/WINDOWS
+  tags: azure_windows
+  hosts: azure_yak_test/srv-win-test-01
+  gather_facts: no
+  tasks:
+
+    - name: Get azure_rm_virtualmachine_info
+      delegate_to: localhost
+      azure_rm_virtualmachine_info:
+        name: "{{ machine_name }}"
+        resource_group: "{{ resource_group }}"
+      register: r_azure_rm_virtualmachine_info
+
+    - debug: var=r_azure_rm_virtualmachine_info
+
+    - name: Get azure_rm_manageddisk_info
+      delegate_to: localhost
+      azure.azcollection.azure_rm_manageddisk_info:
+        managed_by: "{{ r_azure_rm_virtualmachine_info.vms[0].id }}"
+      register: r_azure_rm_manageddisk_info
+
+    - debug: var=r_azure_rm_manageddisk_info
+
+    - name: Get disk facts
+      win_disk_facts:
+
+    - debug: var=ansible_disks
+
+    - name: Derive the pv list
+      delegate_to: localhost
+      yak.core.derive_pv_list:
+        provider: "{{ provider }}"
+        os_type: "{{ os_type }}"
+        azure_rm_virtualmachine_info: "{{ r_azure_rm_virtualmachine_info }}"
+        azure_rm_manageddisk_info: "{{ r_azure_rm_manageddisk_info }}"
+        ansible_disks: "{{ ansible_disks }}"
+      register: r_derive_pv_list
+
+    - debug: var=r_derive_pv_list
+
