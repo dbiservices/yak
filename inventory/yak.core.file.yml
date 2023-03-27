@@ -8,7 +8,7 @@ plugin: yak.core.file
 # debug: to display debugging information in
 # stdout for troubleshooting purpose.
 # Environment variable: DEBUG
-debug: true
+debug: false
 
 # windows_ansible_user: Default user for windows
 # Created a instance creation and used as Ansible user
