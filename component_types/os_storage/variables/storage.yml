@@ -1,5 +1,5 @@
 ---
-os_storage:
+yak_manifest_my_os_storage_config:
     linux:
         - { size_GB: 36, filesystem_type: "xfs", mount_point: "/u01" }
         - { size_GB: 16, filesystem_type: "xfs", mount_point: "/u02" }

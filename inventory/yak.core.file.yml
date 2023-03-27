@@ -5,30 +5,10 @@ plugin: yak.core.file
 # Custom configuration
 #
 
-# configuration_base: the folder in which the
-# configuration directory can be found
-# Environment variable: none
-configuration_base: ./
-
-# configuration_directory_name: the configuration
-# directory name
-# Environment variable: CONFIGURATION_DIRECTORY_NAME
-configuration_directory_name: configuration
-
-# infrastructure_directory_name: the name of the
-# infrastructure directory
-# Environment variable: none
-infrastructure_directory_name: infrastructure
-
-# platform_directory_name: the name of the
-# platform directory
-# Environment variable: none
-platform_directory_name: platforms
-
 # debug: to display debugging information in
 # stdout for troubleshooting purpose.
 # Environment variable: DEBUG
-debug: false
+debug: true
 
 # windows_ansible_user: Default user for windows
 # Created a instance creation and used as Ansible user
