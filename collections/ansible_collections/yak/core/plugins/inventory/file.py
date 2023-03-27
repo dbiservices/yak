@@ -6,8 +6,6 @@ from ansible.errors import AnsibleError
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.plugins.inventory import Cacheable
 from ansible.plugins.inventory import Constructable
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
 import yaml
 import glob
 import os.path
