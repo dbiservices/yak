@@ -498,9 +498,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
             self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
             if storage_variable_name in self.inventory.groups["all"].vars:
-                print("==")
-                print(target.vars)
-                print("==")
                 if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
                     raise AnsibleError("No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type'{}'.".format(target.vars["os_type"], target, self.component_type_name))
                 target.vars["yak_manifest_os_storages"].append(
