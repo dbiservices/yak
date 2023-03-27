@@ -52,6 +52,6 @@
 
     - include_role:
         name: yak.core.os_storage
-      loop: "{{ yak_manifest_os_storages }}"
+      loop: "{{ yak_inventory_os_storages }}"
       loop_control:
         loop_var: os_storage
