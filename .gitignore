@@ -1,5 +1,5 @@
-components/*
-!components/os_storage
-!components/README.md
+component_types/*
+!component_types/os_storage
+!component_types/README.md
 configuration/infrastructure/@*
 configuration/infrastructure/.ssh
