@@ -6,6 +6,8 @@ from ansible.errors import AnsibleError
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.plugins.inventory import Cacheable
 from ansible.plugins.inventory import Constructable
+from ansible.inventory.manager import InventoryManager
+from ansible.parsing.dataloader import DataLoader
 import yaml
 import glob
 import os.path
@@ -391,32 +393,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             component_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, component))
             self.inventory.hosts[component].vars = {**self.inventory.hosts[host].vars, **component_config_yaml}
 
-            # # Default variable for components
-            # self.inventory.hosts[component].vars["parent_target_name"] = host
-            # self.inventory.hosts[component].vars["target_type"] = 'component'
-
-            # # Deco Add ansible key file
-            # self._set_auth_secrets(self.inventory.hosts[component], "{}/{}/secrets".format(path, component))
-
-            # Add to component_type group
-            if 'component_type' not in self.inventory.hosts[component].vars:
-                raise AnsibleError("No 'component_type' for component '{}'.".format(component))
-            self.inventory.add_host(
-                component,
-                group=self.inventory.hosts[
-                    component].vars["component_type"]
-            )
-
-            # Add storage (new way with os_storage in component variables)
-            if 'yak_manifest_os_storage' in component_config_yaml:
-                self.inventory.hosts[host].vars["os_storages"].append(
-                    component_config_yaml["os_storage"][self.inventory.hosts[component].vars["os_type"]]
-                )
-            elif 'yak_manifest_os_storage' in self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars:
-                self.inventory.hosts[host].vars["os_storages"].append(
-                    self.inventory.groups[self.inventory.hosts[component].vars["component_type"]].vars["os_storage"][self.inventory.hosts[component].vars["os_type"]]
-                )
-
     def _populate_component(self):
         self.component_path = "{}/{}".format(self.components_path, self.component_name)
         self._log_debug("_populate_component.component_path: {}".format(self.component_path))
@@ -502,25 +478,34 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         for inventory_map in sub_component["inventory_maps"]:
             self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
             if inventory_map["group_name"] in self.inventory.groups:
-                raise AnsibleError("Duplicated group name '{}' in inventory_maps of sub component '{}'.".format(inventory_map["group_name"], self.component_type_name))
+                raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
             self.inventory.add_group(inventory_map["group_name"])
-            self.inventory.groups[inventory_map["group_name"]].vars["yak_manifest_os_storages"] = []
 
+            # Add hosts/group
             for target in self.inventory.groups["all"].vars["yak_manifest_{}".format(inventory_map["group_name"])]:
                 if inventory_map["type"] == "host":
                     self.inventory.add_host(target, group=inventory_map["group_name"])
+                    self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[target])
                 if inventory_map["type"] == "group":
                     self.inventory.add_child(inventory_map["group_name"], target)
+                    for server in self.inventory.groups[target].hosts:
+                        self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[str(server)])
 
-            # Add optional storage to group and append to server
-            if "storage" in inventory_map:
-                storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
-                self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
-                if storage_variable_name in self.inventory.groups["all"].vars:
-                    self.inventory.groups[inventory_map["group_name"]].vars["yak_manifest_os_storages"].append(
-                        self.inventory.groups["all"].vars[storage_variable_name]
-                    )
-                    pass
-                else:
-                    raise AnsibleError("No variables '{}' found in the variables of component '{}'.".format(storage_variable_name, self.component_type_name))
+    def _populate_sub_component_type_storage(self, inventory_map, target):
 
+        target.vars["yak_manifest_os_storages"] = []
+        if "storage" in inventory_map:
+            storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
+            self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
+            if storage_variable_name in self.inventory.groups["all"].vars:
+                print("==")
+                print(target.vars)
+                print("==")
+                if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
+                    raise AnsibleError("No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type'{}'.".format(target.vars["os_type"], target, self.component_type_name))
+                target.vars["yak_manifest_os_storages"].append(
+                    self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]
+                )
+                pass
+            else:
+                raise AnsibleError("No variables '{}' found in the variables of component '{}'.".format(storage_variable_name, self.component_type_name))

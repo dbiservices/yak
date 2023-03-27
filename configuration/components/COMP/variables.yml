@@ -4,12 +4,14 @@ component_type: os_storage/storage
 
 # Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
 yak_manifest_my_servers:
-    - aws_dbi_test/srv-linux-test-01
-    - aws_dbi_test/srv-win-test-01
-    - azure_yak_test/srv-linux-test-01
-    - azure_yak_test/srv-win-test-01
-    - oci_dbi_test/srv-linux-test-01
-    - oci_dbi_test/srv-win-test-01
+    - azure_yak_test
+# yak_manifest_my_servers:
+#     - aws_dbi_test/srv-linux-test-01
+#     - aws_dbi_test/srv-win-test-01
+#     - azure_yak_test/srv-linux-test-01
+#     - azure_yak_test/srv-win-test-01
+#     - oci_dbi_test/srv-linux-test-01
+#     - oci_dbi_test/srv-win-test-01
 
 # Overwrite "os_storage" from component variables
 yak_manifest_my_os_storage_config:
@@ -18,4 +20,7 @@ yak_manifest_my_os_storage_config:
         - { size_GB: 16, filesystem_type: "xfs", mount_point: "/u02" }
         - { size_GB: 10, filesystem_type: "xfs", mount_point: "/u03" }
         - { size_GB: 24, filesystem_type: "xfs", mount_point: "/u90" }
+    windows:
+        - { size_GB: 8, drive_letter: F, partition_label: data   }
+        - { size_GB: 9, drive_letter: G, partition_label: backup }
 

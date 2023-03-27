@@ -10,4 +10,4 @@
 - variables: `os_storage` and group_name value defined in the manifest file must have in variables a `yak_manifest_` prefix.
 - variables: `os_storages` renamed to  `yak_manifest_os_storages`.
 - the `component_type` variable must be fully qualified (including the sub component name). E.g. `component_type: os_storage/storage`
-
+- A server can be use by only 1 component/sub component by design (otherwise, it would generated conflic between os storage FS)
