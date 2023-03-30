@@ -12,7 +12,7 @@ COPY ./collections /workspace/yak/collections
 COPY ./configuration /workspace/yak/configuration
 COPY ./inventory /workspace/yak/inventory
 COPY ./servers /workspace/yak/servers
-COPY ./components /workspace/yak/components
+COPY ./component_types /workspace/yak/component_types
 COPY ./licenses /workspace/yak/lisenses
 COPY ./docs /workspace/yak/docs
 COPY ./ansible.cfg /workspace/yak
