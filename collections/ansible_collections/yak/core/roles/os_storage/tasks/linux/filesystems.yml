@@ -6,14 +6,14 @@
     lv: "{{ item.mount_point | replace('/','') }}"
     size: "{{ item.size_GB }}g"
     shrink: no
-  with_items: "{{ os_storages }}"
+  with_items: "{{ os_storage }}"
 
 - name: Create a filesystem on logical volume
   become: yes
   filesystem:
     fstype: "{{ item.filesystem_type }}"
     dev: "/dev/{{ volume_group_name }}/{{ item.mount_point | replace('/','') }}"
-  with_items: "{{ os_storages }}"
+  with_items: "{{ os_storage }}"
 
 - name: Get UUID for each FS
   become: yes
@@ -23,7 +23,7 @@
     | egrep  -v '^UUID'
   register: r_fs_uuid
   changed_when: false
-  with_items: "{{ os_storages }}"
+  with_items: "{{ os_storage }}"
 
 - debug: var=r_fs_uuid
   when: debug | bool
@@ -38,4 +38,4 @@
     opts: _netdev{% if item.opts is defined %}{% if item.opts %}{% if item.opts|length>0 %},{{ item.opts }}{% endif %}{% endif %}{% endif %}
     fstype: "{{ item.filesystem_type }}"
     state: mounted
-  with_items: "{{ os_storages }}"
+  with_items: "{{ os_storage }}"

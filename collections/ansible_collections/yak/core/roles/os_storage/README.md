@@ -19,7 +19,7 @@ storage_devices:
 ### In the component variables
 
 ```
-os_storage:  # The variable name `os_storage` is expected by YaK core.
+yak_manifest_[os_storage]:  # The variable name from the manifest prefixed by 'yak_manifest_' is expected by YaK core.
     linux:   # FS for Linux
         - { size_GB: 36, filesystem_type: "xfs", mount_point: "/u01" }
         - { size_GB: 16, filesystem_type: "xfs", mount_point: "/u02" }
