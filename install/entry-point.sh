@@ -30,12 +30,12 @@ if ! id yak > /dev/null 2>&1; then
     echo "# Aliases" >> ${YAK_USER_HOME}/.bashrc
     echo "alias ll='ls -ltra'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias uc='unset YAK_CORE_COMPONENT'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdh='cd ~/yak'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdc='cd ~/yak/component_types'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdcc='cd ~/yak/configuration/components'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdci='cd ~/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdcii='cd ~/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdcc='cd ~/yak/configuration/components'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdct='cd ~/yak/configuration/templates'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdh='cd ~/yak'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ~/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias startdemo='cd ~/yak; ~/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
     echo "" >> ${YAK_USER_HOME}/.bashrc
