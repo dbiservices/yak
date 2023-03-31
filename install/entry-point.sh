@@ -21,18 +21,26 @@ if ! id yak > /dev/null 2>&1; then
     fi
 
     # Environment
-    echo "cd ${YAK_USER_HOME}/yak" >> ${YAK_USER_HOME}/.bashrc
+    echo "# Environment" >> ${YAK_USER_HOME}/.bashrc
     echo "export OCI_USE_NAME_AS_IDENTIFIER=true" >> ${YAK_USER_HOME}/.bashrc
+    echo "cd ~/yak" >> ${YAK_USER_HOME}/.bashrc
+    echo "" >> ${YAK_USER_HOME}/.bashrc
 
-    # Alias
-    echo "alias ll='ls -latr'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdci='cd ${YAK_USER_HOME}/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdcii='cd ${YAK_USER_HOME}/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdct='cd ${YAK_USER_HOME}/yak/configuration/template'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdh='cd ${YAK_USER_HOME}/yak'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdr='cd ${YAK_USER_HOME}/yak/roles'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cds='cd ${YAK_USER_HOME}/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias startdemo='cd ${YAK_USER_HOME}/yak;${YAK_USER_HOME}/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
+    # Aliases
+    echo "# Aliases" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias ll='ls -ltra'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias uc='unset YAK_CORE_COMPONENT'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdc='cd ~/yak/component_types'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdci='cd ~/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdcii='cd ~/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdcc='cd ~/yak/configuration/components'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdct='cd ~/yak/configuration/templates'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cdh='cd ~/yak'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias cds='cd ~/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias startdemo='cd ~/yak; ~/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
+    echo "" >> ${YAK_USER_HOME}/.bashrc
+    echo "# Functions" >> ${YAK_USER_HOME}/.bashrc
+    echo 'sc() { export YAK_CORE_COMPONENT="$1"; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aig() { cd ~/yak && ansible-inventory --graph "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aigv() { cd ~/yak && ansible-inventory --graph "$1" --vars; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'aih() { cd ~/yak && ansible-inventory --host "$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
