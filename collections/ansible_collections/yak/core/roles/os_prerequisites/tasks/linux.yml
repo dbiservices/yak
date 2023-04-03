@@ -23,17 +23,25 @@
     name: lvm2
     state: present
   when:
-    - ansible_distribution == "OracleLinux"
+    - ansible_distribution == "RedHat" or ansible_distribution == "OracleLinux"
     - ansible_distribution_major_version|int > 7
+  register: r_dnf
+  ignore_errors: yes # Error handled in the next step
 
-- name: Install LVM
-  become: yes
-  ansible.builtin.dnf:
-    name: lvm2
-    state: present
-  when:
-    - ansible_distribution == "RedHat"
-    - ansible_distribution_major_version|int > 7
+- debug: var=r_dnf
+  when: debug|bool
+
+- name: Error handling for issues 74
+  ansible.builtin.fail:
+    msg: >
+      Package server is not reachable, or certificate from package server is not valid.
+      More info on https://gitlab.com/yak4all/yak/-/issues/74
+  when: "'Cannot download repomd.xml' in r_dnf.msg"
+
+- name: Error handling for any other issues
+  ansible.builtin.fail:
+    msg: "Error with task 'Install LVM': {{ r_dnf }}"
+  when: r_dnf.rc > 0
 
 - name: Update cache (Debian only) # required for LVM and XFS packages installation
   become: yes
