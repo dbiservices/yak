@@ -426,6 +426,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         # Remove server not in component - https://gitlab.com/yak4all/yak/-/issues/82
         self._remove_hosts_not_in_component()
+        self._remove_groups_not_in_component()
 
     def _populate_component_type(self):
 
@@ -527,3 +528,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         break
                 if find is False:
                     self.inventory.remove_host(self.inventory.hosts[host])
+
+    def _remove_groups_not_in_component(self):
+        for group in self.group_all_lists:
+            if len(self.inventory.groups[group].hosts) == 0:
+                self.inventory.remove_group(group)
