@@ -65,6 +65,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.local_ssh_config_file = "~/yak/configuration/infrastructure/.ssh/config"
         self.is_component_specific = False
         self.component_name = None
+        self.host_all_lists = []
 
     # Functions used by Ansible
     def verify_file(self, path):
@@ -251,8 +252,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_infrastructure(self, path):
 
-        self.inventory.add_group(self.infrastructure_group_name)
-        self.inventory.add_group(self.server_group_name)
+        if not self.is_component_specific:
+            self.inventory.add_group(self.infrastructure_group_name)
+            self.inventory.add_group(self.server_group_name)
 
         self._log_debug('Discovering infra {}'.format(path))
         for infrastructure_file in glob.glob("{}/*/".format(path)):
@@ -272,9 +274,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             infrastructure_variables = self.check_and_sanitize_infrastructure_variables(group_config_yaml)
             self.inventory.groups[group].vars = infrastructure_variables
             self.current_provider = self.inventory.groups[group].vars["provider"]
-            self.inventory.add_host('infrastructure/{}'.format(group_name), group='infrastructures')
-            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
-            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
+            if not self.is_component_specific:
+                self.inventory.add_host('infrastructure/{}'.format(group_name), group=self.infrastructure_group_name)
+                self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
+                self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
 
             # Add ssh key / certificates
             self._set_auth_secrets(self.inventory.groups[group], "{}/{}/secrets".format(path, group))
@@ -292,7 +295,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             host = "{}/{}".format(group, os.path.basename(host_file[:-1]))
             machine_name = os.path.basename(host_file[:-1])
             self.inventory.add_host(host, group=group)
-            self.inventory.add_host(host, group=self.server_group_name)
+            self.host_all_lists.append(host)
+            if not self.is_component_specific:
+                self.inventory.add_host(host, group=self.server_group_name)
 
             # Add host vars
             host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, host))
@@ -377,19 +382,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self.inventory.hosts[host].vars[
                         self.inventory.hosts[host].vars['host_ip_access']
                 ]['ip']
-
-    # TODO: '_add_components' to be removed
-    def _add_components(self, path, group, host):
-
-        for component_file in glob.glob("{}/{}/*/".format(path, host)):
-            if os.path.basename(component_file[:-1]) == 'secrets':
-                continue
-            component = "{}/{}".format(host, os.path.basename(component_file[:-1]))
-            self.inventory.add_host(component, group=group)
-
-            # Overwrite with component vars
-            component_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, component))
-            self.inventory.hosts[component].vars = {**self.inventory.hosts[host].vars, **component_config_yaml}
 
     def _populate_component(self):
         self.component_path = "{}/{}".format(self.components_path, self.component_name)
@@ -482,6 +474,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             # Add hosts/group
             for target in self.inventory.groups["all"].vars["yak_manifest_{}".format(inventory_map["group_name"])]:
                 if inventory_map["type"] == "host":
+                    if target not in self.host_all_lists:
+                        raise AnsibleError("Server name '{}' not found in the inventory (typo? Server really declared?).".format(target))
                     self.inventory.add_host(target, group=inventory_map["group_name"])
                     self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[target])
                 if inventory_map["type"] == "group":
