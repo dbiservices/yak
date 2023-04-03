@@ -10,7 +10,7 @@
       filters:
         name: "{{ ami.name|default('*') }}"
         owner-id: "{{ ami.owner_id|default('*') }}"
-        image-id: "{{ ami.image_id|default('*') }}"
+        image-id: "{{ ami.id|default('*') }}"
 
     register: r_ec2_ami_info
 

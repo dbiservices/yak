@@ -13,7 +13,7 @@
     amazon.aws.ec2_ami_info:
       region: "{{ region_id }}"
       filters:
-        image-id: "{{ ami.image_id|default('*') }}"
+        image-id: "{{ ami.id|default('*') }}"
         owner-id: "{{ ami.owner_id|default('*') }}"
         name: "{{ ami.name|default('*') }}"
     register: r_ec2_ami_info
