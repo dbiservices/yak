@@ -1,14 +1,21 @@
 ---
 - block:
 
+  - debug:
+      msg:
+        - "Attribute 'ami' defined with the following parameters:"
+        - "  ami.id: {{ ami.image_id|default('*') }}"
+        - "  ami.owner: {{ ami.owner_id|default('*') }}"
+        - "  ami.name: {{ ami.name|default('*') }}"
+
   - name: Lookup AMI id
     delegate_to: localhost
     amazon.aws.ec2_ami_info:
       region: "{{ region_id }}"
       filters:
-        name: "{{ ami.name|default('*') }}"
-        owner-id: "{{ ami.owner_id|default('*') }}"
         image-id: "{{ ami.image_id|default('*') }}"
+        owner-id: "{{ ami.owner_id|default('*') }}"
+        name: "{{ ami.name|default('*') }}"
     register: r_ec2_ami_info
 
   - name: Set amis variable with all AMIs retrieved
