@@ -65,7 +65,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.local_ssh_config_file = "~/yak/configuration/infrastructure/.ssh/config"
         self.is_component_specific = False
         self.component_name = None
+        self.group_all_lists = []
         self.host_all_lists = []
+        self.host_component_lists = []
+        self.group_component_lists = []
 
     # Functions used by Ansible
     def verify_file(self, path):
@@ -267,6 +270,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             group_name = os.path.basename(infrastructure_file[:-1])
             group = os.path.basename(infrastructure_file[:-1])
             group = self.inventory.add_group(group)
+            self.group_all_lists.append(group)
             self.inventory.add_child('all', group)
 
             # Add group vars
@@ -420,6 +424,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Populate generic sub component type variables
         self._populate_sub_component_type()
 
+        # Remove server not in component - https://gitlab.com/yak4all/yak/-/issues/82
+        self._remove_hosts_not_in_component()
+
     def _populate_component_type(self):
 
         # variables.yml and variables/*.yml if exists
@@ -473,13 +480,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
             # Add hosts/group
             for target in self.inventory.groups["all"].vars["yak_manifest_{}".format(inventory_map["group_name"])]:
-                if inventory_map["type"] == "host":
-                    if target not in self.host_all_lists:
-                        raise AnsibleError("Server name '{}' not found in the inventory (typo? Server really declared?).".format(target))
+                if target not in self.host_all_lists and target not in self.group_all_lists:
+                    raise AnsibleError("Server/group name '{}' not found in the inventory (typo? Server/infra really declared?).".format(target))
+                if target in self.host_all_lists:
                     self.inventory.add_host(target, group=inventory_map["group_name"])
+                    self.host_component_lists.append(target)
                     self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[target])
-                if inventory_map["type"] == "group":
+                elif target in self.group_all_lists:
                     self.inventory.add_child(inventory_map["group_name"], target)
+                    self.group_component_lists.append(target)
                     for server in self.inventory.groups[target].hosts:
                         self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[str(server)])
 
@@ -491,10 +500,30 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
             if storage_variable_name in self.inventory.groups["all"].vars:
                 if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
-                    raise AnsibleError("No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type'{}'.".format(target.vars["os_type"], target, self.component_type_name))
+                    raise AnsibleError(
+                        "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type'{}'."
+                        .format(target.vars["os_type"], target, self.component_type_name)
+                    )
                 target.vars["yak_inventory_os_storages"].append(
                     self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]
                 )
                 pass
             else:
-                raise AnsibleError("No variables '{}' found in the variables of component '{}'.".format(storage_variable_name, self.component_type_name))
+                raise AnsibleError(
+                    "No variables '{}' found in the variables of component '{}'."
+                    .format(storage_variable_name, self.component_type_name)
+                )
+
+    def _remove_hosts_not_in_component(self):
+        for host in self.host_all_lists:
+            find = False
+            if host not in self.host_component_lists:
+                for group in self.group_component_lists:
+                    for ghost in self.inventory.groups[group].hosts:
+                        if host == ghost.name:
+                            find = True
+                            break
+                    if find is False:
+                        break
+                if find is False:
+                    self.inventory.remove_host(self.inventory.hosts[host])
