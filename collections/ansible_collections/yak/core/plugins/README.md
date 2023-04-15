@@ -6,7 +6,7 @@
   - [View the inventory](#view-the-inventory)
   - [Inventory structure](#inventory-structure)
     - [the infrastructure folder](#the-infrastructure-folder)
-    - [the infrastructure_sample folder](#the-infrastructure_sample-folder)
+    - [the infrastructure\_sample folder](#the-infrastructure_sample-folder)
     - [The templates folder](#the-templates-folder)
   - [Debug](#debug)
 - [db inventory](#db-inventory)
@@ -172,7 +172,7 @@ export DEBUG=1
 
 You can overwrite the default behavior of the inventory using these environment variables:
 
-- `DEBUG`: Display more information for debugging purpose.
+- `YAK_ANSIBLE_DEBUG`: Display more information for debugging purpose.
   - Valid options: [`true`, `1`, `yes`, `false`, `0`, `no`].
 - `YAK_ANSIBLE_TRANSPORT_URL`: The YAK backend entry point.
   - Valid option: `<URL TO BACKEND ENTRYPOINT>`.
