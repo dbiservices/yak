@@ -3,14 +3,21 @@
   gather_facts: no
   tasks:
 
+  - debug:
+      msg:
+        - "Attribute 'ami' defined with the following parameters:"
+        - "  ami.id: {{ ami.id|default('*', true) }}"
+        - "  ami.owner: {{ ami.owner_id|default('*', true) }}"
+        - "  ami.name: {{ ami.name|default('*', true) }}"
+
   - name: Lookup AMI id
     delegate_to: localhost
     amazon.aws.ec2_ami_info:
       region: "{{ region_id }}"
       filters:
-        name: "{{ ami.name|default('*') }}"
-        owner-id: "{{ ami.owner_id|default('*') }}"
-        image-id: "{{ ami.id|default('*') }}"
+        name: "{{ ami.name|default('*', true) }}"
+        owner-id: "{{ ami.owner_id|default('*', true) }}"
+        image-id: "{{ ami.id|default('*', true) }}"
 
     register: r_ec2_ami_info
 

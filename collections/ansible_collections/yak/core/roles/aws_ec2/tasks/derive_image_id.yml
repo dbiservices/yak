@@ -4,7 +4,7 @@
   - debug:
       msg:
         - "Attribute 'ami' defined with the following parameters:"
-        - "  ami.id: {{ ami.image_id|default('*') }}"
+        - "  ami.id: {{ ami.id|default('*') }}"
         - "  ami.owner: {{ ami.owner_id|default('*') }}"
         - "  ami.name: {{ ami.name|default('*') }}"
 
@@ -13,10 +13,13 @@
     amazon.aws.ec2_ami_info:
       region: "{{ region_id }}"
       filters:
-        image-id: "{{ ami.id|default('*') }}"
-        owner-id: "{{ ami.owner_id|default('*') }}"
-        name: "{{ ami.name|default('*') }}"
+        name: "{{ ami.name|default('*', true) }}"
+        owner-id: "{{ ami.owner_id|default('*', true) }}"
+        image-id: "{{ ami.id|default('*', true) }}"
     register: r_ec2_ami_info
+
+  - debug: var=r_ec2_ami_info
+    when: debug|bool
 
   - name: Set amis variable with all AMIs retrieved
     set_fact:
