@@ -1,0 +1,30 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Install LVM
+  become: yes
+  ansible.builtin.dnf:
+    name: lvm2
+    state: present
+  register: r_dnf
+  ignore_errors: yes # Error handled in the next step
+
+- debug: var=r_dnf
+  when: debug|bool
+
+- name: Error handling for issues 74
+  ansible.builtin.fail:
+    msg: >
+      Package server is not reachable, or certificate from package server is not valid.
+      More info on https://gitlab.com/yak4all/yak/-/issues/74
+  when: "'Cannot download repomd.xml' in r_dnf.msg"
+
+- name: Error handling for any other issues
+  ansible.builtin.fail:
+    msg: "Error with task 'Install LVM': {{ r_dnf }}"
+  when: r_dnf.rc > 0
+
+- name: Install xfsprogs
+  become: yes
+  ansible.builtin.dnf:
+    name: xfsprogs
+    state: present
