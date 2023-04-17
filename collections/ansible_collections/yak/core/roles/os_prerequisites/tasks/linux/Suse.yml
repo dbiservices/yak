@@ -1,0 +1,14 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Update cache and install Install LVM (may retry)
+  become: yes
+  community.general.zypper:
+    update_cache: yes
+    name:
+      - 'lvm*'
+      - xfsprogs
+    state: present
+  register: r_zypper
+  retries: 5
+  delay: 10
+  until: r_zypper.rc == 0
