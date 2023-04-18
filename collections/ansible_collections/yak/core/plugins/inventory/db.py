@@ -96,9 +96,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._read_config_data(path)
 
         # Checking debug
-        if self.get_option('debug') is not None:
-            self.debug = self.get_option('debug')
-        if environ.get('DEBUG') is not None and str(environ.get('DEBUG')) in ['true', '1', 'yes']:
+        if self.get_option('yak_ansible_debug') is not None:
+            self.debug = self.get_option('yak_ansible_debug')
+        if environ.get('YAK_ANSIBLE_DEBUG') is not None and str(environ.get('YAK_ANSIBLE_DEBUG')) in ['true', '1', 'yes']:
             self.debug = True
         self._log_debug("## debug: {}".format(self.debug))
 
@@ -114,8 +114,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         if self.get_option('ssl_verify_certificate') is not None:
             self.ssl_verify_certificate = self.get_option('ssl_verify_certificate')
         if environ.get('YAK_SSL_VERIFY_CERTIFICATE') is not None and \
-          str(environ.get('YAK_SSL_VERIFY_CERTIFICATE').lower()) in ['false', '0', 'no']:
-            self.ssl_verify_certificate = False
+            str(environ.get('YAK_SSL_VERIFY_CERTIFICATE').lower()) in ['false', '0', 'no']:
+              self.ssl_verify_certificate = False
         self._log_debug("## ssl_verify_certificate: {}".format(self.debug))
 
         # Checking GQL_TRANSPORT_URL

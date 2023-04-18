@@ -8,8 +8,7 @@ yak_manifest_my_servers:
     - aws_dbi_test/srv-win-test-01
     - azure_yak_test/srv-linux-test-01
     - azure_yak_test/srv-win-test-01
-    - oci_dbi_test/srv-linux-test-01
-    - oci_dbi_test/srv-win-test-01
+    - oci_dbi_test
 
 # Overwrite "os_storage" from component variables
 yak_manifest_my_os_storage_config:

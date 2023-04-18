@@ -1,9 +1,0 @@
-# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
----
-- name: Define hostname to {{ host_name }}
-  win_hostname:
-    name: "{{ host_name }}"
-
-- name: Set timezone to {{ time_zone }}
-  win_timezone:
-    timezone: "{{ time_zone }}"
