@@ -231,6 +231,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     def _populate_internal_variables(self):
         self._set_gvars('all', 'yak_inventory_type', 'database')
         self._set_gvars('all', 'ansible_winrm_read_timeout_sec', 60)
+        self._set_gvars('all', 'ansible_winrm_transport', 'certificate')
+        self._set_gvars('all', 'ansible_winrm_server_cert_validation', 'ignore')
         self._set_gvars('all', 'yak_local_ssh_config_file', "{}/config".format(self.local_ssh_config_file))
         os.makedirs(self.local_ssh_config_file, exist_ok=True)
 
@@ -293,6 +295,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_host(server_name, group=self.server_group_name)
             self.inventory.add_host(server_name, group=server["infrastructureName"].replace("-", "_"))
             self._append_hvars(server_name, server["variables"])
+            if server["providerImageOsType"].lower() == "windows":
+                self._set_hvars(server_name, "ansible_connection", "winrm")
             for secret in server["secrets"]["secrets"]:
                 if secret["type_name"] == "ssh private key":
                     self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}".format(self.secret_dir, secret["id"]))
