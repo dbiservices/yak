@@ -7,7 +7,7 @@
     filters:
       "tag:Name": "{{ server_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
-  failed_when: r_ec2_instance_info.instances|length > 1
+  failed_when: r_ec2_instance_info.instances|length != 1
   register: r_ec2_instance_info
 
 - debug: var=r_ec2_instance_info
