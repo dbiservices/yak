@@ -4,7 +4,7 @@
   - name: Update yak inventory
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: "{{ inventory_hostname }}"
+      server_name: "{{ inventory_hostname }}"
       private_ip: "{{ returned.private_ip_address|default(None) }}"
       public_ip: "{{ returned.public_ip_address|default(None) }}"
     when: yak_inventory_type == 'file'

@@ -7,27 +7,27 @@
   - name: Update private_ip variable
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: azure/srv-windows-01
       private_ip: 1.1.1.1
 
   - name: Update public_ip variable
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: azure/srv-windows-01
       public_ip: 2.2.2.2
 
   - name: Update IPs variables
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: azure/srv-windows-01
       private_ip: 3.3.3.3
       public_ip: 4.4.4.4
 
   - name: Update infrastructure variables
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test
-      infrastructure:
+      infrastructure_name: azure
+      variables:
         test_var_text: text variable
         test_var_list:
           - list item 1
@@ -49,7 +49,7 @@
     ignore_errors: yes
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: azure/srv-windows-01
       private_ip: 3.3.3.3
       public_ip: 4.4.4.4
       infrastructure:

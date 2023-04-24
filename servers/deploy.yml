@@ -26,7 +26,7 @@
 
 - name: Update and refresh inventory
   tags: server
-  strategy: linear # This play must be linear until migration to RDBMS
+  strategy: linear # This play must be linear
   hosts: "{{ target }}"
   gather_facts: no
   vars:

@@ -23,19 +23,27 @@ version_added: "1.0.0"
 description: This is my longer description explaining my test module.
 
 options:
-    target:
-        description: The target to be modify.
-        required: true
+    server_name:
+        description: The name of the server.
+        required: false
+        type: str
+    server_state:
+        description: The state of the server.
+        required: false
         type: str
     private_ip:
-        description: The private IP of the host defined in target.
+        description: The private IP of the host defined in server_name.
         required: false
         type: str
     public_ip:
-        description: The public IP of the host defined in target.
+        description: The public IP of the host defined in server_name.
         required: false
         type: str
-    infrastructure:
+    infrastructure_name:
+        description: The name of the server.
+        required: false
+        type: str
+    variables:
         description: Variable to add/update to the infrastructure variables.
         required: false
         type: dict
@@ -47,10 +55,11 @@ from ansible.module_utils.basic import AnsibleModule
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        target=dict(type='str', required=True),
+        server_name=dict(type='str', required=False),
         private_ip=dict(type='str', required=False),
         public_ip=dict(type='str', required=False),
-        infrastructure=dict(type='dict', required=False)
+        infrastructure_name=dict(type='str', required=False),
+        variables=dict(type='dict', required=False)
     )
 
     # seed the result dict in the object
@@ -60,8 +69,8 @@ def run_module():
     # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
-        original_message='',
-        message=''
+        inventory_type='',
+        inventory_file='',
     )
 
     # the AnsibleModule object will be our abstraction working with Ansible
@@ -79,18 +88,65 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    # Check params consistency
-    if (module.params['private_ip'] is not None or module.params['public_ip'] is not None ) and \
-        module.params['infrastructure'] is not None:
-        raise AnsibleError("You can't update IP and infrastructure simultaneously because there are different target types.")
+    # DB or file based inventory?
+    if os.environ.get('YAK_ANSIBLE_HTTP_TOKEN') is not None and os.environ.get('YAK_ANSIBLE_TRANSPORT_URL') is not None:
+        result['inventory_type'] = 'database'
 
-    # Find the target variable file
+        if module.params['server_name'] is not None:
+            # TODO: update server IP + state
+            pass
+
+        if module.params['infrastructure_name'] is not None:
+            # TODO: update variables
+            pass
+
+    else:
+
+        yml = {}
+
+        if module.params['server_name'] is not None:
+
+            yml = load_yml(module.params['server_name'])
+            result['inventory_file'] = yml["file_path"]
+
+            if module.params['private_ip'] is not None and len(module.params['private_ip']) > 2:
+                if 'private_ip' in yml["variables"]:
+                    yml["variables"]["private_ip"]["ip"] = module.params['private_ip']
+                else:
+                    yml["variables"]["private_ip"] = {"mode": "auto", "ip": module.params['private_ip']}
+                result['changed'] = True
+            if module.params['public_ip'] is not None and len(module.params['public_ip']) > 2:
+                if 'public_ip' in yml["variables"]:
+                    yml["variables"]["public_ip"]["ip"] = module.params['public_ip']
+                else:
+                    yml["variables"]["public_ip"] = {"mode": "auto", "ip": module.params['public_ip']}
+                result['changed'] = True
+
+        if module.params['infrastructure_name'] is not None:
+
+            yml = load_yml(module.params['infrastructure_name'])
+            result['inventory_file'] = yml["file_path"]
+
+            if module.params['variables'] is not None:
+                for variable in module.params['variables']:
+                    yml["variables"][variable] = module.params['variables'][variable]
+                    result['changed'] = True
+
+        if result['changed'] is True:
+            save_variables(yml)
+
+    # in the event of a successful module execution, you will want to
+    # simple AnsibleModule.exit_json(), passing the key/value results
+    module.exit_json(**result)
+
+
+def load_yml(target_name):
+
     variables_file_path = ''
-
     for root, dirs, filenames in os.walk('/workspace/yak/configuration/infrastructure'):
         for dir_name in dirs:
-            if '{}/{}'.format(root,dir_name).endswith(module.params['target']):
-                variables_file_path='{}/{}/variables.yml'.format(root,dir_name)
+            if '{}/{}'.format(root, dir_name).endswith(target_name):
+                variables_file_path = '{}/{}/variables.yml'.format(root, dir_name)
                 break
 
     try:
@@ -98,50 +154,30 @@ def run_module():
     except Exception as e:
         raise AnsibleError(
             "Issue while reading variable file '{}' of target '{}': [{}]\n"
-            .format(variables_file_path, module.params['target'], e)
+            .format(variables_file_path, target_name, e)
         )
 
     yaml = ruamel.yaml.YAML()
-    yaml.indent(mapping=4, sequence=4, offset=2)
     try:
         variables_yml = yaml.load(variables_file)
         variables_file.close()
     except Exception as e:
-        raise AnsibleError("Issue loading yaml file '{}': [{}]\n".format(variables_file_path,e))
+        raise AnsibleError("Issue loading yaml file '{}': [{}]\n".format(variables_file_path, e))
 
-    # Update variable file
-    if module.params['private_ip'] is not None and len(module.params['private_ip']) > 2:
-        if 'private_ip' in variables_yml:
-            variables_yml["private_ip"]["ip"] = module.params['private_ip']
-        else:
-            variables_yml["private_ip"] = {"mode": "auto", "ip": module.params['private_ip']}
-        result['changed'] = True
-    if module.params['public_ip'] is not None and len(module.params['public_ip']) > 2:
-        if 'public_ip' in variables_yml:
-            variables_yml["public_ip"]["ip"] = module.params['public_ip']
-        else:
-            variables_yml["public_ip"] = {"mode": "auto", "ip": module.params['public_ip']}
-        result['changed'] = True
-    if module.params['infrastructure'] is not None:
-        for variable in module.params['infrastructure']:
-            variables_yml[variable] = module.params['infrastructure'][variable]
-            result['changed'] = True
+    return {"file_path": variables_file_path, "variables": variables_yml}
 
+def save_variables(yml):
+    yaml = ruamel.yaml.YAML()
+    yaml.indent(mapping=4, sequence=4, offset=2)
     try:
-        variables_file = open(variables_file_path, 'w')
-        yaml.dump(variables_yml, variables_file)
+        variables_file = open(yml["file_path"], 'w')
+        yaml.dump(yml["variables"], variables_file)
         variables_file.close()
     except Exception as e:
-        raise AnsibleError("Issue while writing variable file '{}': [{}]\n".format(variables_file_path,e))
-
-    # in the event of a successful module execution, you will want to
-    # simple AnsibleModule.exit_json(), passing the key/value results
-    module.exit_json(**result)
-
+        raise AnsibleError("Issue while writing variable file: {}\n".format(e))
 
 def main():
     run_module()
-
 
 if __name__ == '__main__':
     main()

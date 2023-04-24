@@ -25,8 +25,8 @@
     - name: Update infrastructure variables
       delegate_to: localhost
       yak.core.yak_inventory_update:
-        target: aws_infrastructure
-        infrastructure:
+        infrastructure_name: aws_infrastructure
+        variables:
           vpc_id: "{{ yak_VPC.vpc.id }}"
           security_group_id: "{{ yak_security_group.group_id }}"
           nat_gateway_id: "{{ yak_nat_gateway.results[1].nat_gateway_id }}"
@@ -47,9 +47,9 @@
               - az_value: "{{yak_subnet.results[3].item.az_value}}"
                 subnet_cidr: "{{yak_subnet.results[3].item.subnet_cidr}}"
                 subnet_tag_name: "{{yak_subnet.results[3].item.subnet_tag_name}}"
-                subnet_id: "{{ yak_subnet.results[3].subnet.id }}"  
-#       target: azure_infrastructure
-#       infrastructure:
+                subnet_id: "{{ yak_subnet.results[3].subnet.id }}"
+#       infrastructure_name: azure_infrastructure
+#       variables:
 #         resource_group: "{{ resource_group }}"
 #         virtual_network_name: "{{ virtual_network_name }}"
 #         subnet_name: "{{ subnet_name }}"
