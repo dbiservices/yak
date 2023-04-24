@@ -2,3 +2,4 @@
 ---
 # defaults file for ./roles/winrm
 script_type: aws
+state: present

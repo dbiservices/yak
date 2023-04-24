@@ -66,6 +66,12 @@
   delegate_to: localhost
   when: debug | bool
 
+- name: Clear winrm variable and file
+  include_role:
+    name: yak.core.winrm
+  vars:
+    state: absent
+
 - name: Set network interface name
   delegate_to: localhost
   amazon.aws.ec2_eni:

@@ -42,6 +42,12 @@
   delegate_to: localhost
   when: debug | bool
 
+- name: Clear winrm variable and file
+  include_role:
+    name: yak.core.winrm
+  vars:
+    state: absent
+
 - name: VM Extension[copy file from custom data]
   delegate_to: localhost
   azure_rm_virtualmachineextension:

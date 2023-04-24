@@ -37,6 +37,13 @@
   delegate_to: localhost
   when: debug | bool
 
+- name: Clear winrm variable and file
+  include_role:
+    name: yak.core.winrm
+  vars:
+    server_name: "{{ display_name }}"
+    state: absent
+
 - delegate_to: localhost
   set_fact:
     returned:
