@@ -10,13 +10,11 @@ ami_id: ami-02220151b8854e8fe
 operating_system: Debian-11.6-amd64-20221219
 private_ip:
     mode: auto
-    ip: 
+    ip:
 public_ip:
     mode: auto
-    ip: 
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-        volume_type: gp2
-        volume_size: 10
-        delete_on_termination: true
+    ip:
+root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
+    volume_type: gp3
+    volume_size: 10
+

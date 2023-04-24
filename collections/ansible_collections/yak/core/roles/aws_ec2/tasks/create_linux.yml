@@ -41,6 +41,9 @@
     security_group: "{{ security_group_id }}"
     vpc_subnet_id: "{{ subnet_id }}"
     network: "{{ instance_network }}"
+    volumes:
+      - device_name: "{{ root_device_name }}"
+        ebs: "{{ root_device_ebs_option }}"
     tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
   register: r_aws
 
