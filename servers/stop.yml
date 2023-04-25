@@ -7,4 +7,18 @@
     debug: false
   tasks:
 
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: stopping
+      when: yak_inventory_type == "database"
+
     - include_tasks: "stop/{{ provider }}.yml"
+
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: stopped
+      when: yak_inventory_type == "database"

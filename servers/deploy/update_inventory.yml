@@ -7,7 +7,6 @@
       server_name: "{{ inventory_hostname }}"
       private_ip: "{{ returned.private_ip_address|default(None) }}"
       public_ip: "{{ returned.public_ip_address|default(None) }}"
-    #when: yak_inventory_type == 'file'
 
   - debug:
       msg:

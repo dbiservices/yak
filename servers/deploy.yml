@@ -22,11 +22,18 @@
     debug: false
   tasks:
 
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: starting
+      when: yak_inventory_type == "database"
+
     - include_tasks: "deploy/{{ provider }}.yml"
 
 - name: Update and refresh inventory
   tags: server
-  strategy: linear # This play must be linear
+  strategy: linear # This play must be linear to avoid race condition when inv = file
   hosts: "{{ target }}"
   gather_facts: no
   vars:
@@ -34,6 +41,13 @@
   tasks:
 
     - include_tasks: "deploy/update_inventory.yml"
+
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: running
+      when: yak_inventory_type == "database"
 
     - name: Refresh inventory to ensure IPs are up to date
       ansible.builtin.meta: refresh_inventory
