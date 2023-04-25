@@ -7,6 +7,7 @@ from __future__ import (absolute_import, division, print_function)
 from ansible.errors import AnsibleError
 import ruamel.yaml
 import os
+import requests
 
 __metaclass__ = type
 
@@ -27,6 +28,10 @@ options:
         description: The name of the server.
         required: false
         type: str
+    server_variables:
+        description: Variable to add/update to the server variables.
+        required: false
+        type: dict
     server_state:
         description: The state of the server.
         required: false
@@ -43,7 +48,7 @@ options:
         description: The name of the server.
         required: false
         type: str
-    variables:
+    infrastructure_variables:
         description: Variable to add/update to the infrastructure variables.
         required: false
         type: dict
@@ -56,10 +61,12 @@ def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         server_name=dict(type='str', required=False),
+        server_variables=dict(type='dict', required=False),
+        server_state=dict(type='str', required=False),
         private_ip=dict(type='str', required=False),
         public_ip=dict(type='str', required=False),
         infrastructure_name=dict(type='str', required=False),
-        variables=dict(type='dict', required=False)
+        infrastructure_variables=dict(type='dict', required=False),
     )
 
     # seed the result dict in the object
@@ -88,17 +95,30 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
+    if module.params['server_variables'] is not None:
+        raise AnsibleError("server_variables not supported yet.\n")
+
+    if module.params['server_name'] is not None and module.params['infrastructure_name'] is not None:
+        raise AnsibleError("Server and infrastructure cannot be changed a the same time.\n")
+
     # DB or file based inventory?
     if os.environ.get('YAK_ANSIBLE_HTTP_TOKEN') is not None and os.environ.get('YAK_ANSIBLE_TRANSPORT_URL') is not None:
         result['inventory_type'] = 'database'
 
         if module.params['server_name'] is not None:
-            # TODO: update server IP + state
-            pass
+            api_update_server(
+                module.params['server_name'],
+                module.params['server_state'],
+                module.params['private_ip'],
+                module.params['public_ip'],
+            )
 
         if module.params['infrastructure_name'] is not None:
-            # TODO: update variables
-            pass
+            variables = api_get_infrastructure_variables(module.params['infrastructure_name'])
+            for variable in module.params['infrastructure_variables']:
+                variables[variable] = module.params['infrastructure_variables'][variable]
+                result['changed'] = True
+            api_update_infrastructure(module.params['infrastructure_name'], variables)
 
     else:
 
@@ -127,9 +147,9 @@ def run_module():
             yml = load_yml(module.params['infrastructure_name'])
             result['inventory_file'] = yml["file_path"]
 
-            if module.params['variables'] is not None:
-                for variable in module.params['variables']:
-                    yml["variables"][variable] = module.params['variables'][variable]
+            if module.params['infrastructure_variables'] is not None:
+                for variable in module.params['infrastructure_variables']:
+                    yml["variables"][variable] = module.params['infrastructure_variables'][variable]
                     result['changed'] = True
 
         if result['changed'] is True:
@@ -139,6 +159,70 @@ def run_module():
     # simple AnsibleModule.exit_json(), passing the key/value results
     module.exit_json(**result)
 
+
+def api_update_server(server_name, server_state, private_ip, public_ip):
+
+    graphql_request = """
+    mutation MyMutation($pServerName: String!, $pServerStateName: String, $pPrivateIp: String, $pPublicIp: String) {
+        serverUpdate(
+            input: { pServerName: $pServerName, pServerStateName: $pServerStateName, pPrivateIp: $pPrivateIp, pPublicIp: $pPublicIp }
+        ) { integer }
+    }
+    """
+    graphql_request_variables = {"pServerName": server_name, "pServerStateName": server_state, "pPrivateIp": private_ip, "pPublicIp": public_ip}
+    graphQLRequest(graphql_request, graphql_request_variables)
+
+def api_get_infrastructure_variables(infrastructure_name):
+
+    graphql_request = """
+    query Infrastructures($name: String!) {
+        vInfrastructures(condition: {name: $name}) {
+            nodes {
+                variables
+            }
+        }
+    }
+    """
+    graphql_request_variables = {"name": infrastructure_name}
+    data = graphQLRequest(graphql_request, graphql_request_variables)
+
+    if len(data["vInfrastructures"]["nodes"]) == 0:
+        raise AnsibleError("No infrastructure found with name: {}\n" .format(infrastructure_name))
+
+    return data["vInfrastructures"]["nodes"][0]["variables"]
+
+def api_update_infrastructure(infrastructure_name, infrastructure_variables):
+
+    graphql_request = """
+    mutation infrastructureUpdate($pInfrastructureName: String!, $pVariables: JSON! = "") {
+        infrastructureUpdate(
+            input: {pInfrastructureName: $pInfrastructureName, pVariables: $pVariables}
+        ) { integer }
+    }
+    """
+    graphql_request_variables = {"pInfrastructureName": infrastructure_name, "pVariables": infrastructure_variables}
+    graphQLRequest(graphql_request, graphql_request_variables)
+
+
+def graphQLRequest(graphql_request, graphql_request_variables):
+
+    response = requests.post(
+        url=os.environ.get('YAK_ANSIBLE_TRANSPORT_URL'),
+        headers={
+            "Authorization": "Bearer {}".format(os.environ.get('YAK_ANSIBLE_HTTP_TOKEN')),
+            "Content-Type": "application/json",
+        },
+        json={
+            "query": graphql_request,
+            "variables": graphql_request_variables,
+        },
+    )
+    if response.status_code != 200:
+        raise AnsibleError("API error: {}\n".format(response))
+    if "errors" in response.json():
+        raise AnsibleError("GraphQL error: {}\n".format(response.json()["errors"][0]["message"]))
+    if graphql_request.lstrip().startswith('query'):
+        return response.json()["data"]
 
 def load_yml(target_name):
 
