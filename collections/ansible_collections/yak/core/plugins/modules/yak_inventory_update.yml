@@ -19,6 +19,13 @@
       server_name: "{{ server_name }}"
       private_ip: 1.1.1.1
 
+  - name: Update empty variables
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      server_name: "{{ server_name }}"
+      private_ip:
+      public_ip: ""
+
   - name: Update public_ip variable
     delegate_to: localhost
     yak.core.yak_inventory_update:

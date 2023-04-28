@@ -105,12 +105,22 @@ def run_module():
     if os.environ.get('YAK_ANSIBLE_HTTP_TOKEN') is not None and os.environ.get('YAK_ANSIBLE_TRANSPORT_URL') is not None:
         result['inventory_type'] = 'database'
 
+        server_state = None
+        if module.params['server_state'] is not None and len(module.params['server_state']) > 2:
+            server_state = module.params['server_state']
+        private_ip = None
+        if module.params['private_ip'] is not None and len(module.params['private_ip']) > 2:
+            private_ip = module.params['private_ip']
+        public_ip = None
+        if module.params['public_ip'] is not None and len(module.params['public_ip']) > 2:
+            public_ip = module.params['public_ip']
+
         if module.params['server_name'] is not None:
             api_update_server(
                 module.params['server_name'],
-                module.params['server_state'],
-                module.params['private_ip'],
-                module.params['public_ip'],
+                server_state,
+                private_ip,
+                public_ip,
             )
 
         if module.params['infrastructure_name'] is not None:
