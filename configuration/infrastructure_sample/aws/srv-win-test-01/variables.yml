@@ -8,8 +8,12 @@ private_ip:
 public_ip:
     mode: none
     ip:
-operating_system: Microsoft Windows Server 2019 Base 2022.08.10
-ami_id: ami-0c6e3ed6b1dd28a39
+operating_system: Windows_Server-2019-English-Full-Base-2023.04.12
+ami_id: ami-000db6d28423ad985
 instance_type: t3.large
 os_type: windows
 time_zone: UTC
+
+root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
+  volume_type: gp2
+  volume_size: 100
