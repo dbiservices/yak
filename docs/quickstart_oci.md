@@ -76,8 +76,14 @@ Create a directory under your infrastructure `./configuration/infrastructure/oci
 mkdir ./configuration/infrastructure/oci_testing/srv01
 ```
 
-Copy the adaquat template file located under `./configuration/infrastructure/oci_testing/srv01`:
+Copy one of the below server template file for Linux or Windows under `./configuration/infrastructure/aws_testing/srv01`:
 
+```bash
+/configuration/infrastructure_sample/oci/srv-linux-test-01/variables.yml 
+/configuration/infrastructure_sample/oci/srv-windows-test-01/variables.yml 
+```
+
+In our example we choose the Linux templates
 ```
 cp ./configuration/infrastructure_sample/oci/srv-linux-test-01/variables.yml ./configuration/infrastructure/oci_testing/srv01
 vi ./configuration/infrastructure/oci_testing/srv01/variables.yml
