@@ -56,7 +56,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.component_group_name = "components"
         self.gql_resultset = None
         self.secret_dir = "/tmp/secrets"
-        self.local_ssh_config_file = "/root/.ssh"
+        self.local_ssh_config_file = "{}/.ssh".format(os.path.expanduser('~'))
 
     def verify_file(self, path):
         if super(InventoryModule, self).verify_file(path):
@@ -153,7 +153,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 nodes {
                   id
                   name
-                  secretValue
+                  secretValues
                   typeId
                   typeName
                   expirationTs
@@ -238,26 +238,27 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_secrets(self):
 
-        os.makedirs(self.secret_dir, exist_ok=True)
-
         for secret in self.gql_resultset["vSecrets"]["nodes"]:
 
-            if secret["typeName"] in ["winrm certificat", "winrm private key", "ssh private key"]:
-                descriptor = os.open(
-                    path="{}/{}".format(self.secret_dir, secret["id"]),
-                    flags=(
-                        os.O_WRONLY   # access mode: write only
-                        | os.O_CREAT  # create if not exists
-                        | os.O_TRUNC  # truncate the file to zero
-                    ),
-                    mode=0o600
-                )
-                f = open(descriptor, "w")
-                f.write(secret["secretValue"])
-                f.close()
+            if secret["typeId"] == 5 or secret["typeId"] == 6:  # SSH(5) or WINRM(6)
+                os.makedirs("{}/{}".format(self.secret_dir, secret["id"]), exist_ok=True)
+                for secretValue in secret["secretValues"]:
+                    descriptor = os.open(
+                        path="{}/{}/{}".format(self.secret_dir, secret["id"], secretValue["attribute"]),
+                        flags=(
+                            os.O_WRONLY   # access mode: write only
+                            | os.O_CREAT  # create if not exists
+                            | os.O_TRUNC  # truncate the file to zero
+                        ),
+                        mode=0o600
+                    )
+                    f = open(descriptor, "w")
+                    f.write(secretValue["value"])
+                    f.close()
 
-            if secret["typeName"] == "ssh private key":
-                os.system("/usr/bin/ssh-keygen -f {}/{} -y > {}/{}.pub".format(self.secret_dir, secret["id"], self.secret_dir, secret["id"]))
+                    if secretValue["attribute"] == "PRIVATE_KEY":
+                        os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
+                                  .format(self.secret_dir, secret["id"], secretValue["attribute"], self.secret_dir, secret["id"]))
 
     def _populate_providers(self):
 
@@ -279,13 +280,12 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_child(infra["providerName"], infra_name)
             self._append_gvars(infra_name, infra["variables"])
             for secret in infra["secrets"]["secrets"]:
-                if secret["type_name"] == "ssh private key":
-                    self._set_gvars(infra_name, "ansible_ssh_private_key_file", "{}/{}".format(self.secret_dir, secret["id"]))
-                    self._set_gvars(infra_name, "ansible_ssh_public_key_file.pub", "{}/{}".format(self.secret_dir, secret["id"]))
-                if secret["type_name"] == "winrm private key":
-                    self._set_gvars(infra_name, "ansible_winrm_cert_key_pem", "{}/{}".format(self.secret_dir, secret["id"]))
-                if secret["type_name"] == "winrm certificat":
-                    self._set_gvars(infra_name, "ansible_winrm_cert_pem", "{}/{}".format(self.secret_dir, secret["id"]))
+                if secret["type_id"] == 5:
+                    self._set_gvars(infra_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                    self._set_gvars(infra_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
+                if secret["type_id"] == 6:
+                    self._set_gvars(infra_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICAT_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                    self._set_gvars(infra_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICAT".format(self.secret_dir, secret["id"]))
 
     def _populate_servers(self):
 
@@ -298,13 +298,12 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             if server["providerImageOsType"].lower() == "windows":
                 self._set_hvars(server_name, "ansible_connection", "winrm")
             for secret in server["secrets"]["secrets"]:
-                if secret["type_name"] == "ssh private key":
-                    self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}".format(self.secret_dir, secret["id"]))
-                    self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}.pub".format(self.secret_dir, secret["id"]))
-                if secret["type_name"] == "winrm private key":
-                    self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}".format(self.secret_dir, secret["id"]))
-                if secret["type_name"] == "winrm certificat":
-                    self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}".format(self.secret_dir, secret["id"]))
+                if secret["type_id"] == 5:
+                    self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                    self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
+                if secret["type_id"] == 6:
+                    self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICAT_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                    self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICAT".format(self.secret_dir, secret["id"]))
             self._set_hvars(server_name, 'storages', [])
             self._set_hvars(server_name, 'target_type', 'server')
             self._set_hvars(server_name, 'machine_name', server["name"])
