@@ -74,7 +74,7 @@ function not_available ()
 function start_demo ()
 {
    echo 
-   blueLog "STEP 1#10: Provider description"
+   blueLog "STEP 1#11: Provider description"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   To Provision a server on AWS, a Cloud provider configuration must exist"
    echo "   The environment demo_aws is located under ./configuration/infrastructure"
@@ -90,7 +90,7 @@ function start_demo ()
    echo
    step_time "STEP 1"
 
-   blueLog "STEP 2#10: server variables"
+   blueLog "STEP 2#11: server variables"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   The server configuration is located under the Provider environment "
    echo "   ./configuration/infrastructure/demo_aws"
@@ -106,25 +106,23 @@ function start_demo ()
    echo
    step_time "STEP 2"
 
-   blueLog "STEP 3#10: Component variables"
+   blueLog "STEP 3#11: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Component configuration is located under the server configuration"
-   echo "   ./configuration/infrastructure/demo_aws/linux-$(hostname -s)"
+   echo "   The Component configuration is located under a separated directory structure"
+   echo "   ./configuration/components"
    echo
    greenLog "Executed command: "
-   whiteLog "cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml" 
+   whiteLog "cat $HOME/yak/configuration/components/COMP/variables.yml" 
    echo
    read -p "Press enter to continue "
    echo
-   cat $HOME/yak/configuration/infrastructure/demo_${provider}/linux-$(hostname -s)/COMP/variables.yml
-   echo
-   echo  "Above configuration is based on the template file located in ./configuration/templates/linux/storage/demo_instance.yml"
+   cat $HOME/yak/configuration/components/COMP/variables.yml
    echo
    read -p "Press enter to continue "
    echo
    step_time "STEP 3"
 
-   blueLog "STEP 4#10. Display the Ansible inventory"
+   blueLog "STEP 4#11. Display the Ansible inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo
    greenLog "Executed command: "
@@ -138,7 +136,7 @@ function start_demo ()
    echo
    step_time "STEP 4"
 
-   blueLog "STEP 5#10. Display the Ansible Host inventory"
+   blueLog "STEP 5#11. Display the Ansible Host inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo
    greenLog "Executed command: "
@@ -152,7 +150,7 @@ function start_demo ()
    echo
    step_time "STEP 5"
 
-   blueLog "STEP 6#10. Set the authentification method"
+   blueLog "STEP 6#11. Set the authentification method"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   To have the privileges to create and configure the server" 
    echo "   For this demo on ${provider} it is done by exporting the ${provider} provided variables"
@@ -166,7 +164,24 @@ function start_demo ()
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#10. Server creation"
+   blueLog "STEP 7#11. Set Inventory to the component"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo "   To deploy an server including the disk of the component configuration COMP "
+   echo "   The inventory must be set to the component"
+   echo
+   greenLog "Executed command: "
+   whiteLog "sc COMP" 
+   whiteLog "ansible-inventory --graph" 
+   echo
+   read -p "Press enter to continue "
+   echo
+   sc COMP
+   ansible-inventory --graph
+   echo
+   read -p "Press enter to continue "
+   step_time "STEP 7"
+
+   blueLog "STEP 8#11. Server creation"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   Now you are ready to create your host including storage configuration"
    echo
@@ -178,9 +193,9 @@ function start_demo ()
    ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo
    read -p "Press enter to continue "
-   step_time "STEP 7"
+   step_time "STEP 8"
 
-   blueLog "STEP 8#10. SSH connection to created server"
+   blueLog "STEP 9#11. SSH connection to created server"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   At this step the server is created and an SSH connection will be made"
    echo "   Check the server and the storage if it is correctly configured"
@@ -193,9 +208,9 @@ function start_demo ()
    echo
    ssh demo_${provider}/linux-$(hostname -s) 
    echo 
-   step_time "STEP 8"
+   step_time "STEP 9"
    
-   blueLog "STEP 9#10 SSH connection from your PC"
+   blueLog "STEP 10#11 SSH connection from your PC"
    whiteLog "-------------------------------------------------------------------------------------"
    whiteLog "   If you want to connect from your PC"
    whiteLog "   You can use the below information, and copying the content of the sshkey file"
@@ -208,9 +223,9 @@ function start_demo ()
    cat configuration/infrastructure/.ssh/config
    echo
    read -p "Press enter to continue "
-   step_time "STEP 9"
+   step_time "STEP 10"
 
-   blueLog "STEP 10#10 Server Decommissioning"
+   blueLog "STEP 11#11 Server Decommissioning"
    whiteLog "-------------------------------------------------------------------------------------"
    redLog   "   If you Press ENTER the server will be destroyed"
    redLog   "   But you can press CTRL-C now if you want to keep the server"
@@ -223,7 +238,7 @@ function start_demo ()
    echo
    ansible-playbook servers/decommission.yml -e target=demo_${provider}/linux-$(hostname -s)
    echo
-   step_time "STEP 10"
+   step_time "STEP 11"
 
    blueLog "End."
    whiteLog "-------------------------------------------------------------------------------------"

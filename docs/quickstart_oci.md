@@ -83,7 +83,8 @@ Copy one of the below server template file for Linux or Windows under `./configu
 /configuration/infrastructure_sample/oci/srv-windows-test-01/variables.yml 
 ```
 
-In our example we choose the Linux templates 
+In our example we choose the Linux templates
+
 ```
 cp ./configuration/infrastructure_sample/oci/srv-linux-test-01/variables.yml ./configuration/infrastructure/oci_testing/srv01
 vi ./configuration/infrastructure/oci_testing/srv01/variables.yml
