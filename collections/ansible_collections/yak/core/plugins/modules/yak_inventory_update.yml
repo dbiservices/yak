@@ -2,32 +2,73 @@
 - name: Test module yak_inventory_update
   hosts: localhost
   gather_facts: no
+  vars:
+    server_name: srv-aws-linux
+    infrastructure_name: aws-yak-test
   tasks:
+
+  - name: Update state
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      server_name: "{{ server_name }}"
+      server_state: starting
 
   - name: Update private_ip variable
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: "{{ server_name }}"
       private_ip: 1.1.1.1
+
+  - name: Update empty variables
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      server_name: "{{ server_name }}"
+      private_ip:
+      public_ip: ""
 
   - name: Update public_ip variable
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: "{{ server_name }}"
       public_ip: 2.2.2.2
 
   - name: Update IPs variables
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: "{{ server_name }}"
       private_ip: 3.3.3.3
       public_ip: 4.4.4.4
+
+  - name: Update state
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      server_name: "{{ server_name }}"
+      server_state: stopping
+
+  - name: Update state
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      server_name: "{{ server_name }}"
+      server_state: no-a-correct-state
+    register: r_test_result
+    failed_when:
+      - yak_inventory_type == "database"
+      - r_test_result.rc == 0
+
+  - name: Update state
+    delegate_to: localhost
+    yak.core.yak_inventory_update:
+      server_name: "{{ server_name }}"
+      server_variables:
+        var1: value 1
+    register: r_test_result
+    failed_when: r_test_result.rc == 0
 
   - name: Update infrastructure variables
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test
-      infrastructure:
+      infrastructure_name: "{{ infrastructure_name }}"
+      infrastructure_variables:
         test_var_text: text variable
         test_var_list:
           - list item 1
@@ -46,11 +87,13 @@
               - list item 2
 
   - name: Test failure when using parameters for different target type
-    ignore_errors: yes
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: azure_yak_test/srv-win-test-01
+      server_name: "{{ server_name }}"
+      infrastructure_name: aws
       private_ip: 3.3.3.3
       public_ip: 4.4.4.4
-      infrastructure:
+      infrastructure_variables:
         test_var_text: text variable
+    register: r_test_result
+    failed_when: r_test_result.rc == 0

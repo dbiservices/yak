@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services
+# Copyright: (c) 2023, dbi services
 # This file is part of YaK core
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -27,17 +27,8 @@ DOCUMENTATION = r'''
         description: Debug mode for developers
         required: false
         choices: [True, False]
-      configuration_base:
-        description: Path to the directory of the configuration directory
-        required: false
-      configuration_directory_name:
-        description: configuration directory name
-        required: false
       infrastructure_directory_name:
         description: infrastructure directory name
-        required: false
-      platform_directory_name:
-        description: platform directory name
         required: false
       windows_ansible_user:
         description: The user to be create/used for Windows machine
@@ -61,17 +52,23 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.debug = False
         self.configuration_directory_name = "configuration"
         self.infrastructure_directory_name = "infrastructure"
-        self.platform_directory_name = "platforms"
-        self.configuration_base = "/opt/{}".format(self.NAME)
-        self.configuration_path = \
-            "{}/{}".format(self.configuration_base,
-                           self.configuration_directory_name)
+        self.yak_base = os.path.abspath(os.getcwd())
+        self.configuration_path = "{}/{}".format(self.yak_base, self.configuration_directory_name)
+        self.component_types_path = "{}/{}".format(self.yak_base, "component_types")
+        self.components_path = "{}/{}".format(self.configuration_path, "components")
         self.windows_ansible_user = "Ansible"
         self.default_server_os_type = "linux"
+        self.infrastructure_group_name = "infrastructures"
         self.server_group_name = "servers"
         self.allowed_providers = ['aws', 'azure', 'oci', 'on-premises']
         self.secret_permissions = stat.S_IRUSR | stat.S_IWUSR
         self.local_ssh_config_file = "~/yak/configuration/infrastructure/.ssh/config"
+        self.is_component_specific = False
+        self.component_name = None
+        self.group_all_lists = []
+        self.host_all_lists = []
+        self.host_component_lists = []
+        self.group_component_lists = []
 
     # Functions used by Ansible
     def verify_file(self, path):
@@ -139,36 +136,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         if environ.get('DEBUG') is not None and int(environ.get('DEBUG')) == 1:
             self.debug = True
 
-        # Checking configuration_directory_name
-        if self.get_option('configuration_directory_name'):
-            self.configuration_directory_name = self.get_option(
-                'configuration_directory_name')
-        if environ.get('CONFIGURATION_DIRECTORY_NAME') is not None:
-            self.configuration_directory_name = \
-                environ.get('CONFIGURATION_DIRECTORY_NAME')
-
-        # Checking infrastructure_directory_name
-        if self.get_option('infrastructure_directory_name'):
-            self.infrastructure_directory_name = self.get_option(
-                'infrastructure_directory_name')
-
-        # Checking platform_directory_name
-        if self.get_option('platform_directory_name'):
-            self.platform_directory_name = self.get_option(
-                'platform_directory_name')
-
-        # Checking configuration_base
-        if self.get_option('configuration_base'):
-            self.configuration_path = os.path.abspath(
-                "{}/{}/{}".format(
-                    os.getcwd(),
-                    self.get_option('configuration_base'),
-                    self.configuration_directory_name)
-            )
-
         if not Path(self.configuration_path).is_dir():
             raise AnsibleError(
-                "Is not a valid configuration path '{}'."
+                "Is not a valid configuration_path '{}'."
                 .format(self.configuration_path))
 
         # Checking windows ansible user
@@ -181,11 +151,18 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.default_server_os_type = self.get_option(
                 'default_server_os_type')
 
+        # Get component name
+        if "YAK_CORE_COMPONENT" in os.environ:
+            self.is_component_specific = True
+
+            self.component_name = os.environ.get('YAK_CORE_COMPONENT')
+
         # Start populating
         self._populate_infrastructure_global_variables(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
         self._populate_infrastructure_global_secrets(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
-        self.inventory.add_group('infrastructures')
         self._populate_infrastructure(path="{}/{}".format(self.configuration_path, self.infrastructure_directory_name))
+        if self.is_component_specific:
+            self._populate_component()
 
     def _populate_infrastructure_global_variables(self, path):
 
@@ -195,6 +172,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         self.inventory.groups['all'].vars['yak_inventory_type'] = 'file'
         self.inventory.groups['all'].vars['yak_local_ssh_config_file'] = self.local_ssh_config_file
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
+
+        self.inventory.groups['all'].vars['storage_devices'] = {
+            'size_GB': 10,
+            'max_size_gb': 100,
+            'specifications': {}
+        }
+
+        self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
         self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
 
     def _populate_infrastructure_global_secrets(self, path):
@@ -251,7 +237,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     target.vars["ansible_winrm_transport"] = "certificate"
                     target.vars["ansible_winrm_server_cert_validation"] = "ignore"
 
-
     def check_and_sanitize_infrastructure_variables(self, config):
         config_sanitized = config
         # Cloud providers
@@ -270,6 +255,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_infrastructure(self, path):
 
+        if not self.is_component_specific:
+            self.inventory.add_group(self.infrastructure_group_name)
+            self.inventory.add_group(self.server_group_name)
+
         self._log_debug('Discovering infra {}'.format(path))
         for infrastructure_file in glob.glob("{}/*/".format(path)):
             if os.path.basename(infrastructure_file[:-1]) == 'secrets':
@@ -281,6 +270,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             group_name = os.path.basename(infrastructure_file[:-1])
             group = os.path.basename(infrastructure_file[:-1])
             group = self.inventory.add_group(group)
+            self.group_all_lists.append(group)
             self.inventory.add_child('all', group)
 
             # Add group vars
@@ -288,19 +278,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             infrastructure_variables = self.check_and_sanitize_infrastructure_variables(group_config_yaml)
             self.inventory.groups[group].vars = infrastructure_variables
             self.current_provider = self.inventory.groups[group].vars["provider"]
-            self.inventory.add_host('infrastructure/{}'.format(group_name), group='infrastructures')
-            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
-            self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
+            if not self.is_component_specific:
+                self.inventory.add_host('infrastructure/{}'.format(group_name), group=self.infrastructure_group_name)
+                self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
+                self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
 
             # Add ssh key / certificates
             self._set_auth_secrets(self.inventory.groups[group], "{}/{}/secrets".format(path, group))
 
             self._add_hosts(path, group)
 
-    def _add_hosts(self, path, group ):
+    def _add_hosts(self, path, group):
 
         self._log_debug('Discovering servers in {}'.format(path))
-        group_server = self.inventory.add_group(self.server_group_name)
         for host_file in glob.glob("{}/{}/*/".format(
                 path,
                 group)):
@@ -309,7 +299,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             host = "{}/{}".format(group, os.path.basename(host_file[:-1]))
             machine_name = os.path.basename(host_file[:-1])
             self.inventory.add_host(host, group=group)
-            self.inventory.add_host(host, group=group_server)
+            self.host_all_lists.append(host)
+            if not self.is_component_specific:
+                self.inventory.add_host(host, group=self.server_group_name)
 
             # Add host vars
             host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, host))
@@ -395,81 +387,149 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         self.inventory.hosts[host].vars['host_ip_access']
                 ]['ip']
 
-            # Initiate list of storage
-            self.inventory.hosts[host].vars["storages"] = []
+    def _populate_component(self):
+        self.component_path = "{}/{}".format(self.components_path, self.component_name)
+        self._log_debug("_populate_component.component_path: {}".format(self.component_path))
 
-            # Populate components on current host
-            self._add_components(path, group, host)
+        self.component_variables = self._load_yaml_file("{}/variables.yml".format(self.component_path))
 
-    def _add_components(self, path, group, host):
+        # Extract component type name
+        if "component_type" not in self.component_variables:
+            raise AnsibleError("No 'component_type' for component '{}'.".format(self.component_name))
 
-        for component_file in glob.glob("{}/{}/*/".format(path, host)):
-            if os.path.basename(component_file[:-1]) == 'secrets':
-                continue
-            component = "{}/{}".format(host, os.path.basename(component_file[:-1]))
-            self.inventory.add_host(component, group=group)
+        if len(self.component_variables["component_type"].split("/")) != 2:
+            raise AnsibleError((
+                "The value of 'component_type' has not a correct format for component '{}' "
+                "(should be 'component_name/sub_component_name')."
+            ).format(self.component_name))
 
-            # Overwrite with component vars
-            component_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, component))
-            self.inventory.hosts[component].vars = {**self.inventory.hosts[host].vars, **component_config_yaml}
+        self.component_type_name = self.component_variables["component_type"].split("/")[0]
+        self._log_debug("_populate_component.component_type_name: {}".format(self.component_type_name))
+        self.component_type_sub_name = self.component_variables["component_type"].split("/")[1]
+        self._log_debug("_populate_component.component_type_sub_name: {}".format(self.component_type_sub_name))
+        self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
+        self._log_debug("_populate_component.component_type_path: {}".format(self.component_type_path))
 
-            # Default variable for components
-            self.inventory.hosts[component].vars["parent_target_name"] = host
-            self.inventory.hosts[component].vars["target_type"] = 'component'
+        # Populate generic component type variables
+        self._populate_component_type()
 
-            # Add ansible key file
-            self._set_auth_secrets(self.inventory.hosts[component], "{}/{}/secrets".format(path, component))
+        # Overwrite with specific component variables
+        self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **self.component_variables}
+        self.inventory.groups["all"].vars["component_variables"] = self.component_variables
+        self.inventory.groups["all"].vars["component_name"] = self.component_name
+        self.inventory.groups["all"].vars["component_path"] = self.component_path
+        self.inventory.groups["all"].vars["component_type_name"] = self.component_type_name
+        self.inventory.groups["all"].vars["component_type_path"] = self.component_type_path
 
-            # Add to component_type group
-            if 'component_type' in self.inventory.hosts[component].vars:
-                self.inventory.add_group(
-                    self.inventory.hosts[component].vars["component_type"])
-                self.inventory.add_host(
-                    component,
-                    group=self.inventory.hosts[
-                        component].vars["component_type"]
-                )
+        # Populate generic sub component type variables
+        self._populate_sub_component_type()
 
-            # Add storage
-            if 'storage' in component_config_yaml:
+        # Remove server not in component - https://gitlab.com/yak4all/yak/-/issues/82
+        self._remove_hosts_not_in_component()
+        self._remove_groups_not_in_component()
 
-                storage_config_file = "{}/templates/{}.yml".format(
-                    self.configuration_path, component_config_yaml["storage"]
-                )
+    def _populate_component_type(self):
 
-                storage_config_yaml = self._load_yaml_file(storage_config_file)
+        # variables.yml and variables/*.yml if exists
+        if os.path.exists("{}/variables.yml".format(self.component_type_path)):
+            variables_yaml = self._load_yaml_file("{}/variables.yml".format(self.component_type_path), warning_only=True)
+            self.inventory.groups["all"].vars = variables_yaml
 
-                if self.current_provider not in \
-                        storage_config_yaml["volumes"]:
+        if os.path.exists("{}/variables".format(self.component_type_path)):
+            for variables_path in Path("{}/variables".format(self.component_type_path)).rglob('*.yml'):
+                variables_yaml = self._load_yaml_file(variables_path, warning_only=True)
+                self.inventory.groups["all"].vars.update(variables_yaml)
+
+        # Add component manifest.yml: must exists
+        if not os.path.exists("{}/manifest.yml".format(self.component_type_path)):
+            raise AnsibleError("File manifest.yml not found for component type '{}'.".format(self.component_type_name))
+
+        manifest_yaml = self._load_yaml_file(
+            "{}/manifest.yml".format(self.component_type_path),
+            warning_only=True
+        )
+        self.inventory.groups["all"].vars["component_type_manifest"] = manifest_yaml
+        self.component_type_manifest = manifest_yaml
+
+        # artifacts_requirements.yml: should exists
+        if os.path.exists("{}/artifacts_requirements.yml".format(self.component_type_path)):
+            artifacts_requirements_yaml = self._load_yaml_file(
+                "{}/artifacts_requirements.yml".format(self.component_type_path),
+                warning_only=True
+            )
+            self.inventory.groups["all"].vars["artifacts_requirements"] = artifacts_requirements_yaml
+
+    def _populate_sub_component_type(self):
+
+        if "sub_component_types" not in self.component_type_manifest:
+            raise AnsibleError("No 'sub_component_types' in the manifest file '{}'.".format(self.component_type_name))
+
+        sub_component = None
+        for sub_component_item in self.component_type_manifest["sub_component_types"]:
+            if sub_component_item["name"] == self.component_type_sub_name:
+                sub_component = sub_component_item
+                break
+
+        if sub_component is None:
+            raise AnsibleError("No sub component name '{}' in the manifest file of component type '{}'.".format(self.component_type_sub_name, self.component_type_name))
+
+        for inventory_map in sub_component["inventory_maps"]:
+            self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
+            if inventory_map["group_name"] in self.inventory.groups:
+                raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
+            self.inventory.add_group(inventory_map["group_name"])
+
+            # Add hosts/group
+            for target in self.inventory.groups["all"].vars["yak_manifest_{}".format(inventory_map["group_name"])]:
+                if target not in self.host_all_lists and target not in self.group_all_lists:
+                    raise AnsibleError("Server/group name '{}' not found in the inventory (typo? Server/infra really declared?).".format(target))
+                if target in self.host_all_lists:
+                    self.inventory.add_host(target, group=inventory_map["group_name"])
+                    self.host_component_lists.append(target)
+                    self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[target])
+                elif target in self.group_all_lists:
+                    self.inventory.add_child(inventory_map["group_name"], target)
+                    self.group_component_lists.append(target)
+                    for server in self.inventory.groups[target].hosts:
+                        self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[str(server)])
+
+    def _populate_sub_component_type_storage(self, inventory_map, target):
+
+        target.vars["yak_inventory_os_storages"] = []
+        if "storage" in inventory_map:
+            storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
+            self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
+            if storage_variable_name in self.inventory.groups["all"].vars:
+                if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
                     raise AnsibleError(
-                        "Storage volume for provider '{}' not found in '{}'."
-                        .format(self.current_provider, storage_config_file))
-
-                # Add template vars to component vars
-                self.inventory.hosts[component].vars["storage"] = \
-                    storage_config_yaml
-                self.inventory.hosts[component].vars["storage"]["volumes"] = \
-                    self.inventory.hosts[
-                        component
-                ].vars["storage"]["volumes"][self.current_provider]
-
-                # Add template var to server
-                self.inventory.hosts[host].vars["storages"].append(
-                    self.inventory.hosts[component].vars["storage"]
+                        "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type'{}'."
+                        .format(target.vars["os_type"], target, self.component_type_name)
+                    )
+                target.vars["yak_inventory_os_storages"].append(
+                    self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]
+                )
+                pass
+            else:
+                raise AnsibleError(
+                    "No variables '{}' found in the variables of component '{}'."
+                    .format(storage_variable_name, self.component_type_name)
                 )
 
-            # Add template
-            if 'templates' in component_config_yaml:
-                for template in component_config_yaml["templates"]:
+    def _remove_hosts_not_in_component(self):
+        for host in self.host_all_lists:
+            find = False
+            if host not in self.host_component_lists:
+                for group in self.group_component_lists:
+                    for ghost in self.inventory.groups[group].hosts:
+                        if host == ghost.name:
+                            find = True
+                            break
+                    if find is False:
+                        break
+                if find is False:
+                    self.inventory.remove_host(self.inventory.hosts[host])
 
-                    template_config_yaml = self._load_yaml_file(
-                        "components/{}/templates/{}.yml". format(
-                            component_config_yaml["component_type"],
-                            template["path"]
-                        ),
-                        warning_only=True
-                    )
-
-                    # Add template vars to component vars
-                    self.inventory.hosts[component].vars[template["name"]] = \
-                        template_config_yaml
+    def _remove_groups_not_in_component(self):
+        for group in self.group_all_lists:
+            if len(self.inventory.groups[group].hosts) == 0:
+                self.inventory.remove_group(group)

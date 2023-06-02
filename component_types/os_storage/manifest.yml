@@ -1,0 +1,18 @@
+# The manifest file is used:
+#  - By the CI pipeline to check and validate all possible options of the component playbooks on all certified OS.
+#  - By the YaK GUI to display information to the user and generates forms with basic check.
+
+version:                                   # Version of the component accoring to standard https://semver.org
+  major: 1
+  minor: 0
+  patch: 0
+
+dependencies:                              # Here goes the dependencies of the component
+    yak_major_version: 0                   # yak_major_version: this indicates to which version of YaK this component has been tested and validated.
+
+sub_component_types:
+  - name: storage
+    inventory_maps:
+      - group_name: my_servers             # Name of the variable/hosts value in which the host(s) can be found
+        type: host                        # Can either be host (YaK server) or group (YaK infrastructure)
+        storage: my_os_storage_config      # (optional) Name of the variable in which the storage layout to be used cna be found

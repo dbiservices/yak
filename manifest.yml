@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 # https://semver.org
 version:
   major: 1
@@ -15,7 +15,7 @@ components:
   - src: git@gitlab.com:dbiservices/yak/yak_components/mongodb_instance.git
     version: master
   - src: git@gitlab.com:dbiservices/yak/yak_components/weblogic_domain.git
-    version: master  
+    version: master
   - src: git@gitlab.com:dbiservices/yak/yak_components/kubernetes_cluster.git
     version: master
 

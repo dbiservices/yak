@@ -25,13 +25,11 @@ Including an example of how to use your role (for instance, with variables passe
   vars:
     state: present
     server_name: "{{ machine_name }}"
-    ec2_key_name: "{{ machine_name }}"
     image_id: "{{ ami_id }}"
     local_ssh_key:
         path: "{{ ansible_ssh_private_key_file|dirname }}"
         private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
         public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
-    volumes_params: "{{ ec2_volumes_params }}"
     winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
     winrm_user: "{{ ansible_user }}"
     os_admin_username: "{{ ansible_user }}"

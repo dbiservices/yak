@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 plugin: yak.core.db
 #
 # Custom configuration
@@ -6,11 +6,11 @@ plugin: yak.core.db
 
 # debug: to display debugging information in
 # stdout for troubleshooting purpose.
-# Environment variable: DEBUG
-debug: true
+# Environment variable: YAK_ANSIBLE_DEBUG
+yak_ansible_debug: false
 
 # Environment variable: YAK_ANSIBLE_TRANSPORT_URL
-gql_transport_url: https://2c059b20-a200-45aa-8492-0e2891e14832.backend.agoston.io/d1a0a162-e1ff-4a34-87aa-025983124825/v1/data/graphql
+yak_ansible_transport_url: https://2c059b20-a200-45aa-8492-0e2891e14832.backend.agoston.io/d1a0a162-e1ff-4a34-87aa-025983124825/v1/data/graphql
 
-# Environment variable: YAK_SSL_VERIFY_CERTIFICATE
+# Environment variable: YAK_ANSIBLE_SSL_VERIFY_CERTIFICATE
 ssl_verify_certificate: false

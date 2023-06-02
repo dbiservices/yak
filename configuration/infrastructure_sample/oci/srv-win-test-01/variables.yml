@@ -1,13 +1,13 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 hostname: srv-win-test-01
 is_physical_server: no
 host_ip_access: public_ip
 private_ip:
     mode: auto
-    ip: 
+    ip:
 public_ip:
     mode: auto
-    ip: 
+    ip:
 os_type: windows
 time_zone: UTC
 image_id: ocid1.image.oc1.eu-zurich-1.aaaaaaaazdntsrzkqrxqt7x2zs4x35q2nox77ekxbv2pwzl2gxri2qijjlfa

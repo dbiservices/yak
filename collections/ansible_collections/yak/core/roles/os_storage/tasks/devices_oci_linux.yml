@@ -1,14 +1,17 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- include_tasks: derive_volumes_need.yml
+
 - name: Create volume
   delegate_to: localhost
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ vm_name }}_{{ item.volume_name }}"
-    size_in_gbs: "{{ item.size_GB }}"
-  with_items: "{{ volumes }}"
+    display_name: "{{ machine_name }}_disk{{ item }}"
+    size_in_gbs: "{{ storage_devices.max_size_gb|int }}"
+    freeform_tags : "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
+  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
 
 - debug: var=r_oci_blockstorage_volume_present
   delegate_to: localhost
@@ -19,7 +22,7 @@
   oracle.oci.oci_compute_instance_facts:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ vm_name }}"
+    display_name: "{{ machine_name }}"
     lifecycle_state: RUNNING
   register: r_oci_compute_instance_facts
   failed_when: r_oci_compute_instance_facts.instances|length == 0

@@ -1,0 +1,21 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Check variables
+  assert:
+    that:
+      - winrm_cert_pem_path is defined
+      - winrm_user is defined
+
+- name: Generate user data for windows to configre WinRM
+  set_fact:
+    winrm_script: "{{ lookup('template', 'winrm.ps1') }}"
+
+- debug: msg="Cloud init script saved in variable 'winrm_script'"
+
+- name: Copy WinRM script to backup location
+  delegate_to: localhost
+  copy: content="{{ winrm_script }}" dest=/tmp/{{ server_name }}_winrm_script.ps1
+  when: debug|bool
+
+- debug: msg="Cloud init script saved in file '/tmp/{{ server_name }}_winrm_script.ps1"
+  when: debug|bool

@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Check target type
   tags: always
@@ -22,11 +22,18 @@
     debug: false
   tasks:
 
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: starting
+      when: yak_inventory_type == "database"
+
     - include_tasks: "deploy/{{ provider }}.yml"
 
 - name: Update and refresh inventory
   tags: server
-  strategy: linear # This play must be linear until migration to RDBMS
+  strategy: linear # This play must be linear to avoid race condition when inv = file
   hosts: "{{ target }}"
   gather_facts: no
   vars:
@@ -34,6 +41,13 @@
   tasks:
 
     - include_tasks: "deploy/update_inventory.yml"
+
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: running
+      when: yak_inventory_type == "database"
 
     - name: Refresh inventory to ensure IPs are up to date
       ansible.builtin.meta: refresh_inventory
@@ -52,10 +66,6 @@
 
     - include_role:
         name: yak.core.os_storage
-      vars:
-        vm_name: "{{ machine_name }}"
-        volumes: "{{ storage.volumes }}"
-        filesystems: "{{ storage.filesystems }}"
-      loop: "{{ storages }}"
+      loop: "{{ yak_inventory_os_storages|default([]) }}"
       loop_control:
-        loop_var: storage
+        loop_var: os_storage

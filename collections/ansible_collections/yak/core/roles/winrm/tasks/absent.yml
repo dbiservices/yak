@@ -1,0 +1,11 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Unset winrm_script variable
+  set_fact:
+    winrm_script:
+
+- name: Remove WinRM script
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: /tmp/{{ server_name }}_winrm_script.ps1
+    state: absent

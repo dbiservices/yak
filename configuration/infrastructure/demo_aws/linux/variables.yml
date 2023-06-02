@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 #
 hostname: linux
 is_physical_server: no
@@ -9,13 +9,7 @@ ami_id: ami-090a0d6a5e7962013
 operating_system: Debian-11.6-amd64-20221219
 private_ip:
     mode: auto
-    ip: 
+    ip:
 public_ip:
     mode: auto
-    ip: 
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-        volume_type: gp2
-        volume_size: 10
-        delete_on_termination: true
+    ip:

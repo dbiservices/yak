@@ -1,0 +1,33 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- include_tasks: derive_volumes_need.yml
+
+- name: Check if disks already exist
+  delegate_to: localhost
+  azure.azcollection.azure_rm_manageddisk_info:
+    name: "{{ machine_name }}_disk{{ item }}"
+    resource_group: "{{ resource_group }}"
+  register: r_azure_rm_manageddisk_info
+  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
+
+- debug: var=r_azure_rm_manageddisk_info
+  delegate_to: localhost
+  when: debug | bool
+
+- name: Create and attach the managed disk to VM
+  delegate_to: localhost
+  azure.azcollection.azure_rm_manageddisk:
+    name: "{{ machine_name }}_disk{{ item }}"
+    resource_group: "{{ resource_group }}"
+    disk_size_gb: "{{ storage_devices.max_size_gb|int }}"
+    managed_by: "{{ machine_name }}"
+    os_type: "{{ os_type }}"
+    storage_account_type: "{{ storage_devices.specifications.storage_account_type }}"
+    tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
+  register: r_azure_rm_manageddisk
+  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[*].name[]|[?contains(@, `'+machine_name+'_disk'+item+'`) == `true`]')|length==0
+  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
+
+- debug: var=r_azure_rm_manageddisk
+  delegate_to: localhost
+  when: debug | bool
