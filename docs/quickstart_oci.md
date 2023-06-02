@@ -102,16 +102,16 @@ ansible_user: opc
 host_ip_access: public_ip
 private_ip:
     mode: auto
-    ip: 
+    ip:
 public_ip:
     mode: auto
-    ip: 
+    ip:
 operating_system: Oracle-Linux-8.5-2022.01.24-0
 image_id: ocid1.image.oc1.eu-zurich-1.aaaaaaaamtulj4fmm6cx6xq6delggc5jhfoy652lbxxj2xbnzzxik7sgsnva
 shape:
     name: VM.Standard.E4.Flex
-    memory_in_gbs: 12
-    ocpus: 8
+    memory_in_gbs: 8
+    ocpus: 2
 ```
 
 You should now see your server in the Ansible inventory:
