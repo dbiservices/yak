@@ -181,7 +181,7 @@ function start_demo ()
    echo
    read -p "Press enter to continue "
    echo
-   sc DEMO
+   export YAK_CORE_COMPONENT=DEMO
    ansible-inventory --graph
    echo
    read -p "Press enter to continue "
