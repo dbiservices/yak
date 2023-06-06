@@ -36,6 +36,16 @@ availability_zone: eu-central-1a
 region_id: eu-central-1
 security_group_id:
 subnet_id:
+
+custom_tags:
+    Environment: Test
+    Department: Development YaK
+    Business_unit: YaK
+
+storage_devices:
+    max_size_gb: 100
+    specifications:
+        volume_type: gp2
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -104,8 +114,8 @@ private_ip:
 public_ip:
    mode: auto
    ip:
-operating_system: OL8.5-x86_64-HVM-2021-11-24
-ami_id: ami-07e51b655b107cd9b
+operating_system: OL8.7-x86_64-HVM-2023-03-07
+ami_id: ami-065e2293a3df4c870
 instance_type: t3.medium
 ```
 
@@ -220,65 +230,44 @@ ssh aws_testing/srv01
 
 ### 7. Declare your first component
 
-Create a directory under your server `./configuration/infrastructure/aws_testing/srv01/postgres` with your component name:
+The component configuration is located under a separated directory structure ./configuration/components
 
-```bash
-mkdir ./configuration/infrastructure/aws_testing/srv01/postgres
-```
+To deploy the disks for your server, you can use the DEMO component
 
-Copy component template file located under `./configuration/infrastructure/aws_testing/srv01/postgres`:
-
-```bash
-cp ./configuration/infrastructure_sample/aws/srv-linux-test-01/COMP/variables.yml ./configuration/infrastructure/aws_testing/srv01/postgres
-```
-
-This component has a type `postgresql_instance` and requires a predefined storage layout `linux/storage/postgresql_instance`:
+This component DEMO can be updated for you server aws/srv01 or copied to a new component 
 
 ```yaml
-# File ./configuration/infrastructure/aws_testing/srv01/postgres/variables.yml
-component_type: postgresql_instance
-storage: linux/storage/postgresql_instance
+# File ./configuration/components/DEMO/variables.yml
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+component_type: os_storage/storage
+
+# Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
+yak_manifest_my_servers:
+    - aws_testing/srv01
+
+yak_manifest_my_os_storage_config:
+    linux:
+        - { size_GB: 5, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_GB: 5, filesystem_type: "xfs", mount_point: "/u02" }
+    windows:
+        - { size_GB: 5, drive_letter: F, partition_label: data   }
+        - { size_GB: 5, drive_letter: G, partition_label: backup }
 ```
 
-**Optional:** You can use another official storage template available in the YaK project:
+### 8. Set the inventory to your DEMO component
 
 ```bash
-$ tree configuration/templates/
-configuration/templates/
-|-- linux
-|   `-- storage
-|       |-- demo_instance.yml
-|       |-- mongodb_instance.yml
-|       |-- oracle_instance.yml
-|       |-- postgresql_instance.yml
-|       |-- sqlserver_instance.yml
-|       `-- weblogic_domain.yml
-`-- windows
-    `-- storage
-        `-- sqlserver_instance.yml
+sc DEMO 
+ansible-inventory --graph 
 ```
 
-You should now see your component `aws_testing/srv01/postgres` in the Ansible inventory:
+### 8. Deploy the storage for your server
+
+This Ansible playbook will deploy the storage on your server for your configured component
 
 ```bash
-$ ansible-inventory --graph
-@all:
-  |--@aws_testing:
-  |  |--aws_testing/srv01
-  |  |--aws_testing/srv01/postgres
-  |--@postgresql_instance:
-  |  |--aws_testing/srv01/postgres
-  |--@servers:
-  |  |--aws_testing/srv01
-  |--@ungrouped:
-```
-
-### 8. Deploy the deployment storage requirements
-
-This Ansible playbook will deploy the storage requirements for each component attached to the server:
-
-```bash
-ansible-playbook servers/deploy.yml -e target=aws_testing/srv01 --tags=requirements
+ansible-playbook servers/deploy.yml -e target=aws_testing/srv01 
 ```
 
 Once completed, connect via SSH to the server and look at the storage layout:
