@@ -4,8 +4,8 @@
 
 ### Inventory parsing
 
-- The inventory will only parse the configuration files available under the directory ./configuration/infrastructure
-- Per default this directory is empty
+- The inventory will only parse the configuration files available under the directory ./configuration/infrastructure and ./configuration/components
+- Per default the directory ./configuration/infrastructure is empty
 - We made you some provider and host templates available under configuration/infrastructure_sample that can be copied and adapted
 
 ### Inventory structure
@@ -20,38 +20,28 @@ configuration/
 │   │   ├── variables.yml
 │   │   ├── {server_name}
 │   │   │   ├── variables.yml
-│   │   │   └── {component}
-│   │   │       └── variables.yml
 │   │   ├── {server_name}
 │   │   │   ├── variables.yml
-│   │   │   └── {component}
-│   │   │       └── variables.yml
 │   │   └── ...
 │   │
 │   └── {infrastructure_name_2}
 │       └── ...
 │
-├── infrastructure_sample
-│   └── aws
-│       ├── variables.yml
-│       ├── srv-linux-test-01
-│       │   ├── variables.yml
-│       │   └── COMP
-│       │       └── variables.yml
-│       ├── srv-win-test-01
-│       │   ├── variables.yml
-│       │   └── COMP
-│       │       └── variables.yml
-│       └── ...
-├── templates
-    |-- linux
-    |   `-- storage
-    |       |-- oracle_instance.yml
-    |       |-- postgresql_instance.yml
-    |       `-- sqlserver_instance.yml
-    `-- windows
-        `-- storage
-            `-- sqlserver_instance.yml
+├── components
+│   ├── {component_name_1}
+│   │    └── variables.yml
+│   └── {component_name_2}
+│       └── variables.yml
+│
+└── infrastructure_sample
+    └── aws
+        ├── variables.yml
+        ├── srv-linux-test-01
+        │   ├── variables.yml
+        ├── srv-win-test-01
+        │   ├── variables.yml
+        └── ...
+
 ```
 
 ### Create a new infrastructure
