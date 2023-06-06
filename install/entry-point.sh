@@ -25,6 +25,7 @@ if ! id yak > /dev/null 2>&1; then
     echo "export OCI_USE_NAME_AS_IDENTIFIER=true" >> ${YAK_USER_HOME}/.bashrc
     echo "cd ~/yak" >> ${YAK_USER_HOME}/.bashrc
     echo "" >> ${YAK_USER_HOME}/.bashrc
+    echo 'set mouse-=a' >> ~/.vimrc
 
     # Aliases
     echo "# Aliases" >> ${YAK_USER_HOME}/.bashrc
