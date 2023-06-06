@@ -106,6 +106,12 @@ function start_demo ()
    echo
    step_time "STEP 2"
 
+   ### begin : Replace Hostname in the COMP (disc configuration variable file)
+
+    sed -i "s/demo_hostname/linux-$HOSTNAME/g" $HOME/yak/configuration/components/COMP/variables.yml
+
+   ### end : Replace Hostname in the COMP (disc configuration variable file)
+   
    blueLog "STEP 3#11: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   The Component configuration is located under a separated directory structure"
@@ -164,9 +170,9 @@ function start_demo ()
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#11. Set Inventory to the component"
+   blueLog "STEP 7#11. Set Inventory to the component COMP"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To deploy an server including the disk of the component configuration COMP "
+   echo "   To deploy a server including the discs of the component configuration COMP "
    echo "   The inventory must be set to the component"
    echo
    greenLog "Executed command: "

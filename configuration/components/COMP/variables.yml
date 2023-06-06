@@ -4,7 +4,7 @@ component_type: os_storage/storage
 
 # Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
 yak_manifest_my_servers:
-    - demo_aws/linux-$(hostname -s)
+    - demo_aws/linux-3f17d6bf3fab
 
 # Overwrite "os_storage" from component variables
 yak_manifest_my_os_storage_config:
