@@ -482,7 +482,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             # Add hosts/group
             for target in self.inventory.groups["all"].vars["yak_manifest_{}".format(inventory_map["group_name"])]:
                 if target not in self.host_all_lists and target not in self.group_all_lists:
-                    raise AnsibleError("Server/group name '{}' not found in the inventory (typo? Server/infra really declared?).".format(target))
+                    raise AnsibleError("Server/group name '{}' in file '{}/variables.yml' not found (typo? Server/infra really declared?).".format(target, self.component_path))
                 if target in self.host_all_lists:
                     self.inventory.add_host(target, group=inventory_map["group_name"])
                     self.host_component_lists.append(target)
@@ -502,7 +502,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             if storage_variable_name in self.inventory.groups["all"].vars:
                 if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
                     raise AnsibleError(
-                        "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type'{}'."
+                        "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type '{}'."
                         .format(target.vars["os_type"], target, self.component_type_name)
                     )
                 target.vars["yak_inventory_os_storages"].append(
