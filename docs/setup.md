@@ -40,7 +40,7 @@ mkdir -p \$MY_LOCAL_COMPONENTS_DIR
 mkdir -p \$MY_LOCAL_COMPONENT_TYPES_DIR
 
 docker run -it --rm --name yak --pull always \
-           -v \${MY_LOCAL_CONFIGURATION_DIR}:/workspace/yak/configuration/infrastructure \
+           -v \${MY_LOCAL_INFRASTRUCTURE_DIR}:/workspace/yak/configuration/infrastructure \
            -v \${MY_LOCAL_COMPONENTS_DIR}:/workspace/yak/configuration/components \
            -v \${MY_LOCAL_COMPONENT_TYPES_DIR}:/workspace/yak/component_types \
            -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) \
