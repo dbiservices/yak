@@ -1,0 +1,17 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+component_type: os_storage/storage
+
+# Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
+yak_manifest_my_servers:
+    - demo_aws/demo_hostname
+
+# Overwrite "os_storage" from component variables
+yak_manifest_my_os_storage_config:
+    linux:
+        - { size_GB: 5, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_GB: 5, filesystem_type: "xfs", mount_point: "/u02" }
+    windows:
+        - { size_GB: 5, drive_letter: F, partition_label: data   }
+        - { size_GB: 5, drive_letter: G, partition_label: backup }
+
