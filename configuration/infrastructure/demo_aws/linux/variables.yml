@@ -15,5 +15,5 @@ public_ip:
     ip: 
 
 root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
-    volume_type: gp3
+    volume_type: gp2
     volume_size: 10
