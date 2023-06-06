@@ -106,11 +106,11 @@ function start_demo ()
    echo
    step_time "STEP 2"
 
-   ### begin : Replace Hostname in the COMP (disc configuration variable file)
+   ### begin : Replace Hostname in the DEMO (disc configuration variable file)
 
-    sed -i "s/demo_hostname/linux-$HOSTNAME/g" $HOME/yak/configuration/components/COMP/variables.yml
+    sed -i "s/demo_hostname/linux-$HOSTNAME/g" $HOME/yak/configuration/components/DEMO/variables.yml
 
-   ### end : Replace Hostname in the COMP (disc configuration variable file)
+   ### end : Replace Hostname in the DEMO (disc configuration variable file)
    
    blueLog "STEP 3#11: Component variables"
    whiteLog "-------------------------------------------------------------------------------------"
@@ -118,11 +118,11 @@ function start_demo ()
    echo "   ./configuration/components"
    echo
    greenLog "Executed command: "
-   whiteLog "cat $HOME/yak/configuration/components/COMP/variables.yml" 
+   whiteLog "cat $HOME/yak/configuration/components/DEMO/variables.yml" 
    echo
    read -p "Press enter to continue "
    echo
-   cat $HOME/yak/configuration/components/COMP/variables.yml
+   cat $HOME/yak/configuration/components/DEMO/variables.yml
    echo
    read -p "Press enter to continue "
    echo
@@ -170,18 +170,18 @@ function start_demo ()
    echo
    step_time "STEP 6"
 
-   blueLog "STEP 7#11. Set Inventory to the component COMP"
+   blueLog "STEP 7#11. Set Inventory to the component DEMO"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To deploy a server including the discs of the component configuration COMP "
+   echo "   To deploy a server including the discs of the component configuration DEMO "
    echo "   The inventory must be set to the component"
    echo
    greenLog "Executed command: "
-   whiteLog "sc COMP" 
+   whiteLog "sc DEMO" 
    whiteLog "ansible-inventory --graph" 
    echo
    read -p "Press enter to continue "
    echo
-   sc COMP
+   sc DEMO
    ansible-inventory --graph
    echo
    read -p "Press enter to continue "
