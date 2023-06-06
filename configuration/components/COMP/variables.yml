@@ -4,11 +4,7 @@ component_type: os_storage/storage
 
 # Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
 yak_manifest_my_servers:
-    - aws/srv-linux-01
-    - aws/srv-windows-01
-    - azure/srv-linux-01
-    - azure/srv-windows-01
-    - oci
+    - demo_aws/demo_hostname
 
 # Overwrite "os_storage" from component variables
 yak_manifest_my_os_storage_config:
