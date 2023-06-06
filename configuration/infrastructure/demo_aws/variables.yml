@@ -13,7 +13,7 @@ custom_tags:
     Business_unit: YaK
 
 storage_devices:
-    max_size_gb: 15
+    max_size_gb: 15        # max size of the disks
     specifications:
         volume_type: gp2
 
