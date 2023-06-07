@@ -27,11 +27,14 @@ Generate the below script which will create
  - An alias "yak" to execute your container
 
 ```bash
-cat << EOF > $HOME/yak.sh
+export MY_LOCAL_YAK_DIR=${HOME}/yak 
+mkdir -p  \$MY_LOCAL_YAK_DIR
 
-export MY_LOCAL_INFRASTRUCTURE_DIR=${HOME}/yak/infrastructure
-export MY_LOCAL_COMPONENTS_DIR=${HOME}/yak/components
-export MY_LOCAL_COMPONENT_TYPES_DIR=${HOME}/yak/component_types
+cat << EOF > $HOME/yak/yak.sh
+
+export MY_LOCAL_INFRASTRUCTURE_DIR=\${MY_LOCAL_YAK_DIR}/infrastructure
+export MY_LOCAL_COMPONENTS_DIR=\${MY_LOCAL_YAK_DIR}/components
+export MY_LOCAL_COMPONENT_TYPES_DIR=\${MY_LOCAL_YAK_DIR}/component_types
 
 echo  "my dir is : \$MY_LOCAL_INFRASTRUCTURE_DIR"
 
@@ -47,9 +50,9 @@ docker run -it --rm --name yak --pull always \\
            registry.gitlab.com/yak4all/yak:stable bash
 EOF
 
-chmod +x $HOME/yak.sh
-alias yak=$HOME/yak.sh
-echo "alias yak=$HOME/yak.sh" >> $HOME/.bash_profile
+chmod +x $HOME/yak/yak.sh
+alias yak=$HOME/yak/yak.sh
+echo "alias yak=$HOME/yak/yak.sh" >> $HOME/.bash_profile
 ```
 
 Execute your "yak" alias and if it worked well, you should be inside the container with the YaK Software configured.
