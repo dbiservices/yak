@@ -30,7 +30,10 @@ Generate the below script which will create
 export MY_LOCAL_YAK_DIR=${HOME}/yak 
 mkdir -p  \$MY_LOCAL_YAK_DIR
 
-cat << EOF > $HOME/yak/yak.sh
+cat << EOF > \$MY_LOCAL_YAK_DIR/yak.sh
+
+export MY_LOCAL_YAK_DIR=${HOME}/yak 
+mkdir -p  \$MY_LOCAL_YAK_DIR
 
 export MY_LOCAL_INFRASTRUCTURE_DIR=\${MY_LOCAL_YAK_DIR}/infrastructure
 export MY_LOCAL_COMPONENTS_DIR=\${MY_LOCAL_YAK_DIR}/components
