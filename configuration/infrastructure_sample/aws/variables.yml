@@ -14,5 +14,5 @@ custom_tags:
 storage_devices:
     max_size_gb: 100
     specifications:
-        volume_type: gp2
+        volume_type: gp3
 
