@@ -21,7 +21,7 @@ This container contains all necessary software used by YaK Core <br>
 
 ## 2. Run the container
 
-Generate the below script which will create   
+Execute the below script which will create   
  - The required local persistant directories 
  - The container run script 
  - An alias "yak" to execute your container
