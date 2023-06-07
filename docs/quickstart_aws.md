@@ -274,18 +274,19 @@ sc DEMO
 ansible-inventory --graph 
 ```
 
-### 8. Deploy the storage for your server
+### 9. Deploy the storage of your DEMO component
 
-This Ansible playbook will deploy the storage on your server for your configured component
+This Ansible playbook will deploy the storage of the component attached to the servers:
 
 ```bash
-ansible-playbook servers/deploy.yml -e target=aws_testing/srv01 
+ansible-playbook servers/deploy.yml 
 ```
 
 Once completed, connect via SSH to the server and look at the storage layout:
 
 ```bash
-$ ssh aws_testing/srv01 df -h
+$ ssh aws_testing/srv01 
+$ df -h
 Filesystem            Size  Used Avail Use% Mounted on
 devtmpfs              3.7G     0  3.7G   0% /dev
 tmpfs                 3.7G  8.0K  3.7G   1% /dev/shm
@@ -296,8 +297,7 @@ tmpfs                 757M     0  757M   0% /run/user/1000
 /dev/mapper/data-u01  4.0G   62M  4.0G   2% /u01
 /dev/mapper/data-u02   12G  119M   12G   1% /u02
 ```
-
-You are now ready to operate your component for your deploy server!
+You are now ready to operate your component for your deploy servers!
 
 ## License
 
