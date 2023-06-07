@@ -275,11 +275,11 @@ yak_manifest_my_servers:
 
 yak_manifest_my_os_storage_config:
     linux:
-        - { size_GB: 5, filesystem_type: "xfs", mount_point: "/u01" }
-        - { size_GB: 5, filesystem_type: "xfs", mount_point: "/u02" }
+        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u02" }
     windows:
-        - { size_GB: 5, drive_letter: F, partition_label: data   }
-        - { size_GB: 5, drive_letter: G, partition_label: backup }
+        - { size_gb: 5, drive_letter: F, partition_label: data   }
+        - { size_gb: 5, drive_letter: G, partition_label: backup }
 ```
 
 ### 8. Set the inventory to your DEMO component
