@@ -53,9 +53,9 @@ docker run -it --rm --name yak --pull always \\
            registry.gitlab.com/yak4all/yak:stable bash
 EOF
 
-chmod +x $HOME/yak/yak.sh
-alias yak=$HOME/yak/yak.sh
-echo "alias yak=$HOME/yak/yak.sh" >> $HOME/.bash_profile
+chmod +x \$MY_LOCAL_YAK_DIR/yak.sh
+alias yak=\$MY_LOCAL_YAK_DIR/yak.sh
+echo "alias yak=\$MY_LOCAL_YAK_DIR/yak.sh" >> $HOME/.bash_profile
 ```
 
 Execute your "yak" alias and if it worked well, you should be inside the container with the YaK Software configured.
