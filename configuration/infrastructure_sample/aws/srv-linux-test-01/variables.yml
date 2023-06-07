@@ -10,6 +10,6 @@ private_ip:
 public_ip:
     mode: auto
     ip:
-operating_system: OL8.5-x86_64-HVM-2021-11-24
-ami_id: ami-07e51b655b107cd9b
+operating_system: OL8.7-x86_64-HVM-2023-03-07
+ami_id: ami-065e2293a3df4c870
 instance_type: t3.medium
