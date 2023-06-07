@@ -28,9 +28,9 @@ Execute the below script which will create
 
 ```bash
 export MY_LOCAL_YAK_DIR=${HOME}/yak 
-mkdir -p  \$MY_LOCAL_YAK_DIR
+mkdir -p  $MY_LOCAL_YAK_DIR
 
-cat << EOF > \$MY_LOCAL_YAK_DIR/yak.sh
+cat << EOF > $MY_LOCAL_YAK_DIR/yak.sh
 
 export MY_LOCAL_YAK_DIR=${HOME}/yak 
 mkdir -p  \$MY_LOCAL_YAK_DIR
