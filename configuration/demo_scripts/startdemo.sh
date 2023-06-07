@@ -133,9 +133,6 @@ function start_demo ()
    echo
    greenLog "Executed command: "
    whiteLog "sc DEMO" 
-   echo
-   read -p "Press enter to continue "
-   echo
    export YAK_CORE_COMPONENT=DEMO
    echo
    read -p "Press enter to continue "
