@@ -232,9 +232,21 @@ ssh aws_testing/srv01
 
 The component configuration is located under a separated directory structure ./configuration/components
 
-To deploy the disks for your server, you can use the DEMO component
+To deploy the disks for your server, you can use a DEMO component
 
-This component DEMO can be updated for you server aws/srv01 or copied to a new component 
+Create a directory under `./configuration/components` with your component name DEMO in our case
+
+```bash
+mkdir ./configuration/components/DEMO
+```
+
+Copy the adaquat template file located under `./configuration/components_sample/DEMO`:
+
+```bash
+cp  ./configuration/components_sample/DEMO/variables.yml  ./configuration/components/DEMO
+vi ./configuration/components/DEMO/variables.yml
+```
+Now you can update the parameters for your required filesystem or windows disks 
 
 ```yaml
 # File ./configuration/components/DEMO/variables.yml
@@ -283,10 +295,9 @@ tmpfs                 3.7G     0  3.7G   0% /sys/fs/cgroup
 tmpfs                 757M     0  757M   0% /run/user/1000
 /dev/mapper/data-u01  4.0G   62M  4.0G   2% /u01
 /dev/mapper/data-u02   12G  119M   12G   1% /u02
-/dev/mapper/data-u90   24G  205M   24G   1% /u90
 ```
 
-You are now ready to operate your components on your server!
+You are now ready to operate your component for your deploy server!
 
 ## License
 
