@@ -296,6 +296,12 @@ yak_manifest_my_os_storage_config:
 ```bash
 sc DEMO 
 ansible-inventory --graph 
+@all:
+  |--@ungrouped:
+  |--@azure_testing:
+  |  |--azure_testing/srv01
+  |--@my_servers:
+  |  |--azure_testing/srv01
 ```
 
 ### 9. Deploy the storage of your DEMO component
