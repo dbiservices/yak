@@ -128,7 +128,20 @@ function start_demo ()
    echo
    step_time "STEP 3"
 
-   blueLog "STEP 4/11. Display the Ansible inventory"
+   blueLog "STEP 4/11. Set the component DEMO inventory"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo
+   greenLog "Executed command: "
+   whiteLog "sc DEMO" 
+   echo
+   read -p "Press enter to continue "
+   echo
+   export YAK_CORE_COMPONENT=DEMO
+   echo
+   read -p "Press enter to continue "
+   step_time "STEP 4"
+
+   blueLog "STEP 5/11. Display the Ansible inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo
    greenLog "Executed command: "
@@ -140,9 +153,9 @@ function start_demo ()
    echo
    read -p "Press enter to continue "
    echo
-   step_time "STEP 4"
+   step_time "STEP 5"
 
-   blueLog "STEP 5/11. Display the Ansible host inventory"
+   blueLog "STEP 6/11. Display the Ansible host inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo
    greenLog "Executed command: "
@@ -154,9 +167,9 @@ function start_demo ()
    echo
    read -p "Press enter to continue "
    echo
-   step_time "STEP 5"
+   step_time "STEP 6"
 
-   blueLog "STEP 6/11. Cloud provider authentication"
+   blueLog "STEP 7/11. Cloud provider authentication"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   For this demo on ${provider} it is done by exporting the ${provider} credentials"
    echo
@@ -167,21 +180,6 @@ function start_demo ()
    echo 
    read -p "Press enter to continue "
    echo
-   step_time "STEP 6"
-
-   blueLog "STEP 7/11. Set the component DEMO inventory"
-   whiteLog "-------------------------------------------------------------------------------------"
-   echo
-   greenLog "Executed command: "
-   whiteLog "sc DEMO" 
-   whiteLog "ansible-inventory --graph" 
-   echo
-   read -p "Press enter to continue "
-   echo
-   export YAK_CORE_COMPONENT=DEMO
-   ansible-inventory --graph
-   echo
-   read -p "Press enter to continue "
    step_time "STEP 7"
 
    blueLog "STEP 8/11. Create the server "
