@@ -10,3 +10,15 @@ resource_group:
 virtual_network_name:
 subnet_name:
 security_group:
+
+custom_tags:
+  Environment: Test
+  Department: Development YaK
+  Business_unit: YaK
+
+storage_devices:
+  max_size_gb: 100
+  specifications:
+    storage_account_type: StandardSSD_LRS
+
+
