@@ -276,10 +276,10 @@ ansible-inventory --graph
 
 ### 9. Deploy the storage of your DEMO component
 
-This Ansible playbook will deploy the storage of the component attached to the servers:
+This Ansible playbook will deploy the storage of the component attached to your server:
 
 ```bash
-ansible-playbook servers/deploy.yml 
+ansible-playbook servers/deploy.yml -e target=aws_testing/srv01
 ```
 
 Once completed, connect via SSH to the server and look at the storage layout:
