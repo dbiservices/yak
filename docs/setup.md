@@ -53,7 +53,7 @@ docker run -it --rm --name yak --pull always \\
            registry.gitlab.com/yak4all/yak:stable bash
 EOF
 
-chmod +x /$MY_LOCAL_YAK_DIR/yak.sh
+chmod +x $MY_LOCAL_YAK_DIR/yak.sh
 alias yak=$MY_LOCAL_YAK_DIR/yak.sh
 echo "alias yak=$MY_LOCAL_YAK_DIR/yak.sh" >> $HOME/.bash_profile
 ```
