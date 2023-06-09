@@ -5,8 +5,8 @@ ARG YAKENV_TAG="stable"
 
 FROM registry.gitlab.com/yak4all/yakenv:${YAKENV_TAG}
 
-ARG CI_COMMIT_TAG=""
-ARG CI_COMMIT_SHORT_SHA=""
+ARG CI_COMMIT_TAG="stable"
+ARG CI_COMMIT_SHORT_SHA="xxxxxx"
 
 # COPY Sources
 COPY ./collections /workspace/yak/collections
