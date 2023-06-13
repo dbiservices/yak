@@ -1,11 +1,12 @@
 # Copyright: (c) 2023, dbi services
 # This file is part of YaK core.
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
-ARG CI_COMMIT_TAG="Default_Value"
-ARG CI_COMMIT_SHORT_SHA="Default_Value"
 ARG YAKENV_TAG="stable"
 
 FROM registry.gitlab.com/yak4all/yakenv:${YAKENV_TAG}
+
+ARG CI_COMMIT_TAG="stable"
+ARG CI_COMMIT_SHORT_SHA="xxxxxx"
 
 # COPY Sources
 COPY ./collections /workspace/yak/collections
