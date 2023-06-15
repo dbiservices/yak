@@ -37,11 +37,13 @@ mkdir -p  \$MY_LOCAL_YAK_DIR
 
 export MY_LOCAL_INFRASTRUCTURE_DIR=\${MY_LOCAL_YAK_DIR}/infrastructure
 export MY_LOCAL_COMPONENTS_DIR=\${MY_LOCAL_YAK_DIR}/components
+export MY_LOCAL_COMPONENT_TYPES_DIR=\${MY_LOCAL_YAK_DIR}/component_types
 
 echo  "my dir is : \$MY_LOCAL_INFRASTRUCTURE_DIR"
 
 mkdir -p \$MY_LOCAL_INFRASTRUCTURE_DIR
 mkdir -p \$MY_LOCAL_COMPONENTS_DIR
+mkdir -p \$MY_LOCAL_COMPONENT_TYPES_DIR
 
 docker run -it --rm --name yak --pull always \\
            -v \${MY_LOCAL_INFRASTRUCTURE_DIR}:/workspace/yak/configuration/infrastructure \\
@@ -56,6 +58,7 @@ echo "alias yak=$MY_LOCAL_YAK_DIR/yak.sh" >> $HOME/.bash_profile
 ```
 
 Execute your "yak" alias and if it worked well, you should be inside the container with the YaK Software configured.
+
 ```
 $ yak 
 yak@d47a98f30c99:~/yak$ ansible-inventory --graph
