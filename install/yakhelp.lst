@@ -8,7 +8,6 @@
   cdc              --> Change directory to component_types
   cdcc             --> Change directory to configuration/components
   cdci             --> Change directory to configuration/infrastructure
-  cdct             --> Change directory to configuration/templates
   cds              --> Change directory to servers
   startdemo        --> Start a demo of the YaK
 
