@@ -59,7 +59,7 @@ echo "alias yak=$MY_LOCAL_YAK_DIR/yak.sh" >> $HOME/.bash_profile
 
 Execute your "yak" alias and if it worked well, you should be inside the container with the YaK Software configured.
 
-```
+```bash
 $ yak 
 yak@d47a98f30c99:~/yak$ ansible-inventory --graph
 @all:
@@ -72,7 +72,7 @@ yak@d47a98f30c99:~/yak$
 
 You want to allow sudo as user ROOT in the container, the parametere below must be added in the "docker run" command
 
-```
+```bash
 -e YAK_ENABLE_SUDO=true
 ```
 
