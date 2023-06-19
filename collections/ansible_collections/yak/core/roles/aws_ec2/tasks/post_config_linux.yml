@@ -12,6 +12,24 @@
 - debug: var=r_ec2_instance_info
   when: debug | bool
 
+- name: Update yak inventory
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ inventory_hostname }}"
+    private_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address |default(None) }}"
+    public_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address |default(None) }}"
+
+- name: Refresh inventory to ensure IPs are up to date
+  ansible.builtin.meta: refresh_inventory
+
+- name: Show public ip from aws
+  debug: 
+    var: r_ec2_instance_info.instances[0].public_ip_address
+
+- name: Show public ip from inventory after reload 
+  debug: 
+    var: public_ip.ip
+
 - name: Create the ssh config file if not exists
   delegate_to: localhost
   copy:
