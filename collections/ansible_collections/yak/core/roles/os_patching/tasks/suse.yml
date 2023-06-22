@@ -1,9 +1,9 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 # zypper module doesn't have a parameter to list available updates
 - name: Get packages that can be upgraded
   become: true
-  shell: | 
+  shell: |
     zypper list-updates
   register: reg_zypper_output
   changed_when: false
@@ -18,7 +18,7 @@
 # - name: Request user confirmation
 #   ansible.builtin.pause:
 #     prompt: |
-    
+
 #       *************************************************************************
 #       * The packages listed above will be upgraded. Do you want to continue ? *
 #       * -> Press RETURN to continue.                                          *
@@ -43,7 +43,7 @@
   ansible.builtin.debug:
     msg: "Packages upgrade failed"
   when:
-    - reg_zypper_output is not regex("No updates found") 
+    - reg_zypper_output is not regex("No updates found")
     - reg_upgrade_ok is not defined
 
 

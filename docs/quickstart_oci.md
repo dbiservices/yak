@@ -41,6 +41,16 @@ compartment_id: ****
 availability_domain: *****
 security_list: ******
 subnet_id: ******
+
+custom_tags:
+  Environment: Test
+  Department: Development YaK
+  Business_unit: YaK
+
+storage_devices:
+  max_size_gb: 100
+  specifications:
+    xxxxxxxxxx: xxxxxxxxxxxxxx
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -76,14 +86,15 @@ Create a directory under your infrastructure `./configuration/infrastructure/oci
 mkdir ./configuration/infrastructure/oci_testing/srv01
 ```
 
-Copy one of the below server template file for Linux or Windows under `./configuration/infrastructure/aws_testing/srv01`:
+Copy one of the below server template file for Linux or Windows under `./configuration/infrastructure/oci_testing/srv01`:
 
 ```bash
 /configuration/infrastructure_sample/oci/srv-linux-test-01/variables.yml 
 /configuration/infrastructure_sample/oci/srv-windows-test-01/variables.yml 
 ```
 
-In our example we choose the Linux templates 
+In our example we choose the Linux templates
+
 ```
 cp ./configuration/infrastructure_sample/oci/srv-linux-test-01/variables.yml ./configuration/infrastructure/oci_testing/srv01
 vi ./configuration/infrastructure/oci_testing/srv01/variables.yml
@@ -108,16 +119,16 @@ ansible_user: opc
 host_ip_access: public_ip
 private_ip:
     mode: auto
-    ip: 
+    ip:
 public_ip:
     mode: auto
-    ip: 
+    ip:
 operating_system: Oracle-Linux-8.5-2022.01.24-0
 image_id: ocid1.image.oc1.eu-zurich-1.aaaaaaaamtulj4fmm6cx6xq6delggc5jhfoy652lbxxj2xbnzzxik7sgsnva
 shape:
     name: VM.Standard.E4.Flex
-    memory_in_gbs: 12
-    ocpus: 8
+    memory_in_gbs: 8
+    ocpus: 2
 ```
 
 You should now see your server in the Ansible inventory:
@@ -234,65 +245,57 @@ ssh oci_testing/srv01
 
 ### 7. Declare your first component
 
-Create a directory under your server `./configuration/infrastructure/oci_testing/srv01/postgres` with your component name:
+The component configuration is located under a separated directory structure ./configuration/components
 
-```
-mkdir ./configuration/infrastructure/oci_testing/srv01/postgres
-```
+To deploy the disks for your server, you can use a DEMO component
 
-Copy component template file located under `./configuration/infrastructure/oci_testing/srv01/postgres`:
+Create a directory under `./configuration/components` with your component name DEMO in our case
 
-```
-cp ./configuration/infrastructure_sample/oci/srv-linux-test-01/COMP/variables.yml ./configuration/infrastructure/oci_testing/srv01/postgres
+```bash
+mkdir ./configuration/components/DEMO
 ```
 
-This component has a type `postgresql_instance` and requires a predefined storage layout `linux/storage/postgresql_instance`:
+Copy the adaquat template file located under `./configuration/components_sample/DEMO`:
+
+```bash
+cp  ./configuration/components_sample/DEMO/variables.yml  ./configuration/components/DEMO
+vi ./configuration/components/DEMO/variables.yml
+```
+Now you can update the parameters for your required filesystem or windows disks 
 
 ```yaml
-# File ./configuration/infrastructure/oci_testing/srv01/postgres/variables.yml
-component_type: postgresql_instance
-storage: linux/storage/postgresql_instance
+# File ./configuration/components/DEMO/variables.yml
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+component_type: os_storage/storage
+
+# Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
+yak_manifest_my_servers:
+    - oci_testing/srv01
+
+yak_manifest_my_os_storage_config:
+    linux:
+        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u02" }
+    windows:
+        - { size_gb: 5, drive_letter: F, partition_label: data   }
+        - { size_gb: 5, drive_letter: G, partition_label: backup }
 ```
 
-**Optional:** You can use another official storage template available in the YaK project:
+### 8. Set the inventory to your DEMO component
 
-```
-$ tree configuration/templates/
-configuration/templates/
-|-- linux
-|   `-- storage
-|       |-- demo_instance.yml
-|       |-- mongodb_instance.yml
-|       |-- oracle_instance.yml
-|       |-- postgresql_instance.yml
-|       |-- sqlserver_instance.yml
-|       `-- weblogic_domain.yml
-`-- windows
-    `-- storage
-        `-- sqlserver_instance.yml
+```bash
+sc DEMO 
+ansible-inventory --graph 
 ```
 
-You should now see your component `oci_testing/srv01/postgres` in the Ansible inventory:
+
+### 9. Deploy the storage of your DEMO component
+
+This Ansible playbook will deploy the storage of the component attached to your server:
 
 ```
-$ ansible-inventory --graph
-@all:
-  |--@oci_testing:
-  |  |--oci_testing/srv01
-  |  |--oci_testing/srv01/postgres
-  |--@postgresql_instance:
-  |  |--oci_testing/srv01/postgres
-  |--@servers:
-  |  |--oci_testing/srv01
-  |--@ungrouped:
-```
-
-### 8. Deploy the deployment storage requirements
-
-This Ansible playbook will deploy the storage requirements for each component attached to the server:
-
-```
-ansible-playbook servers/deploy.yml -e target=oci_testing/srv01 --tags=requirements
+ansible-playbook servers/deploy.yml -e target=oci_testing/srv01
 ```
 
 Once completed, connect via SSH to the server and look at the storage layout:
@@ -308,7 +311,6 @@ tmpfs                 3.7G     0  3.7G   0% /sys/fs/cgroup
 tmpfs                 757M     0  757M   0% /run/user/1000
 /dev/mapper/data-u01  4.0G   62M  4.0G   2% /u01
 /dev/mapper/data-u02   12G  119M   12G   1% /u02
-/dev/mapper/data-u90   24G  205M   24G   1% /u90
 ```
 
 You are now ready to operate your components on your server!

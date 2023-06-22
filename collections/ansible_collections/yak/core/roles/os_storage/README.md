@@ -6,20 +6,26 @@ instance and create the expected FS layout as described in the storage template.
 
 ## Requirements
 
-- `vm_name`.
-- `volumes` dictionary.
-- `filesystems` dictionary.
+### In the inventory (global, infrastructure, server level)
 
-## Example Playbook
+```
+storage_devices:
+  max_size_gb: 100  # Valid for Linux
+  specifications:   # Valid for Linux and Windows if applicable
+    xxxxxxxxxx: xxxxxxxxxxxxxx
+```
 
-```yaml
-- include_role:
-    name: yak.core.os_storage
-  vars:
-    vm_name: "{{ machine_name }}"
-    volumes: "{{ storage.volumes }}"
-    filesystems: "{{ storage.filesystems }}"
-  loop: "{{ storages }}"
-  loop_control:
-    loop_var: storage
+### In the component variables
+
+```
+yak_manifest_[os_storage]:  # The variable name from the manifest prefixed by 'yak_manifest_' is expected by YaK core.
+    linux:   # FS for Linux
+        - { size_gb: 36, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_gb: 16, filesystem_type: "xfs", mount_point: "/u02" }
+        - { size_gb:  8, filesystem_type: "xfs", mount_point: "/u03" }
+        - { size_gb:  8, filesystem_type: "xfs", mount_point: "/u04" }
+        - { size_gb: 24, filesystem_type: "xfs", mount_point: "/u90" }
+    windows:  # Disks for windows
+        - { size_gb: 5, drive_letter: F, partition_label: data   }
+        - { size_gb: 5, drive_letter: G, partition_label: backup }
 ```

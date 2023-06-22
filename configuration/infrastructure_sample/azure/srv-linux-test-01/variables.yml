@@ -1,14 +1,14 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 hostname: srv-linux-test-01
 is_physical_server: no
 ansible_user: azureuser
 host_ip_access: public_ip
 private_ip:
     mode: auto
-    ip: 
+    ip:
 public_ip:
     mode: auto
-    ip: 
+    ip:
 vm_size: Standard_B2ms
 image:
     offer: Oracle-Linux

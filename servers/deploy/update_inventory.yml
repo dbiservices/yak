@@ -1,13 +1,12 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - block:
   - name: Update yak inventory
     delegate_to: localhost
     yak.core.yak_inventory_update:
-      target: "{{ inventory_hostname }}"
+      server_name: "{{ inventory_hostname }}"
       private_ip: "{{ returned.private_ip_address|default(None) }}"
       public_ip: "{{ returned.public_ip_address|default(None) }}"
-    when: yak_inventory_type == 'file'
 
   - debug:
       msg:

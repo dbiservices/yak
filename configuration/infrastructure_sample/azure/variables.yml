@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 is_cloud_environment: yes
 environment: production
 ansible_user: azureuser
@@ -10,3 +10,15 @@ resource_group:
 virtual_network_name:
 subnet_name:
 security_group:
+
+custom_tags:
+  Environment: Test
+  Department: Development YaK
+  Business_unit: YaK
+
+storage_devices:
+  max_size_gb: 100
+  specifications:
+    storage_account_type: StandardSSD_LRS
+
+

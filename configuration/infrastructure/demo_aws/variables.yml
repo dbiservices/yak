@@ -6,3 +6,14 @@ availability_zone: eu-west-1a
 region_id: eu-west-1
 security_group_id: sg-0751b1a72bd251609
 subnet_id: subnet-051a7af6dbab85cc9
+
+custom_tags:
+    Environment: YaK Demo
+    Department: Development
+    Business_unit: YaK
+
+storage_devices:
+    max_size_gb: 15        # max size of the disks
+    specifications:
+        volume_type: gp2
+

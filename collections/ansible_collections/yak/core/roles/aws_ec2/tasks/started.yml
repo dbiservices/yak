@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Get instance ID
   delegate_to: localhost
@@ -7,7 +7,7 @@
     filters:
       "tag:Name": "{{ server_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
-  failed_when: r_ec2_instance_info.instances|length > 1
+  failed_when: r_ec2_instance_info.instances|length != 1
   register: r_ec2_instance_info
 
 - debug: var=r_ec2_instance_info

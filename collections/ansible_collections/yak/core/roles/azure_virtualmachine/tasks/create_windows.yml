@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Set password for Windows Admin account
   no_log: true
@@ -41,6 +41,12 @@
 - debug: var=r_azure
   delegate_to: localhost
   when: debug | bool
+
+- name: Clear winrm variable and file
+  include_role:
+    name: yak.core.winrm
+  vars:
+    state: absent
 
 - name: VM Extension[copy file from custom data]
   delegate_to: localhost

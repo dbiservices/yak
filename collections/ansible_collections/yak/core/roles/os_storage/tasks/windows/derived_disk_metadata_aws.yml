@@ -1,63 +1,42 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 - name: Gather information about instance
   delegate_to: localhost
   community.aws.ec2_instance_info:
     region: "{{ region_id }}"
     filters:
-      "tag:Name": "{{ vm_name }}"
+      "tag:Name": "{{ machine_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
   register: r_ec2_instance_info
 
-- set_fact:
-    vm_disk: "{{ r_ec2_instance_info | json_query('instances[0].block_device_mappings[*].{device_name:device_name,volume_id:ebs.volume_id}') }}"
+- name: Get volume(s) info from EC2 Instance
+  delegate_to: localhost
+  amazon.aws.ec2_vol_info:
+    region: "{{ region_id }}"
+    filters:
+      attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+      "tag:Name": disk*
+  register: r_attached_volumes
 
-- debug: var=vm_disk
-  when: debug | bool
+- name: Re-collect facts after disk addition and ensure expected data is present
+  community.windows.win_disk_facts:
 
-- name: Get disk facts
-  win_disk_facts:
+- debug: var=r_attached_volumes
+  when: debug|bool
 
-- set_fact:
-    windows_disks: []
+- debug: var=ansible_disks
+  when: debug|bool
 
-- debug: var=windows_disks
-  when: debug | bool
-
-- set_fact:
-    windows_disks: >
-      {{ windows_disks +
-        [
-          {
-            'windows_disk_number': item.windows_disk_number,
-            'volume_id': 'vol-'+item.serial_number.split("_")[0][3:],
-            'device_name': vm_disk|json_query('[?volume_id==`vol-'+item.serial_number.split("_")[0][3:]+'`].device_name|[0]')
-          }
-        ]
-      }}
-  with_items: "{{ ansible_disks | json_query('[?partitions[0].drive_letter!=`C`].{serial_number:serial_number,windows_disk_number:number}') }}"
-
-- debug: var=windows_disks
-  when: debug | bool
-
-- debug: var=volumes
-  when: debug | bool
+- name: Derive the pv list
+  delegate_to: localhost
+  yak.core.derive_pv_list:
+    provider: "{{ provider }}"
+    os_type: "{{ os_type }}"
+    vol_info: "{{ r_attached_volumes }}"
+    ansible_disks: "{{ ansible_disks }}"
+  register: r_derive_pv_list
 
 - set_fact:
-    derived_disk_metadata: []
+    pv_list_extended: "{{ r_derive_pv_list.pv_list_extended }}"
 
-# The next task expects this format.
-- set_fact:
-    derived_disk_metadata: >
-      {{ derived_disk_metadata +
-        [
-          {
-            'drive_letter': item.drive_letter,
-            'partition_label': item.partition_label,
-            'windows_disk_number': windows_disks|json_query('[?device_name==`'+item.device_name+'`].windows_disk_number|[0]')|int
-          }
-        ]
-      }}
-  with_items: "{{ volumes }}"
-
-- debug: var=derived_disk_metadata
+- debug: var=pv_list_extended
   when: debug | bool

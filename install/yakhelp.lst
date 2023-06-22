@@ -1,45 +1,49 @@
-        GENERAL ALIASES [YaK]
-        ##############################################################
+#####################
+## General Aliases ##
+#####################
 
-        ll              --> List files in list mode
-        cdh             --> Change directory to YaK home
-        cdci            --> Change directory to configuration/infrastructure
-        cdct            --> Change directory to configuration/template
-        cdr             --> Change directory to roles directory
-        cdp             --> Change directory to playbooks directory
-        cdcii           --> Change director to yak_dev_infrastructure (internal use only)
+  ll               --> List files in list mode
+  uc               --> Unset the YAK_CORE_COMPONENT environment variable
+  cdh              --> Change directory to YaK home
+  cdc              --> Change directory to component_types
+  cdcc             --> Change directory to configuration/components
+  cdci             --> Change directory to configuration/infrastructure
+  cds              --> Change directory to servers
+  startdemo        --> Start a demo of the YaK
 
-        ANSIBLE INVENTORY ALIASES
-        ##############################################################
 
-        aig                  --> Display the inventory graph for all groups
-                             cmd : ansible-inventory --graph 
+#######################
+## Ansible Functions ##
+#######################
 
-        aigv                 --> Display the inventory graph for all groups with the variables
-                             cmd : ansible-inventory --graph --vars
+  sc <comp>        --> Set the YAK_CORE_COMPONENT environment variable
+                       cmd: export YAK_CORE_COMPONENT="<comp>"
 
-        aig <group>          --> Display the inventory graph for a specific group
-                             cmd : ansible-inventory --graph <group>
+  aig [<grp>]      --> Display the inventory graph for all groups / a specific group
+                       cmd: ansible-inventory --graph [<grp>]
 
-        aih <group/server>   --> Display the specific server info
-                             cmd : ansible-inventory --host <group/server>
+  aigv [<grp>]     --> Display the inventory graph for all groups / a specific group with the variables
+                       cmd: ansible-inventory --graph [<grp>] --vars
 
-        apdp <group/server>  --> Deploy a specific server and requirements
-                             cmd : ansible-playbook servers/deploy.yml -e target=<group/server> 
-        
-        apdps <group/server> --> Deploy a specific server without the requirements
-                             cmd : ansible-playbook servers/deploy.yml -e target=<group/server> --tags=server
+  aih <srv/grp>    --> Display a specific server/group info
+                       cmd: ansible-inventory --host <srv/grp>
 
-        apdpr <group/server> --> Apply only the server requirements for a specific server
-                             cmd : ansible-playbook servers/deploy.yml -e target=<group/server> --tags=requirements
+  apdp <srv/grp>   --> Deploy a specific server/group including requirements
+                       cmd: ansible-playbook servers/deploy.yml -e target=<srv/grp>
 
-        apdc <group/server>  --> Decommission a specific server
-                             cmd : ansible-playbook servers/decommission.yml -e target=<group/server>
-        
-        GENERATE SSH SECRETS 
-        ##############################################################################
+  apdps <srv/grp>  --> Deploy a specific server/group without the requirements
+                       cmd: ansible-playbook servers/deploy.yml -e target=<srv/grp> --tags=server
 
-        gen_secret      --> Generate sshkey's under the current directory
-                            cmd : ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N "";
+  apdpr <srv/grp>  --> Apply only the requirements for a specific server/group
+                       cmd: ansible-playbook servers/deploy.yml -e target=<srv/grp> --tags=requirements
 
-       
+  apdc <srv/grp>   --> Decommission a specific server/group
+                       cmd: ansible-playbook servers/decommission.yml -e target=<srv/grp>
+
+
+#######################
+## Generate SSH keys ##
+#######################
+
+  gen_secret       --> Generate ssh keys in the current directory
+                     cmd: ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N "";

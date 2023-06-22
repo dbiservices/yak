@@ -1,6 +1,6 @@
 # Artifacts providers sync
 
-Sync artifacts from s3 to other storage providers:
+Sync artifacts from s3 to other storage providers (Azure and OCI):
 
     - One file at a time
     - Skype files that already exists on Azure with the same size
@@ -26,7 +26,7 @@ source /tmp/artifacts_providers_sync/bin/activate
 ### Install packages
 
 ```bash
-pip install boto3 azure-storage-blob azure-identity
+pip install boto3 azure-storage-blob azure-identity oci
 ```
 
 ## Credentials
@@ -49,13 +49,34 @@ Then export the connection string in a variable `AZURE_STORAGE_CONNECTION_STRING
 export AZURE_STORAGE_CONNECTION_STRING='<yourconnectionstring>'
 ```
 
+### OCI
+
+Then export the variables:
+
+```bash
+export OCI_USER_ID='<OCI_USER_ID>'
+export OCI_USER_KEY_FILE='<OCI_USER_KEY_FILE>'
+export OCI_USER_FINGERPRINT='<OCI_USER_FINGERPRINT>'
+export OCI_TENANCY='<OCI_TENANCY>'
+export OCI_REGION='<OCI_REGION>'
+```
+
 ## Run the synchronisation
 
 ```bash
 export AWS_ACCESS_KEY_ID="<AWS_ACCESS_KEY_ID>"
 export AWS_SECRET_ACCESS_KEY="<AWS_SECRET_ACCESS_KEY>"
 export AWS_SESSION_TOKEN="<AWS_SESSION_TOKEN>"
+#-- Azure
 export AZURE_STORAGE_CONNECTION_STRING='<yourconnectionstring>'
-python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py
+#-- OCI
+export OCI_USER_ID='<OCI_USER_ID>'
+export OCI_USER_KEY_FILE='<OCI_USER_KEY_FILE>'
+export OCI_USER_FINGERPRINT='<OCI_USER_FINGERPRINT>'
+export OCI_TENANCY='<OCI_TENANCY>'
+export OCI_REGION='<OCI_REGION>'
+python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py all   # All available providers
+python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py azure # Azure only
+python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py oci   # OCI only
 ```
 

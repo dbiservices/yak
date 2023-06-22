@@ -1,16 +1,14 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 provider: aws
-vm_name: anonymous
+machine_name: anonymous
 os_type: linux
 volume_group_name: data
-volumes:
-  - { name: sdb, size_GB: 10, type: gp2 }
-  - { name: sdc, size_GB: 10, type: gp2 }
-  - { name: sdd, size_GB: 10, type: gp2 }
-filesystems:
-  - { size_GB: 15, filesystem_type: "ext4", mount_point: "/u01" }
-  - { size_GB: 12, filesystem_type: "ext4", mount_point: "/u02" }
+custom_tags: {}
 
-## Azure variables
-storage_account_type: StandardSSD_LRS
+storage_devices:
+  max_size_gb: 100
+  specifications:
+    volume_type: gp2
+    storage_account_type: StandardSSD_LRS
+

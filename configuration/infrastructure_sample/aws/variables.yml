@@ -1,7 +1,18 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 is_cloud_environment: yes
 provider: aws
 availability_zone: eu-central-1a
 region_id: eu-central-1
-security_group_id: 
-subnet_id: 
+security_group_id:
+subnet_id:
+
+custom_tags:
+    Environment: Test
+    Department: Development YaK
+    Business_unit: YaK
+
+storage_devices:
+    max_size_gb: 100
+    specifications:
+        volume_type: gp3
+

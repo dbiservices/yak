@@ -1,0 +1,20 @@
+# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+hostname: linux
+is_physical_server: no
+ansible_user: admin
+host_ip_access: public_ip
+instance_type: t3.micro
+subnet_id: "{{ subnet_list[3].subnet_id }}"
+ami_id: ami-02220151b8854e8fe
+operating_system: Debian-11.6-amd64-20221219
+private_ip:
+    mode: auto
+    ip:
+public_ip:
+    mode: auto
+    ip:
+root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
+    volume_type: gp3
+    volume_size: 10
+

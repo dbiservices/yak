@@ -44,6 +44,16 @@ resource_group: dbi-testing-yak-rg
 virtual_network_name: dbi-testing-yak-nsg
 subnet_name: dbi-testing-yak-subnet
 security_group: dbi-testing-yak-nsg
+
+custom_tags:
+    Environment: Test
+    Department: Development YaK
+    Business_unit: YaK
+
+storage_devices:
+    max_size_gb: 100
+    specifications:
+        storage_account_type: StandardSSD_LRS
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -72,7 +82,14 @@ Create a directory under your infrastructure `./configuration/infrastructure/azu
 mkdir ./configuration/infrastructure/azure_testing/srv01
 ```
 
-Copy the adaquat template file located under `./configuration/infrastructure/azure_testing/srv01`:
+Copy one of the below server template file for Linux or Windows under `./configuration/infrastructure/aws_testing/srv01`:
+
+```bash
+/configuration/infrastructure_sample/azure/srv-linux-test-01/variables.yml 
+/configuration/infrastructure_sample/azure/srv-windows-test-01/variables.yml 
+```
+
+In our example we choose the Linux templates 
 
 ```
 cp ./configuration/infrastructure_sample/azure/srv-linux-test-01/variables.yml ./configuration/infrastructure/azure_testing/srv01
@@ -104,10 +121,11 @@ public_ip:
     mode: auto
     ip: 
 vm_size: Standard_B2ms
+
 image:
     offer: Oracle-Linux
     publisher: Oracle
-    sku: ol85-lvm
+    sku: ol87-lvm
     version: latest
 
 ```
@@ -236,71 +254,69 @@ rdp <public_ip/private_ip available in the inventory > Ansible/<generated-passwo
 
 ### 7. Declare your first component
 
-Create a directory under your server `./configuration/infrastructure/azure_testing/srv01/postgres` with your component name:
+The component configuration is located under a separated directory structure ./configuration/components
 
-```
-mkdir ./configuration/infrastructure/azure_testing/srv01/postgres
-```
+To deploy the disks for your server, you can use a DEMO component
 
-Copy component template file located under `./configuration/infrastructure/azure_testing/srv01/postgres`:
+Create a directory under `./configuration/components` with your component name DEMO in our case
 
-```
-cp ./configuration/infrastructure_sample/azure/srv-linux-test-01/COMP/variables.yml ./configuration/infrastructure/azure_testing/srv01/postgres
+```bash
+mkdir ./configuration/components/DEMO
 ```
 
-This component has a type `postgresql_instance` and requires a predefined storage layout `linux/storage/postgresql_instance`:
+Copy the adaquat template file located under `./configuration/components_sample/DEMO`:
+
+```bash
+cp  ./configuration/components_sample/DEMO/variables.yml  ./configuration/components/DEMO
+vi ./configuration/components/DEMO/variables.yml
+```
+Now you can update the parameters for your server name and your required filesystem or windows disks 
 
 ```yaml
-# File ./configuration/infrastructure/azure_testing/srv01/postgres/variables.yml
-component_type: postgresql_instance
-storage: linux/storage/postgresql_instance
+# File ./configuration/components/DEMO/variables.yml
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+#
+component_type: os_storage/storage
+
+# Variable indicated in the manifest and declaring the servers belonging to group 'my_servers'
+yak_manifest_my_servers:
+    - azure_testing/srv01
+
+yak_manifest_my_os_storage_config:
+    linux:
+        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u01" }
+        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u02" }
+    windows:
+        - { size_gb: 5, drive_letter: F, partition_label: data   }
+        - { size_gb: 5, drive_letter: G, partition_label: backup }
 ```
 
-**Optional:** You can use another official storage template available in the YaK project:
+### 8. Set the inventory to your DEMO component
 
-```
-$ tree configuration/templates/
-configuration/templates/
-|-- linux
-|   `-- storage
-|       |-- demo_instance.yml
-|       |-- mongodb_instance.yml
-|       |-- oracle_instance.yml
-|       |-- postgresql_instance.yml
-|       |-- sqlserver_instance.yml
-|       `-- weblogic_domain.yml
-`-- windows
-    `-- storage
-        `-- sqlserver_instance.yml
-```
-
-You should now see your component `azure_testing/srv01/postgres` in the Ansible inventory:
-
-```
-$ ansible-inventory --graph
+```bash
+sc DEMO 
+ansible-inventory --graph 
 @all:
+  |--@ungrouped:
   |--@azure_testing:
   |  |--azure_testing/srv01
-  |  |--azure_testing/srv01/postgres
-  |--@postgresql_instance:
-  |  |--azure_testing/srv01/postgres
-  |--@servers:
+  |--@my_servers:
   |  |--azure_testing/srv01
-  |--@ungrouped:
 ```
 
-### 8. Deploy the deployment storage requirements
+### 9. Deploy the storage of your DEMO component
 
-This Ansible playbook will deploy the storage requirements for each component attached to the server:
+This Ansible playbook will deploy the storage of the component attached to your server:
 
-```
-ansible-playbook servers/deploy.yml -e target=azure_testing/srv01 --tags=requirements
+```bash
+ansible-playbook servers/deploy.yml -e target=azure_testing/srv01
 ```
 
 Once completed, connect via SSH to the server and look at the storage layout:
 
 ```
-$ ssh azure_testing/srv01 df -h
+$ ssh azure_testing/srv01
+$ df -h
 Filesystem            Size  Used Avail Use% Mounted on
 devtmpfs              3.7G     0  3.7G   0% /dev
 tmpfs                 3.7G  8.0K  3.7G   1% /dev/shm
@@ -310,10 +326,8 @@ tmpfs                 3.7G     0  3.7G   0% /sys/fs/cgroup
 tmpfs                 757M     0  757M   0% /run/user/1000
 /dev/mapper/data-u01  4.0G   62M  4.0G   2% /u01
 /dev/mapper/data-u02   12G  119M   12G   1% /u02
-/dev/mapper/data-u90   24G  205M   24G   1% /u90
 ```
-
-You are now ready to operate your components on your server!
+You are now ready to operate your component for your deploy servers!
 
 ## License
 

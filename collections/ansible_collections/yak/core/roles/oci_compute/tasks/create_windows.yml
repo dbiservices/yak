@@ -1,11 +1,11 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Set password for Windows Admin account
   no_log: true
   set_fact:
     os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
 
-- name: Call role the generate the winrm_script for user_data
+- name: Call role to generate the winrm_script for user_data
   include_role:
     name: yak.core.winrm
   vars:
@@ -30,11 +30,19 @@
     create_vnic_details: "{{ vnic_details }}"
     preserve_boot_volume: no
     metadata : { "user_data" : "{{ winrm_script|b64encode }}" }
+    freeform_tags : "{{ custom_tags }}"
   register: r_oci_compute_instance_present
 
 - debug: var=r_oci_compute_instance_present
   delegate_to: localhost
   when: debug | bool
+
+- name: Clear winrm variable and file
+  include_role:
+    name: yak.core.winrm
+  vars:
+    server_name: "{{ display_name }}"
+    state: absent
 
 - delegate_to: localhost
   set_fact:

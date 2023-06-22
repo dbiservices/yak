@@ -1,11 +1,11 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Set password for Windows Admin account
   no_log: true
   set_fact:
     os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
 
-- name: Call role the generate the winrm_script for user_data
+- name: Call role to generate the winrm_script for user_data
   include_role:
     name: yak.core.winrm
   vars:
@@ -50,23 +50,30 @@
   delegate_to: localhost
   amazon.aws.ec2_instance:
     region: "{{ region_id }}"
-    key_name: "{{ ec2_key_name }}"
+    key_name: "{{ machine_name }}"
     instance_type: "{{ instance_type }}"
     image:
       id: "{{ image_id }}"
     wait: yes
-    volumes: "{{ volumes_params }}"
     security_group: "{{ security_group_id }}"
     vpc_subnet_id: "{{ subnet_id }}"
     network: "{{ instance_network }}"
-    tags:
-      Name: "{{ server_name }}"
+    volumes:
+      - device_name: "{{ root_device_name }}"
+        ebs: "{{ root_device_ebs_option }}"
+    tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
     user_data: "{{ winrm_script }}"
   register: r_aws
 
 - debug: var=r_aws
   delegate_to: localhost
   when: debug | bool
+
+- name: Clear winrm variable and file
+  include_role:
+    name: yak.core.winrm
+  vars:
+    state: absent
 
 - name: Set network interface name
   delegate_to: localhost
@@ -76,6 +83,7 @@
     name: "{{ server_name }}-eni"
     description: "ENI deployed from YaK for instance {{ server_name }}"
     state: present
+    tags: "{{ custom_tags }}"
 
 - name: Associate manually the EIP to the instance
   delegate_to: localhost
@@ -83,8 +91,7 @@
     region: "{{ region_id }}"
     device_id: "{{ r_aws.instances[0].instance_id }}"
     ip: "{{ public_ip.ip }}"
-    tags:
-        Name: "{{ server_name }}"
+    tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
   when: public_ip.mode == 'manual'
 
 - set_fact:

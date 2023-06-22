@@ -4,7 +4,7 @@
 {% if script_type == 'oci' %}
 #ps1_sysnative
 {% endif %}
-# Copyright: (c) 2022, dbi services
+# Copyright: (c) 2023, dbi services
 # This file is part of YaK core.
 # Yak core is free software distributed without any warranty under the terms of the GNU General Public License v3 as published by the Free Software Foundation, https://www.gnu.org/licenses/gpl-3.0.txt
 # -----------------------------------------------------------------------

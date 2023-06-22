@@ -13,9 +13,7 @@ private_ip:
 public_ip:
     mode: auto
     ip: 
-ec2_volumes_params:
-  - device_name: /dev/sda1
-    ebs:
-        volume_type: gp2
-        volume_size: 10
-        delete_on_termination: true
+
+root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
+    volume_type: gp2
+    volume_size: 10

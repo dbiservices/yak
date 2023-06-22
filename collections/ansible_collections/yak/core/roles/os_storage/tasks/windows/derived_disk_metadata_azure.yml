@@ -1,77 +1,41 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-- name: Get facts by name
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- name: Get azure_rm_virtualmachine_info
   delegate_to: localhost
   azure_rm_virtualmachine_info:
-    name: "{{ vm_name }}"
+    name: "{{ machine_name }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_virtualmachine_info
 
-- set_fact:
-    vm_disk: "{{ r_azure_rm_virtualmachine_info | json_query('vms[?name==`'+vm_name+'`].data_disks|[].{lun_id:lun,name:name}') }}"
+- debug: var=r_azure_rm_virtualmachine_info
+  when: debug|bool
+
+- name: Get azure_rm_manageddisk_info
+  delegate_to: localhost
+  azure.azcollection.azure_rm_manageddisk_info:
+    managed_by: "{{ r_azure_rm_virtualmachine_info.vms[0].id }}"
+  register: r_azure_rm_manageddisk_info
+
+- debug: var=r_azure_rm_manageddisk_info
+  when: debug|bool
 
 - name: Get disk facts
   win_disk_facts:
 
 - debug: var=ansible_disks
-  when: debug | bool
+  when: debug|bool
+
+- name: Derive the pv list
+  delegate_to: localhost
+  yak.core.derive_pv_list:
+    provider: "{{ provider }}"
+    os_type: "{{ os_type }}"
+    azure_rm_virtualmachine_info: "{{ r_azure_rm_virtualmachine_info }}"
+    azure_rm_manageddisk_info: "{{ r_azure_rm_manageddisk_info }}"
+    ansible_disks: "{{ ansible_disks }}"
+  register: r_derive_pv_list
 
 - set_fact:
-    windows_disks: []
+    pv_list_extended: "{{ r_derive_pv_list.pv_list_extended }}"
 
-- set_fact:
-    windows_disks: >
-      {{ windows_disks +
-        [
-          {
-            'windows_disk_number': item.windows_disk_number,
-            'lun_id': item.location.split(':')[4].split()[1]|int
-          }
-        ]
-      }}
-  with_items: "{{ ansible_disks | json_query('[?contains(physical_disk.physical_location, `LUN`) == `true`].{windows_disk_number: number, location: location}') }}"
-
-- debug: var=vm_disk
-  when: debug | bool
-- debug: var=windows_disks
-  when: debug | bool
-- debug: var=volumes
-  when: debug | bool
-
-- set_fact:
-    merge1: []
-
-- set_fact:
-    merge1: >
-      {{ merge1 +
-        [
-          {
-            'drive_letter': item.drive_letter,
-            'partition_label': item.partition_label,
-            'lun_id': vm_disk|json_query('[?name==`'+vm_name+'_'+item.disk_name+'`].lun_id|[0]')|int
-          }
-        ]
-      }}
-  with_items: "{{ volumes }}"
-
-- debug: var=merge1
-  when: debug | bool
-
-- set_fact:
-    derived_disk_metadata: []
-
-# The next task expects this format.
-- set_fact:
-    derived_disk_metadata: >
-      {{ derived_disk_metadata +
-        [
-          {
-            'drive_letter': item.drive_letter,
-            'partition_label': item.partition_label,
-            'windows_disk_number': windows_disks|json_query('[?lun_id==`'+item.lun_id|string+'`].windows_disk_number|[0]')|int
-          }
-        ]
-      }}
-  with_items: "{{ merge1 }}"
-
-- debug: var=derived_disk_metadata
+- debug: var=pv_list_extended
   when: debug | bool

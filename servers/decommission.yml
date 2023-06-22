@@ -1,4 +1,4 @@
-# Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - name: Delete server
   hosts: "{{ target }}"
@@ -12,4 +12,18 @@
           - target_type == 'server'
         msg: "This playbook can only run on 'server' target type. Current is '{{ target_type }}'."
 
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: terminating
+      when: yak_inventory_type == "database"
+
     - include_tasks: "decommission/{{ provider }}.yml"
+
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: terminated
+      when: yak_inventory_type == "database"

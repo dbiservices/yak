@@ -13,28 +13,31 @@ build:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:${TAG}" --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG} --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA} .
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:${TAG}" --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG} --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA} --build-arg YAKENV_TAG=${YAKENV_TAG} .
     - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${MAIN_TAG}" 
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
     - docker push "$CI_REGISTRY_IMAGE:${MAIN_TAG}"
   # Run this job on tag creation and when a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(latest|LATEST)[0-9]*$/
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(integration|INTEGRATION)[0-9]*$/
       variables:
         TAG: $CI_COMMIT_TAG
-        MAIN_TAG: latest
+        MAIN_TAG: integration
+        YAKENV_TAG: $MAIN_TAG
       exists:
         - Dockerfile
     - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(stable|STABLE)[0-9]*$/
       variables:
         TAG: $CI_COMMIT_TAG
         MAIN_TAG: stable
+        YAKENV_TAG: $MAIN_TAG
       exists:
         - Dockerfile
     - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(beta|BETA)[0-9]*$/
       variables:
         TAG: $CI_COMMIT_TAG
         MAIN_TAG: beta
+        YAKENV_TAG: $MAIN_TAG
       exists:
         - Dockerfile
 
