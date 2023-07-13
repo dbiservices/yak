@@ -48,7 +48,7 @@ mkdir -p \$MY_LOCAL_COMPONENT_TYPES_DIR
 sudo docker run -it --rm --name yak --pull always \\
            -v \${MY_LOCAL_INFRASTRUCTURE_DIR}:/workspace/yak/configuration/infrastructure \\
            -v \${MY_LOCAL_COMPONENTS_DIR}:/workspace/yak/configuration/components \\
-           -v \${MY_LOCAL_COMPONENT_TYPES_DIR}:/workspace/yak/components_types \\
+           -v \${MY_LOCAL_COMPONENT_TYPES_DIR}:/workspace/yak/component_types \\
            -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) \\
            registry.gitlab.com/yak4all/yak:stable bash
 EOF
