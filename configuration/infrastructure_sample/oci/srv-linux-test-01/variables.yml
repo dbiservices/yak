@@ -16,3 +16,9 @@ shape:
     memory_in_gbs: 8
     ocpus: 2
 
+storage_devices:
+  max_size_gb: 100
+  specifications:
+    xxxxxxxxxx: xxxxxxxxxxxxxx
+
+
