@@ -5,3 +5,14 @@ availability_zone: eu-central-1a
 region_id: eu-central-1
 security_group_id:
 subnet_id:
+
+custom_tags:
+    Environment: Test
+    Department: Development YaK
+    Business_unit: YaK
+
+storage_devices:
+    max_size_gb: 100
+    specifications:
+        volume_type: gp3
+

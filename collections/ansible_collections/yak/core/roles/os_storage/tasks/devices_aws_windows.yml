@@ -19,7 +19,7 @@
   amazon.aws.ec2_vol:
     region: "{{ region_id }}"
     instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-    volume_size: "{{ item.size_GB|int }}"
+    volume_size: "{{ item.size_gb|int }}"
     volume_type: "{{ storage_devices.specifications.volume_type }}"
     device_name: "/dev/sd{{ item.drive_letter|lower }}"
     delete_on_termination: yes

@@ -36,7 +36,6 @@ if ! id yak > /dev/null 2>&1; then
     echo "alias cdcc='cd ~/yak/configuration/components'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdci='cd ~/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdcii='cd ~/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
-    echo "alias cdct='cd ~/yak/configuration/templates'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ~/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias startdemo='cd ~/yak; ~/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
     echo "" >> ${YAK_USER_HOME}/.bashrc
@@ -51,6 +50,7 @@ if ! id yak > /dev/null 2>&1; then
     echo 'apdc() { cd ~/yak && ansible-playbook servers/decommission.yml -e target="$1"; cd - > /dev/null; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'gen_secret() { ssh-keygen -b 4096 -m PEM -t rsa -f sshkey -q -N ""; }' >> ${YAK_USER_HOME}/.bashrc
     echo 'yakhelp() { cat /yakhelp.lst | more; }' >> ${YAK_USER_HOME}/.bashrc
+    echo 'unset LANG' >> ${YAK_USER_HOME}/.bashrc
 
     chown yak:yak ${YAK_USER_HOME}
     chown yak:yak ${YAK_USER_HOME}/.bashrc
@@ -133,5 +133,6 @@ if ! id yak > /dev/null 2>&1; then
 fi
 su - yak --pty -c "$@"
 cd /workspace/yak
+unset LANG
 
 

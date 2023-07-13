@@ -175,7 +175,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups['all'].vars['ansible_winrm_read_timeout_sec'] = 60
 
         self.inventory.groups['all'].vars['storage_devices'] = {
-            'size_GB': 10,
+            'size_gb': 10,
             'max_size_gb': 100,
             'specifications': {}
         }

@@ -74,9 +74,9 @@ function not_available ()
 function start_demo ()
 {
    echo 
-   blueLog "STEP 1#11: Provider description"
+   blueLog "STEP 1/11: Provider configuration"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To Provision a server on AWS, a Cloud provider configuration must exist"
+   echo "   To provision a server on AWS, a Cloud provider configuration must exist"
    echo "   The environment demo_aws is located under ./configuration/infrastructure"
    echo
    greenLog "Executed command: "
@@ -90,9 +90,9 @@ function start_demo ()
    echo
    step_time "STEP 1"
 
-   blueLog "STEP 2#11: server variables"
+   blueLog "STEP 2/11: Server configuration"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The server configuration is located under the Provider environment "
+   echo "   The server configuration is located under the provider environment "
    echo "   ./configuration/infrastructure/demo_aws"
    echo
    greenLog "Executed command: "
@@ -106,15 +106,15 @@ function start_demo ()
    echo
    step_time "STEP 2"
 
-   ### begin : Replace Hostname in the DEMO (disc configuration variable file)
+   ### begin : Replace Hostname in the DEMO (disk configuration variable file)
 
     sed -i "s/demo_hostname/linux-$HOSTNAME/g" $HOME/yak/configuration/components/DEMO/variables.yml
 
-   ### end : Replace Hostname in the DEMO (disc configuration variable file)
+   ### end : Replace Hostname in the DEMO (disk configuration variable file)
    
-   blueLog "STEP 3#11: Component variables"
+   blueLog "STEP 3/11: Component configuration"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   The Component configuration is located under a separated directory structure"
+   echo "   The component configuration is located under a separated directory structure"
    echo "   ./configuration/components"
    echo
    greenLog "Executed command: "
@@ -128,7 +128,17 @@ function start_demo ()
    echo
    step_time "STEP 3"
 
-   blueLog "STEP 4#11. Display the Ansible inventory"
+   blueLog "STEP 4/11. Set the component DEMO inventory"
+   whiteLog "-------------------------------------------------------------------------------------"
+   echo
+   greenLog "Executed command: "
+   whiteLog "sc DEMO" 
+   export YAK_CORE_COMPONENT=DEMO
+   echo
+   read -p "Press enter to continue "
+   step_time "STEP 4"
+
+   blueLog "STEP 5/11. Display the Ansible inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo
    greenLog "Executed command: "
@@ -140,9 +150,9 @@ function start_demo ()
    echo
    read -p "Press enter to continue "
    echo
-   step_time "STEP 4"
+   step_time "STEP 5"
 
-   blueLog "STEP 5#11. Display the Ansible Host inventory"
+   blueLog "STEP 6/11. Display the Ansible host inventory"
    whiteLog "--------------------------------------------------------------------------------------"
    echo
    greenLog "Executed command: "
@@ -154,12 +164,11 @@ function start_demo ()
    echo
    read -p "Press enter to continue "
    echo
-   step_time "STEP 5"
+   step_time "STEP 6"
 
-   blueLog "STEP 6#11. Set the authentification method"
+   blueLog "STEP 7/11. Cloud provider authentication"
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To have the privileges to create and configure the server" 
-   echo "   For this demo on ${provider} it is done by exporting the ${provider} provided variables"
+   echo "   For this demo on ${provider} it is done by exporting the ${provider} credentials"
    echo
    greenLog "Executed command: "
    whiteLog "export AWS_ACCESS_KEY_ID=ASI********2E7"
@@ -168,28 +177,11 @@ function start_demo ()
    echo 
    read -p "Press enter to continue "
    echo
-   step_time "STEP 6"
-
-   blueLog "STEP 7#11. Set Inventory to the component DEMO"
-   whiteLog "-------------------------------------------------------------------------------------"
-   echo "   To deploy a server including the discs of the component configuration DEMO "
-   echo "   The inventory must be set to the component"
-   echo
-   greenLog "Executed command: "
-   whiteLog "sc DEMO" 
-   whiteLog "ansible-inventory --graph" 
-   echo
-   read -p "Press enter to continue "
-   echo
-   export YAK_CORE_COMPONENT=DEMO
-   ansible-inventory --graph
-   echo
-   read -p "Press enter to continue "
    step_time "STEP 7"
 
-   blueLog "STEP 8#11. Server creation"
+   blueLog "STEP 8/11. Create the server "
    whiteLog "-------------------------------------------------------------------------------------"
-   echo "   Now you are ready to create your host including storage configuration"
+   echo "   Now you are ready to create your server including storage configuration"
    echo
    greenLog "Executed command: "
    whiteLog "ansible-playbook servers/deploy.yml -e target=demo_${provider}/linux-$(hostname -s)" 
@@ -201,7 +193,7 @@ function start_demo ()
    read -p "Press enter to continue "
    step_time "STEP 8"
 
-   blueLog "STEP 9#11. SSH connection to created server"
+   blueLog "STEP 9/11. Connect with SSH to the created server"
    whiteLog "-------------------------------------------------------------------------------------"
    echo "   At this step the server is created and an SSH connection will be made"
    echo "   Check the server and the storage if it is correctly configured"
@@ -216,7 +208,7 @@ function start_demo ()
    echo 
    step_time "STEP 9"
    
-   blueLog "STEP 10#11 SSH connection from your PC"
+   blueLog "STEP 10/11 SSH connection from your PC"
    whiteLog "-------------------------------------------------------------------------------------"
    whiteLog "   If you want to connect from your PC"
    whiteLog "   You can use the below information, and copying the content of the sshkey file"
@@ -231,9 +223,9 @@ function start_demo ()
    read -p "Press enter to continue "
    step_time "STEP 10"
 
-   blueLog "STEP 11#11 Server Decommissioning"
+   blueLog "STEP 11/11 Decommission the server "
    whiteLog "-------------------------------------------------------------------------------------"
-   redLog   "   If you Press ENTER the server will be destroyed"
+   redLog   "   If you press ENTER the server will be destroyed"
    redLog   "   But you can press CTRL-C now if you want to keep the server"
    redLog   "   In any case the server will be destroyed in 4h. "
    echo
