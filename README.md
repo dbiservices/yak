@@ -28,6 +28,7 @@ Try it, to see how it works in real life.
 | Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"**     |
 | <img src="/install/img/YaK_demo.png" width="600" height="300">                          |
 
+For more information about [SHELLNGN](https://shellngn.com))
 
 ## Get Started - Setup YaK Core
 
