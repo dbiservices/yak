@@ -22,7 +22,7 @@ Try it, to see how it works in real life.
 
 | Steps                                                                                   |
 | --------------------------------------------------------------------------------------- |
-| Open https://yakdemo.dbi-services.com in a Web broswer  (Recommendation: Google Chrome) |
+| Open https://yakdemo.dbi-services.com in a Web browser  (Recommendation: Google Chrome) |
 | Set Username: **yak**   and Password: **yak**  and click on **"Sign in"**               |
 | <img src="/install/img/YaK_login.png"  width="300" height="250">                        |
 | Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"**     |
