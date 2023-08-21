@@ -3,7 +3,6 @@
 # defaults file for aws
 state: started
 os_type: linux
-os_admin_username: ec2-user
 server_name: "test-srv-01"
 root_device_name: /dev/sda1
 root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
@@ -16,6 +15,6 @@ instance_type: t3.large
 region_id: eu-central-1
 availability_zone: eu-central-1a
 local_ssh_key:
-    path: ~/.ssh
-    private_key_name: id_rsa
-    public_key_name: id_rsa.pub
+    path: "{{ ansible_ssh_private_key_file|dirname }}"
+    private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
+    public_key_name: "{{ ansible_ssh_public_key_file|basename }}"

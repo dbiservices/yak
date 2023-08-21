@@ -17,14 +17,4 @@
     action: start
     action_type: softreset
 
-- name: Wait for SSH to come up
-  wait_for_connection:
-  when: os_type == 'linux'
-
-- name: Wait for the WinRM port to come online
-  delegate_to: localhost
-  wait_for:
-    port: 5986
-    host: "{{ ansible_host }}"
-    timeout: 600
-  when: os_type == 'windows'
+- include_tasks: "post_config_{{ os_type }}.yml"

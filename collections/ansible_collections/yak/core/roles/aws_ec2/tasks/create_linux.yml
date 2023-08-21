@@ -29,6 +29,10 @@
           assign_public_ip: false
       when: private_ip.mode == 'auto' and ( public_ip.mode == 'manual' or public_ip.mode == 'none')
 
+- name: Call the role to generate the Linux init script
+  include_role:
+    name: yak.core.linux_init_script
+
 - name: Add AWS instance
   delegate_to: localhost
   amazon.aws.ec2_instance:
@@ -45,6 +49,9 @@
       - device_name: "{{ root_device_name }}"
         ebs: "{{ root_device_ebs_option }}"
     tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
+    user_data: |
+      #!/bin/bash -ex
+      {{ linux_init_script }}
   register: r_aws
 
 - debug: var=r_aws
