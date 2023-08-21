@@ -11,14 +11,14 @@
 - debug: var=r_dnf
   when: debug|bool
 
-- name: Error handling for issues 74
+- name: Handling of issues 74
   ansible.builtin.fail:
     msg: >
       Package server is not reachable, or certificate from package server is not valid.
       More info on https://gitlab.com/yak4all/yak/-/issues/74
   when: "'Cannot download repomd.xml' in r_dnf.msg"
 
-- name: Error handling for any other issues
+- name: Handling of any other issues
   ansible.builtin.fail:
     msg: "Error with task 'Install LVM': {{ r_dnf }}"
   when: r_dnf.rc > 0

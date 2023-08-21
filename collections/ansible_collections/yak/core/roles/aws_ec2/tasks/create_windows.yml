@@ -5,12 +5,12 @@
   set_fact:
     os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
 
-- name: Call role to generate the winrm_script for user_data
+- name: Call the role to generate the winrm_script for user_data
   include_role:
     name: yak.core.winrm
   vars:
     script_type: aws
-    winrm_user: "{{ os_admin_username }}"
+    winrm_user: "{{ ansible_user }}"
     winrm_user_password: "{{ os_admin_password }}"
 
 - name: Derive network configuration
@@ -110,6 +110,6 @@
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ r_aws.instances[0].private_ip_address|default(None) }}"
       public_ip_address: "{{ r_aws.instances[0].public_ip_address|default(None) }}"
-      os_admin_username: "{{ os_admin_username }}"
+      os_admin_username: "{{ ansible_user }}"
       os_admin_password: "{{ os_admin_password }}"
 
