@@ -71,7 +71,7 @@ yak@d47a98f30c99:~/yak$
 
 ## 3. Appendix
 
-You want to allow sudo as user ROOT in the container, the parametere below must be added in the "docker run" command
+You want to allow sudo as user ROOT in the container, the parameter below must be added in the "docker run" command
 
 ```bash
 -e YAK_ENABLE_SUDO=true
