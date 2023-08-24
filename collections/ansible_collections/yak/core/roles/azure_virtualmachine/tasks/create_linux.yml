@@ -8,14 +8,14 @@
     resource_group: "{{ resource_group }}"
     name: "{{ server_name }}"
     short_hostname: "{{ server_name }}"
-    admin_username: "{{ os_admin_username }}"
+    admin_username: "{{ ansible_user }}"
     vm_size: "{{ vm_size }}"
     virtual_network_name: "{{ virtual_network_name }}"
     subnet_name: "{{ subnet_name }}"
     ssh_password_enabled: false
     ssh_public_keys:
-      - path: "/home/{{ os_admin_username }}/.ssh/authorized_keys"
-        key_data: "{{ lookup('file', ssh_public_key) }}"
+      - path: "/home/{{ ansible_user }}/.ssh/authorized_keys"
+        key_data: "{{ lookup('file', ansible_ssh_public_key_file) }}"
     network_interfaces: "{{ server_name }}-nic001"
     image:
       offer: "{{ image.offer }}"
@@ -35,3 +35,20 @@
   set_fact:
     returned:
       instance: "{{ r_azure.ansible_facts.azure_vm }}"
+
+- name: Call the role to generate the Linux init script
+  include_role:
+    name: yak.core.linux_init_script
+
+- name: Run the Linux init script
+  delegate_to: localhost
+  azure.azcollection.azure_rm_virtualmachineextension:
+    name: winrm-extension
+    resource_group: "{{ resource_group }}"
+    virtual_machine_name: "{{ server_name }}"
+    publisher: Microsoft.Azure.Extensions
+    virtual_machine_extension_type: CustomScript
+    type_handler_version: 2.1
+    settings:
+      commandToExecute: "{{ linux_init_script }}"
+    auto_upgrade_minor_version: true

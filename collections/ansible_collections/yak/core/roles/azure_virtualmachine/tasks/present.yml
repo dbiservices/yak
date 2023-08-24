@@ -1,8 +1,11 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - include_tasks: get_vm_state.yml
-- include_tasks: create_{{ os_type }}.yml
-  when: r_azure_rm_virtualmachine_info|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length == 0
-- include_tasks: derive_variables.yml
-- include_tasks: post_config_{{ os_type }}.yml
+- block:
+  - include_tasks: create_{{ os_type }}.yml
+  - include_tasks: post_config_{{ os_type }}.yml
+  when: r_get_vm_state|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length == 0
+- debug:
+    msg: "The instance already exists. Skipping instance creation..."
+  when: r_get_vm_state|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length > 0
 ...

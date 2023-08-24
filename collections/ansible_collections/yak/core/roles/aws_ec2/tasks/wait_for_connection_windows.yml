@@ -1,16 +1,6 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- set_fact:
-    administrative_ip: '{{ r_ec2_instance_info.instances[0].private_ip_address }}'
-  when: host_ip_access == 'private_ip'
-
-- set_fact:
-    administrative_ip: '{{ r_ec2_instance_info.instances[0].public_ip_address }}'
-  when: host_ip_access == 'public_ip'
-
 - name: Wait for the OS to be reachable by YaK
   ansible.builtin.wait_for_connection:
     delay: 60
     timeout: 600
-  vars:
-    ansible_host: "{{ administrative_ip }}"
