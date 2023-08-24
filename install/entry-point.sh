@@ -22,6 +22,7 @@ if ! id yak > /dev/null 2>&1; then
 
     # Environment
     echo "# Environment" >> ${YAK_USER_HOME}/.bashrc
+    echo "export PATH=/opt/ansible/bin:/opt/oci/bin:/opt/aws/bin:/opt/az/bin:$PATH" >> ${YAK_USER_HOME}/.bashrc
     echo "export OCI_USE_NAME_AS_IDENTIFIER=true" >> ${YAK_USER_HOME}/.bashrc
     echo "cd ~/yak" >> ${YAK_USER_HOME}/.bashrc
     echo "" >> ${YAK_USER_HOME}/.bashrc

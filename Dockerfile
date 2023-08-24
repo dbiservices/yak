@@ -30,6 +30,5 @@ RUN chmod u+x /entry-point.sh && \
     echo "commit short sha: $CI_COMMIT_SHORT_SHA" >> /workspace/yak/.version
 
 ENV LANG en_US.utf8
-ENV PATH=/opt/ansible/bin:/opt/oci/bin:/opt/aws/bin:/opt/az/bin:$PATH
 
 ENTRYPOINT ["/entry-point.sh"]
