@@ -40,4 +40,11 @@ build:
         YAKENV_TAG: $MAIN_TAG
       exists:
         - Dockerfile
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+-(betadwi|BETADWI)[0-9]*$/
+      variables:
+        TAG: $CI_COMMIT_TAG
+        MAIN_TAG: betadwi
+        YAKENV_TAG: $MAIN_TAG
+      exists:
+        - Dockerfile
 
