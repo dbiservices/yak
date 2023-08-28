@@ -46,7 +46,7 @@ RUN apk --update add \
         ## AWS Deps
         && pip3 install boto3 \
         ## Azure Deps (TODO: remove az cli when possible)
-        && pip3 install azure-cli
+        && pip3 install azure-cli \
         # && pip3 install -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
         ## Oracle OCI Deps
         && mkdir -p /etc/ansible/collections \
