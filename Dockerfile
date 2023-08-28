@@ -45,9 +45,10 @@ RUN apk --update add \
                 ansible-runner==${ANSIBLE_RUNNER_VERSION} \
         ## AWS Deps
         && pip3 install boto3 \
-        ## Azure Deps
-        && pip3 install -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
-        ## Oracle OIC Deps
+        ## Azure Deps (TODO: remove az cli when possible)
+        && pip3 install azure-cli
+        # && pip3 install -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
+        ## Oracle OCI Deps
         && mkdir -p /etc/ansible/collections \
         && ansible-galaxy collection install oracle.oci --collections-path /etc/ansible/collections \
         && pip3 install -r /etc/ansible/collections/ansible_collections/oracle/oci/requirements.txt \
