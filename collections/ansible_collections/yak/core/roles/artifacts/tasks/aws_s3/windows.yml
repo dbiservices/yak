@@ -1,5 +1,14 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+
+- name: Install NuGet Package
+  become: yes
+  become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.windows.win_powershell:
+    script: >
+      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
 - name: Install PowerShell module AWS Tool packages
   become: yes
   become_user: "{{ ansible_user }}"
