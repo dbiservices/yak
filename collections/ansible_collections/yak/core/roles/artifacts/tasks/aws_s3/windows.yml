@@ -14,7 +14,7 @@
   become_method: runas
   ansible.windows.win_powershell:
     script: >
-      Install-Module -Name AWS.Tools.S3 -Force
+      Install-AWSToolsModule AWS.Tools.S3 -CleanUp -Force
 
 - name: Download artifact
   become: yes
