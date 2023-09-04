@@ -59,7 +59,7 @@ RUN apk --update add \
 # Add user YaK
 RUN adduser -D yak -h /workspace
 RUN echo "yak ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/yak
-RUN echo "Include /workspace/yak/configuration/infrastructure/.ssh" >> /etc/ssh/ssh_config
+RUN echo "Include /workspace/yak/configuration/infrastructure/.ssh/config" >> /etc/ssh/ssh_config
 
 # Workdir
 WORKDIR /workspace/yak
