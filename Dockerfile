@@ -19,6 +19,7 @@ RUN apk --update --no-cache add \
         openssl \
         python3 \
         py3-cryptography \
+        py3-packaging \
         rsync \
         sshpass \
         shadow \
@@ -38,6 +39,8 @@ RUN apk --update add \
                 cffi \
                 pyyaml==5.3.1 \
                 ruamel.yaml \
+                requests \
+                pywinrm \
         # Ansible
         && pip3 install \
                 ansible==${ANSIBLE_VERSION} \
@@ -45,10 +48,10 @@ RUN apk --update add \
                 ansible-runner==${ANSIBLE_RUNNER_VERSION} \
         ## AWS Deps
         && pip3 install boto3 \
-        ## Azure Deps (TODO: remove az cli when possible)
-        && pip3 install azure-cli \
-        # && pip3 install -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
-        ## Oracle OCI Deps
+        # Azure Deps [TODO: remove az cli when possible. Cli must be isolated in venv not to conflict with the Ansible collection]
+        && python3 -m venv /opt/azure-client && source /opt/azure-client/bin/activate && pip install azure-cli && deactivate \
+        && pip3 install -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
+        # Oracle OCI Deps
         && mkdir -p /etc/ansible/collections \
         && ansible-galaxy collection install oracle.oci --collections-path /etc/ansible/collections \
         && pip3 install -r /etc/ansible/collections/ansible_collections/oracle/oci/requirements.txt \
@@ -59,7 +62,7 @@ RUN apk --update add \
 # Add user YaK
 RUN adduser -D yak -h /workspace
 RUN echo "yak ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/yak
-RUN echo "Include /workspace/yak/configuration/infrastructure/.ssh" >> /etc/ssh/ssh_config
+RUN echo "Include /workspace/yak/configuration/infrastructure/.ssh/config" >> /etc/ssh/ssh_config
 
 # Workdir
 WORKDIR /workspace/yak
