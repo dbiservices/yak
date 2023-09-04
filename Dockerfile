@@ -34,7 +34,7 @@ RUN apk --update add \
         build-base \
         gcc musl-dev cargo make \
         curl \
-        && pip3 install --upgrade \
+        && pip3 install --no-cache-dir --prefer-binary --upgrade \
                 pip \
                 cffi \
                 pyyaml==5.3.1 \
@@ -42,19 +42,18 @@ RUN apk --update add \
                 requests \
                 pywinrm \
         # Ansible
-        && pip3 install \
+        && pip3 install --no-cache-dir --prefer-binary \
                 ansible==${ANSIBLE_VERSION} \
                 ansible-lint==${ANSIBLE_LINT_VERSION} \
                 ansible-runner==${ANSIBLE_RUNNER_VERSION} \
         ## AWS Deps
-        && pip3 install boto3 \
-        # Azure Deps [TODO: remove az cli when possible. Cli must be isolated in venv not to conflict with the Ansible collection]
-        && python3 -m venv /opt/azure-client && source /opt/azure-client/bin/activate && pip install azure-cli && deactivate \
-        && pip3 install -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
+        && pip3 install --no-cache-dir --prefer-binary boto3 \
+        # Azure Deps [for az cli login, map your own local env: -v ${HOME}/.ssh:/workspace/.ssh -v ${HOME}/.azure:/workspace/.azure]
+        && pip3 install --no-cache-dir --prefer-binary -r /usr/lib/python3.11/site-packages/ansible_collections/azure/azcollection/requirements-azure.txt \
         # Oracle OCI Deps
         && mkdir -p /etc/ansible/collections \
         && ansible-galaxy collection install oracle.oci --collections-path /etc/ansible/collections \
-        && pip3 install -r /etc/ansible/collections/ansible_collections/oracle/oci/requirements.txt \
+        && pip3 install --no-cache-dir --prefer-binary -r /etc/ansible/collections/ansible_collections/oracle/oci/requirements.txt \
         ## Cleanup
         && apk del .build-deps \
         && rm -rf /var/cache/apk/*
