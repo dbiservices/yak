@@ -12,6 +12,8 @@
 - name: Install PowerShell module AWS Tool packages
   become: yes
   become_user: "{{ ansible_user }}"
+  become_method: runas
+  ansible.windows.win_powershell:
     script: >
       Install-Module -Name AWS.Tools.Installer -Force
 
