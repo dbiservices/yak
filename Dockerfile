@@ -83,7 +83,7 @@ COPY ./README.md /workspace/yak
 # COPY config
 COPY ./install/log-yak.sh /log-yak.sh
 RUN chmod u+x /log-yak.sh
-COPY ./install/profile.sh /etc/profile
+COPY ./install/profile.sh /etc/profile.d/yak-profile.sh
 RUN chmod ugo+rw /etc/profile
 COPY ./install/yakhelp.txt /workspace/yakhelp.txt
 RUN chown yak:yak /workspace/yakhelp.txt
