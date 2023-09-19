@@ -11,6 +11,7 @@ alias cdci='cd ~/yak/configuration/infrastructure'
 alias cdcii='cd ~/yak/configuration/infrastructure/@yak_dev_infrastructure'
 alias cds='cd ~/yak/servers'
 alias startdemo='cd ~/yak; ~/yak/configuration/demo_scripts/startdemo.sh'
+alias yakversion='cat /workspace/yak/.version'
 
 # Functions
 sc() { export YAK_CORE_COMPONENT="$1"; }
