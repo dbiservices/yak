@@ -43,6 +43,10 @@ You installed your own YaK Core environment and want now to setup your own Cloud
 - [Microsoft Azure Quickstart Instructions](docs/quickstart_azure.md)
 - [Oracle OCI Quickstart Instructions](docs/quickstart_oci.md)
 
+If you want to manage your On-premise infrastructure with YaK
+
+- [On-premise Integration Instructions](docs/onpremise_integration.md)
+
 ## Configuration
 
 To get more information about the inventory and the infrastructure configuration, click on [docs/configuration.md](https://gitlab.com/yak4all/yak/-/blob/main/docs/configuration/README.md).
