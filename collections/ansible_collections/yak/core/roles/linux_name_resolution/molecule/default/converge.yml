@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  connection: lxd
+  vars_files:
+    - ../../defaults/test.yml
+  tasks:
+    - name: "Include linux_name_resolution"
+      include_role:
+        name: "linux_name_resolution"

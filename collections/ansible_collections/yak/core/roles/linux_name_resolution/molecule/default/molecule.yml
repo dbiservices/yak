@@ -1,0 +1,111 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: lxd
+platforms:
+  - name: rocky8
+    source:
+      alias: rockylinux/8/amd64
+    type: container
+    groups:
+      - masters
+  - name: alma9
+    source:
+      alias: almalinux/9/amd64
+    type: container
+    groups:
+      - workers
+  - name: ubuntu-23
+    source:
+      alias: ubuntu/lunar/amd64 # Ubuntu 23.04
+    type: container
+  - name: ubuntu-jammy
+    source:
+      alias: ubuntu/jammy/amd64 # Ubuntu 22.04
+    type: container
+    groups:
+      - workers
+  - name: debian-11
+    source:
+      alias: debian/bullseye/amd64 # Debian 11
+    type: container
+    groups:
+      - workers
+  - name: debian-12
+    source:
+      alias: debian/bookworm/amd64 # Debian 12
+    type: container
+    groups:
+      - workers
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      rocky8:
+        private_ip:
+          ip: "{{ hostvars['rocky8']['ansible_default_ipv4']['address'] }}"
+        hostname: rocky8
+        domain_name: local.local
+      alma9:
+        private_ip:
+          ip: "{{ hostvars['alma9']['ansible_default_ipv4']['address'] }}"
+        hostname: alma9
+        domain_name: local.local
+      ubuntu-23:
+        private_ip:
+          ip: "{{ hostvars['ubuntu-23']['ansible_default_ipv4']['address'] }}"
+        hostname: ubuntu-23
+        domain_name: local.local
+      ubuntu-jammy:
+        private_ip:
+          ip: "{{ hostvars['ubuntu-jammy']['ansible_default_ipv4']['address'] }}"
+        hostname: ubuntu-jammy
+        domain_name: local.local
+      debian-11:
+        private_ip:
+          ip: "{{ hostvars['debian-11']['ansible_default_ipv4']['address'] }}"
+        hostname: debian-11
+        domain_name: local.local
+      debian-12:
+        private_ip:
+          ip: "{{ hostvars['debian-12']['ansible_default_ipv4']['address'] }}"
+        hostname: debian-12
+        domain_name: local.local
+verifier:
+  name: ansible
+
+scenario:
+  create_sequence:
+    - dependency
+    - create
+    - prepare
+  check_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - create
+    - prepare
+    - converge
+    - check
+    - destroy
+  converge_sequence:
+    - dependency
+    - create
+    - prepare
+    - converge
+  destroy_sequence:
+    - dependency
+    - cleanup
+    - destroy
+  test_sequence:
+    - dependency
+    - cleanup
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - cleanup
