@@ -1,0 +1,14 @@
+{{ domain.domain_name }}. IN SOA dns.{{ domain.domain_name }}. a.b.c 2015082541 7200 3600 1209600 3600
+
+{% for alias in domain.aliases -%}
+{% if 'ip_addresses' in alias %}
+{% for ip_address in alias.ip_addresses -%}
+{{ alias.name }}.{{ domain.domain_name }}. IN A {{ ip_address }}
+{% endfor -%}
+{% endif -%}
+{% if 'yak_inventory_hostnames' in alias %}
+{% for yak_inventory_hostname in alias.yak_inventory_hostnames -%}
+{{ alias.name }}.{{ domain.domain_name }}. IN A {{ hostvars[yak_inventory_hostname]['ansible_default_ipv4']['address'] }}
+{% endfor %}
+{% endif %}
+{% endfor -%}

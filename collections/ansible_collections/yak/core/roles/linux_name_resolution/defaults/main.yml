@@ -1,0 +1,35 @@
+---
+# defaults file for linux_name_resolution
+domain_name: local.local
+
+## Location of the config file on the host machine
+host_coredns_conf_dir: /etc/coredns/
+core_dns_binary_url: https://github.com/coredns/coredns/releases/download/v1.10.1/coredns_1.10.1_linux_amd64.tgz
+core_dns_binary_path: /usr/bin/
+
+
+# Override this dict with proper values to setup dns records for your host
+# dns_records:
+#   - domain_name: example.com
+#     aliases: 
+#       - name: randomdns-test
+#         ip_addresses:
+#           - 8.8.8.8 
+#           - 8.8.4.4
+#           - 9.9.9.9
+#       - name: yak-inventory-hostname-test
+#         yak_inventory_hostnames:
+#           - rocky8 
+#           - alma9
+          
+#   - domain_name: rba.com
+#     aliases: 
+#       - name: randomdns-test
+#         ip_addresses:
+#           - 8.8.8.8 
+#           - 8.8.4.4
+#           - 9.9.9.9
+#       - name: yak-inventory-hostname-test
+#         yak_inventory_hostnames:
+#           - rocky8 
+#           - alma9
