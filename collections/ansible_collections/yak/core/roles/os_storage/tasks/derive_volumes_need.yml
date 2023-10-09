@@ -8,4 +8,4 @@
 - name: Derive number of disk needed
   set_fact:
     number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round(0,'ceil') | int  }}"
-    allowed_device_alphabet_letter: "bcdefghijklmnopqrstuvwxyz"
+    allowed_device_alphabet_letter: "fghijklmnopqrstuvwxyz"
