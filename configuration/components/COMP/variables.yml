@@ -18,4 +18,3 @@ yak_manifest_my_os_storage_config:
     windows:
         - { size_gb: 5, drive_letter: F, partition_label: data   }
         - { size_gb: 5, drive_letter: G, partition_label: backup }
-

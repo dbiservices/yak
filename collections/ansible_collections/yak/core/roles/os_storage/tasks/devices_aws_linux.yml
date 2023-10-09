@@ -27,6 +27,7 @@
     volume_size: "{{ storage_devices.max_size_gb|int }}"
     volume_type: "{{ storage_devices.specifications.volume_type }}"
     device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
+    encrypted: true
     delete_on_termination: yes
     tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_aws_vol
