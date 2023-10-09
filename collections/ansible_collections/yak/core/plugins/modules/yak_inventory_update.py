@@ -173,7 +173,7 @@ def run_module():
 def api_update_server(server_name, server_state, private_ip, public_ip):
 
     graphql_request = """
-    mutation MyMutation($pServerName: String!, $pServerStateName: String, $pPrivateIp: String, $pPublicIp: String) {
+    mutation serverUpdate($pServerName: String!, $pServerStateName: String, $pPrivateIp: String, $pPublicIp: String) {
         serverUpdate(
             input: { pServerName: $pServerName, pServerStateName: $pServerStateName, pPrivateIp: $pPrivateIp, pPublicIp: $pPublicIp }
         ) { integer }
