@@ -16,19 +16,26 @@
   delegate_to: localhost
   when: debug | bool
 
-- set_fact:
-    test: "/dev/sd{{ allowed_device_alphabet_letter[1-1:1] }}"
+- name: Generate EC2 volumes variable for Linux
+  delegate_to: localhost
+  set_fact:
+    ec2_volume:
+      region: "{{ region_id }}"
+      instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+      volume_size: "{{ storage_devices.max_size_gb|int }}"
+      volume_type: "{{ storage_devices.specifications.volume_type }}"
+      device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
+      encrypted: "{{ storage_devices.specifications.encrypted|default(false) }}"
+      delete_on_termination: yes
+      tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
+  register: r_ec2_volumes
+  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
+
+- debug: var=r_ec2_volumes
+  delegate_to: localhost
+  when: debug | bool
 
 - name: Create and attach the volumes to instance
   delegate_to: localhost
-  amazon.aws.ec2_vol:
-    region: "{{ region_id }}"
-    instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-    volume_size: "{{ storage_devices.max_size_gb|int }}"
-    volume_type: "{{ storage_devices.specifications.volume_type }}"
-    device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
-    encrypted: true
-    delete_on_termination: yes
-    tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
-  register: r_aws_vol
-  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
+  amazon.aws.ec2_vol: "{{ item.ansible_facts.ec2_volume }}"
+  loop: "{{ r_ec2_volumes.results }}"

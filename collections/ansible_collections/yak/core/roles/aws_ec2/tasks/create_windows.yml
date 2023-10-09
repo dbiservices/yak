@@ -42,10 +42,6 @@
           assign_public_ip: false
       when: private_ip.mode == 'auto' and ( public_ip.mode == 'manual' or public_ip.mode == 'none')
 
-- debug: var=instance_options
-  delegate_to: localhost
-  when: debug | bool
-
 - name: Add AWS instance
   delegate_to: localhost
   amazon.aws.ec2_instance:

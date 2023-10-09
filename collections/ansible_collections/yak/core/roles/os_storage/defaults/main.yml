@@ -11,4 +11,5 @@ storage_devices:
   specifications:
     volume_type: gp2
     storage_account_type: StandardSSD_LRS
+    encrypted: true
 

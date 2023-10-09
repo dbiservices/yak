@@ -14,20 +14,31 @@
   delegate_to: localhost
   when: debug | bool
 
+- name: Generate EC2 volumes variable for Windows
+  delegate_to: localhost
+  set_fact:
+    ec2_volume:
+      region: "{{ region_id }}"
+      instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+      volume_size: "{{ item.size_gb|int }}"
+      volume_type: "{{ storage_devices.specifications.volume_type }}"
+      device_name: "/dev/sd{{ item.drive_letter|lower }}"
+      encrypted: "{{ storage_devices.specifications.encrypted|default(false) }}"
+      delete_on_termination: yes
+      tags: "{{ {
+                  'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
+                  'Partition_label': item.partition_label,
+                  'Drive_letter': item.drive_letter
+                }
+                | combine(custom_tags) }}"
+  register: r_ec2_volumes
+  loop: "{{ os_storage }}"
+
+- debug: var=r_ec2_volumes
+  delegate_to: localhost
+  when: debug | bool
+
 - name: Create and attach the volumes to instance
   delegate_to: localhost
-  amazon.aws.ec2_vol:
-    region: "{{ region_id }}"
-    instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-    volume_size: "{{ item.size_gb|int }}"
-    volume_type: "{{ storage_devices.specifications.volume_type }}"
-    device_name: "/dev/sd{{ item.drive_letter|lower }}"
-    delete_on_termination: yes
-    tags: "{{ {
-                'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
-                'Partition_label': item.partition_label,
-                'Drive_letter': item.drive_letter
-              }
-              | combine(custom_tags) }}"
-  register: r_aws_vol
-  loop: "{{ os_storage }}"
+  amazon.aws.ec2_vol: "{{ item.ansible_facts.ec2_volume }}"
+  loop: "{{ r_ec2_volumes.results }}"
