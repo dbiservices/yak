@@ -3,7 +3,7 @@
 - name: Check if disks already exist
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
-    name: "disk_{{ item.drive_letter }}_{{ item.partition_label }}"
+    name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_manageddisk_info
   loop: "{{ os_storage }}"
@@ -15,7 +15,7 @@
 - name: Create and attach the managed disk to VM
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk:
-    name: "disk_{{ item.drive_letter }}_{{ item.partition_label }}"
+    name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
     disk_size_gb: "{{ storage_devices.max_size_gb|int }}"
     managed_by: "{{ machine_name }}"
