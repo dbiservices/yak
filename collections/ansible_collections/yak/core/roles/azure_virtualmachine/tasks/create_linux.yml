@@ -16,7 +16,7 @@
     ssh_public_keys:
       - path: "/home/{{ ansible_user }}/.ssh/authorized_keys"
         key_data: "{{ lookup('file', ansible_ssh_public_key_file) }}"
-    network_interfaces: "{{ server_name }}-nic001"
+    network_interfaces: "{{ server_name }}-nic-01"
     image:
       offer: "{{ image.offer }}"
       publisher: "{{ image.publisher }}"

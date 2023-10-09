@@ -26,7 +26,7 @@
     vm_size: "{{ vm_size }}"
     virtual_network_name: "{{ virtual_network_name }}"
     subnet_name: "{{ subnet_name }}"
-    network_interfaces: "{{ server_name }}-nic001"
+    network_interfaces: "{{ server_name }}-nic-01"
     image:
       offer: "{{ image.offer }}"
       publisher: "{{ image.publisher }}"
