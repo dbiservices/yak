@@ -23,7 +23,7 @@
       region: "{{ region_id }}"
       instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
       volume_size: "{{ storage_devices.max_size_gb|int }}"
-      volume_type: "{{ storage_devices.specifications.volume_type }}"
+      volume_type: "{{ storage_devices.specifications.volume_type|default(default_aws_volume_type) }}"
       device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
       encrypted: "{{ storage_devices.specifications.encrypted|default(false) }}"
       delete_on_termination: yes
