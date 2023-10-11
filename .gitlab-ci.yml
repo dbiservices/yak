@@ -1,8 +1,21 @@
 stages:
-- build
+  - build_vm_infra
+  - destroy_vm_infra
+  - build
 
 variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
+  TARGET: "aws"
+  CLOUD: "AWS"
+
+
+include: 
+  - project: 'dbiservices/yak/yak_dev_infrastructure'
+    ref: add_ci
+    file: 'build_vm_infra.yml'
+  - project: 'dbiservices/yak/yak_dev_infrastructure'
+    ref: add_ci
+    file: 'destroy_vm_infra.yml'
 
 build:
   # Use the official docker image.
