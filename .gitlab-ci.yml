@@ -1,4 +1,6 @@
 stages:
+  - local_debug
+  - lint
   - build_vm_infra
   - destroy_vm_infra
   - build
@@ -8,6 +10,21 @@ variables:
   TARGET: "aws"
   CLOUD: "AWS"
 
+lint:
+  stage: lint
+  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
+  script:
+    - pwd
+    - ansible-lint --version
+    - ansible-lint --show-relpath --config-file gitlab_ci/ansible-lint.yml
+  allow_failure: true
+
+
+dbg:
+  stage: local_debug
+  image: busybox:latest
+  script:
+    - env
 
 include: 
   - project: 'dbiservices/yak/yak_dev_infrastructure'
