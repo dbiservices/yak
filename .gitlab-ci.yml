@@ -13,6 +13,8 @@ variables:
 lint:
   stage: lint
   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
+  variables:
+    - ANSIBLE_COLLECTIONS_PATHS=./collections
   script:
     - pwd
     - ansible-lint --version
