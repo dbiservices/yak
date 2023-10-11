@@ -6,7 +6,10 @@ exclude_paths:
   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
   - gitlab-ci/
+  - *
 
+extra_vars:
+  target: anyhost
 
 use_default_rules: true
 # Load custom rules from this specific folder
