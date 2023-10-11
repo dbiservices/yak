@@ -15,6 +15,7 @@ lint:
   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
   variables:
     ANSIBLE_COLLECTIONS_PATHS: ./collections
+    ANSIBLE_CONFIG: ./ansible.cfg
   script:
     - pwd
     - ansible-lint --version
