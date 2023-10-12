@@ -6,25 +6,27 @@ stages:
   - build
 
 # Target can be: 
-#   cloud provider aws, oci, azure or aws/srv-linux-01, oci/srv-olinux-85 etc or all 
-#  targets are defined in dbiservices/yak/yak_dev_infrastructure or in gitlab_ci local directory 
+#   cloud provider aws, oci, azure or aws/srv-linux-01, oci/srv-olinux-85 etc 
+#   use "all" for all targets and "none" to skip th CI
+#   default is none
+#  TARGET: "oci/srv-olinux-85"
 variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
-  TARGET: "aws"
+  TARGET: "none"
 
 
-# lint:
-#   stage: lint
-#   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
-#   variables:
-#     ANSIBLE_COLLECTIONS_PATHS: ./collections
-#     ANSIBLE_CONFIG: ./ansible.cfg
-#   script:
-#     - pwd
-#     - ansible-lint --version
-#     - ansible-lint --show-relpath --config-file gitlab_ci/ansible-lint.yml
-#   allow_failure: true
-# 
+lint:
+  stage: lint
+  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
+  variables:
+    ANSIBLE_COLLECTIONS_PATHS: ./collections
+    ANSIBLE_CONFIG: ./ansible.cfg
+  script:
+    - pwd
+    - ansible-lint --version
+    - ansible-lint --show-relpath --config-file gitlab_ci/ansible-lint.yml
+  allow_failure: true
+
 dbg:
   stage: local_debug
   image: busybox:latest
