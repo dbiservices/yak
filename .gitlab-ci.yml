@@ -5,10 +5,13 @@ stages:
   - destroy_vm_infra
   - build
 
+# Target can be: 
+#   cloud provider aws, oci, azure or aws/srv-linux-01, oci/srv-olinux-85 etc or all 
+#  targets are defined in dbiservices/yak/yak_dev_infrastructure or in gitlab_ci local directory 
 variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
   TARGET: "aws"
-  CLOUD: "AWS"
+
 
 lint:
   stage: lint
