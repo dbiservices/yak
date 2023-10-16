@@ -1,8 +1,45 @@
 stages:
-- build
+  - local_debug
+  - lint
+  - build_vm_infra
+  - destroy_vm_infra
+  - build
 
+# Target can be: 
+#   cloud provider aws, oci, azure or aws/srv-linux-01, oci/srv-olinux-85 etc 
+#   use "all" for all targets and "none" to skip th CI
+#   default is none
+#  TARGET: "oci/srv-olinux-85"
 variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
+  TARGET: "none"
+
+
+lint:
+  stage: lint
+  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
+  variables:
+    ANSIBLE_COLLECTIONS_PATHS: ./collections
+    ANSIBLE_CONFIG: ./ansible.cfg
+  script:
+    - pwd
+    - ansible-lint --version
+    - ansible-lint --show-relpath --config-file gitlab_ci/ansible-lint.yml
+  allow_failure: true
+
+dbg:
+  stage: local_debug
+  image: busybox:latest
+  script:
+    - env
+
+include: 
+  - project: 'dbiservices/yak/yak_dev_infrastructure'
+    ref: add_ci
+    file: 'build_vm_infra.yml'
+  - project: 'dbiservices/yak/yak_dev_infrastructure'
+    ref: add_ci
+    file: 'destroy_vm_infra.yml'
 
 build:
   # Use the official docker image.
