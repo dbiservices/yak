@@ -3,3 +3,6 @@
 debug: false
 returned: ""
 custom_tags: "{}"
+role_storage_devices:
+  specifications:
+    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
