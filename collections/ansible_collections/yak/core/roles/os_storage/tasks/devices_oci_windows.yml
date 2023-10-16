@@ -6,7 +6,7 @@
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
     display_name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
-    size_in_gbs: "{{ storage_devices.max_size_gb|int }}"
+    size_in_gbs: "{{ role_storage_devices.max_size_gb }}"
     freeform_tags : "{{ {
                           'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
                           'Partition_label': item.partition_label,

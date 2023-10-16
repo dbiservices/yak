@@ -48,9 +48,9 @@
     volumes:
       - device_name: "{{ root_device_name }}"
         ebs:
-          volume_type: "{{ root_device_ebs_option.volume_type|default(aws_default_root_device_ebs_option.volume_type) }}"
-          volume_size: "{{ root_device_ebs_option.volume_size|default(aws_default_root_device_ebs_option.volume_size) }}"
-          encrypted: "{{ root_device_ebs_option.encrypted|default(aws_default_root_device_ebs_option.encrypted) }}"
+          volume_type: "{{ role_root_device_ebs_option.volume_type }}"
+          volume_size: "{{ role_root_device_ebs_option.volume_size }}"
+          encrypted: "{{ role_root_device_ebs_option.encrypted }}"
     tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
     user_data: |
       #!/bin/bash -ex

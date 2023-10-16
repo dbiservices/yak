@@ -1,2 +1,6 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+role_root_device_ebs_option: #https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
+    volume_type: "{{ root_device_ebs_option.volume_type|default(gp3) }}"
+    volume_size: "{{ root_device_ebs_option.volume_size|default(25) }}"
+    encrypted: "{{ root_device_ebs_option.encrypted|default(true) }}"

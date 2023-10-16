@@ -1,6 +1,5 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-managed_disk_type: StandardSSD_LRS
 debug: false
 returned: ""
 custom_tags: "{}"

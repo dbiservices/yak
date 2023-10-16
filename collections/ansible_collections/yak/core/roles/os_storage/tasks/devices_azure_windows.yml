@@ -17,10 +17,10 @@
   azure.azcollection.azure_rm_manageddisk:
     name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
-    disk_size_gb: "{{ storage_devices.max_size_gb|int }}"
+    disk_size_gb: "{{ role_storage_devices.max_size_gb }}"
     managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
-    storage_account_type: "{{ storage_devices.specifications.storage_account_type }}"
+    storage_account_type: "{{ role_storage_devices.specifications.storage_account_type }}"
     tags: "{{ {
                 'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
                 'Partition_label': item.partition_label,

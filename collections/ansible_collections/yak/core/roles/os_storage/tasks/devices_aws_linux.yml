@@ -22,10 +22,10 @@
     ec2_volume:
       region: "{{ region_id }}"
       instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      volume_size: "{{ storage_devices.max_size_gb|int }}"
-      volume_type: "{{ storage_devices.specifications.volume_type|default(default_aws_volume_type) }}"
+      volume_size: "{{ role_storage_devices.max_size_gb }}"
+      volume_type: "{{ role_storage_devices.specifications.volume_type }}"
       device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
-      encrypted: "{{ storage_devices.specifications.encrypted|default(false) }}"
+      encrypted: "{{ role_storage_devices.specifications.encrypted }}"
       delete_on_termination: yes
       tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_ec2_volumes

@@ -8,7 +8,7 @@
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
     display_name: "{{ machine_name }}_disk{{ item }}"
-    size_in_gbs: "{{ storage_devices.max_size_gb|int }}"
+    size_in_gbs: "{{ role_storage_devices.max_size_gb }}"
     freeform_tags : "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
