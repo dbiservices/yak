@@ -5,9 +5,10 @@ state: started
 os_type: linux
 server_name: "test-srv-01"
 root_device_name: /dev/sda1
-root_device_ebs_option: # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
-    volume_type: gp2
+aws_default_root_device_ebs_option: #https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
+    volume_type: gp3
     volume_size: 25
+    encrypted: true
 debug: False
 returned: ""
 custom_tags: {}
