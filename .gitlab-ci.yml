@@ -5,8 +5,8 @@ stages:
   - destroy_vm_infra
   - build
 
-# Target can be: 
-#   cloud provider aws, oci, azure or aws/srv-linux-01, oci/srv-olinux-85 etc 
+# Target can be:
+#   cloud provider aws, oci, azure or aws/srv-linux-01, oci/srv-olinux-85 etc
 #   use "all" for all targets and "none" to skip th CI
 #   default is none
 #  TARGET: "oci/srv-olinux-85"
@@ -33,12 +33,12 @@ dbg:
   script:
     - env
 
-include: 
+include:
   - project: 'dbiservices/yak/yak_dev_infrastructure'
-    ref: add_ci
+    ref: main
     file: 'build_vm_infra.yml'
   - project: 'dbiservices/yak/yak_dev_infrastructure'
-    ref: add_ci
+    ref: main
     file: 'destroy_vm_infra.yml'
 
 build:
@@ -51,7 +51,7 @@ build:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:${TAG}" --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG} --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA} --build-arg YAKENV_TAG=${YAKENV_TAG} .
-    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${MAIN_TAG}" 
+    - docker tag "$CI_REGISTRY_IMAGE:${TAG}" "$CI_REGISTRY_IMAGE:${MAIN_TAG}"
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
     - docker push "$CI_REGISTRY_IMAGE:${MAIN_TAG}"
   # Run this job on tag creation and when a Dockerfile exists
