@@ -14,3 +14,4 @@ role_storage_devices:
     encrypted: "{{ storage_devices.specifications.encrypted|default(true) }}"
     # Azure
     storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
+    attach_caching: "{{ storage_devices.specifications.attach_caching|default('') }}"
