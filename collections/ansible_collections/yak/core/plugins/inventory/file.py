@@ -255,8 +255,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_infrastructure(self, path):
         
-        self.inventory.add:group("linux")
-        self.inventory.add:group("windows")
+        self.inventory.add_group("linux")
+        self.inventory.add_group("windows")
         if not self.is_component_specific:
             self.inventory.add_group(self.infrastructure_group_name)
             self.inventory.add_group(self.server_group_name)
