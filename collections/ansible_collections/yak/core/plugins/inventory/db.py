@@ -320,7 +320,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
             # IPs
             self._set_hvars(server_name, 'ansible_host', server["name"])
-            for ip in server["ips"]["ips"]:
+            for ip in server["ips"]:
                 if ip["admin_access"] and ip["ip"] is not None:
                     self._set_hvars(server_name, 'ansible_host', ip["ip"])
                     self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))
