@@ -254,7 +254,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         return config_sanitized
 
     def _populate_infrastructure(self, path):
-
+        
+        self.inventory.add:group("linux")
+        self.inventory.add:group("windows")
         if not self.is_component_specific:
             self.inventory.add_group(self.infrastructure_group_name)
             self.inventory.add_group(self.server_group_name)
@@ -313,6 +315,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             if 'os_type' not in self.inventory.hosts[host].vars:
                 self.inventory.hosts[host].vars["os_type"] = \
                     self.default_server_os_type
+            
+            self.inventory.add_host(host, group=self.inventory.hosts[host].vars["os_type"])
 
             # Add ssh key / certificates
             self._set_auth_secrets(self.inventory.hosts[host], "{}/{}/secrets".format(path, host))
