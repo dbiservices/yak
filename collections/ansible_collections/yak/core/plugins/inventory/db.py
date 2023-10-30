@@ -279,7 +279,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_child(self.infra_grp_name, infra_name)
             self.inventory.add_child(infra["providerName"], infra_name)
             self._append_gvars(infra_name, infra["variables"])
-            for secret in infra["secrets"]["secrets"]:
+            for secret in infra["secrets"]:
                 if secret["type_id"] == 5:
                     self._set_gvars(infra_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
                     self._set_gvars(infra_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
@@ -297,7 +297,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._append_hvars(server_name, server["variables"])
             if server["providerImageOsType"].lower() == "windows":
                 self._set_hvars(server_name, "ansible_connection", "winrm")
-            for secret in server["secrets"]["secrets"]:
+            for secret in server["secrets"]:
                 if secret["type_id"] == 5:
                     self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
                     self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
