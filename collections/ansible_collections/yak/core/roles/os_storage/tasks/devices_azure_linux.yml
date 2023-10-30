@@ -26,7 +26,7 @@
     attach_caching: "{{ role_storage_devices.specifications.attach_caching }}"
     tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
-  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[*].name[]|[?contains(@, `'+machine_name+'_disk'+item+'`) == `true`]')|length==0
+  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[?contains(name, `srv-linux-01_disk1`) == `true` && managed_by != null]|[]')|length==0
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
 
 - debug: var=r_azure_rm_manageddisk

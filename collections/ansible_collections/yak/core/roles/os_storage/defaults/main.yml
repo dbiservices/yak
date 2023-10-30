@@ -7,11 +7,11 @@ volume_group_name: data
 custom_tags: {}
 role_storage_devices:
   # AWS,OCI,AZURE
-  max_size_gb: "{{ storage_devices.max_size_gb|default(100)|int }}"
+  max_size_gb: "{{ storage_devices.max_size_gb|default(100) }}"
   specifications:
     # AWS
     volume_type: "{{ storage_devices.specifications.volume_type|default('gp3') }}"
     encrypted: "{{ storage_devices.specifications.encrypted|default(true) }}"
     # Azure
     storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
-    attach_caching: "{{ storage_devices.specifications.attach_caching|default('') }}"
+    attach_caching: "{% if storage_devices.specifications.attach_caching == 'none' %}{% else %}{{ storage_devices.specifications.attach_caching|default('read_write') }}{% endif %}"

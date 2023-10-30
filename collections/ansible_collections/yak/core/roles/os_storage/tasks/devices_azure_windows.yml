@@ -28,7 +28,7 @@
               }
               | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
-  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[*].name[]|[?contains(@, `disk_'+item.drive_letter+'_'+item.partition_label+'`) == `true`]')|length==0
+  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[?contains(name, `srv-linux-01_disk1`) == `true` && managed_by != null]|[]')|length==0
   loop: "{{ os_storage }}"
 
 - debug: var=r_azure_rm_manageddisk
