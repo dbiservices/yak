@@ -11,8 +11,14 @@ custom_tags:
     Department: Development YaK
     Business_unit: YaK
 
-storage_devices:
-    max_size_gb: 100
-    specifications:
-        volume_type: gp3
+#storage_devices:
+#    max_size_gb: 100
+#    specifications:
+#      volume_type: gp3
+#      encrypted: true
+#      attach_caching: read_only
 
+#root_device_ebs_option:
+#    volume_type: gp3
+#    volume_size: 25
+#    encrypted: true
