@@ -14,7 +14,7 @@ variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
   TARGET: "none"
   YAK_REPOSITORY: "yak4all/yak"
-  YAK_VERSION: ":beta"
+  YAK_VERSION: "beta"
 
 
 lint:
