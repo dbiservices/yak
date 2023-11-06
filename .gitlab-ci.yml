@@ -13,6 +13,8 @@ stages:
 variables:
   CI_PRE_CLONE_SCRIPT: umask 0022
   TARGET: "none"
+  YAK_REPOSITORY: "yak4all"
+  YAK_VERSION: "yak:beta"
 
 
 lint:
