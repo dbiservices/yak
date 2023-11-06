@@ -29,6 +29,11 @@
         server_state: starting
       when: yak_inventory_type == "database"
 
+    - name: Set the CI_PIPELINE_TAGID tags if exist
+      set_fact:
+        custom_tags: "{{ custom_tags | default({}) | combine( { 'CI_PIPELINE_TAGID' : lookup('env', 'CI_PIPELINE_TAGID',default=Undefined) } ) }}"
+      when: lookup('ansible.builtin.env','CI_PIPELINE_TAGID')
+
     - include_tasks: "deploy/{{ provider }}.yml"
 
 - name: Apply server prerequisites
