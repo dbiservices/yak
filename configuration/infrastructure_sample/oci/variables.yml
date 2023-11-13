@@ -10,3 +10,6 @@ compartment_id:
 availability_domain:
 security_list:
 subnet_id:
+
+storage_devices:
+  max_size_gb: 100
