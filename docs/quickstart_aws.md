@@ -78,7 +78,7 @@ Copy one of the below server template file for Linux or Windows under `./configu
 
 ```bash
 /configuration/infrastructure_sample/aws/srv-linux-test-01/variables.yml 
-/configuration/infrastructure_sample/aws/srv-windows-test-01/variables.yml 
+/configuration/infrastructure_sample/aws/srv-win-test-01/variables.yml 
 ```
 
 In our example we choose the Linux templates 
