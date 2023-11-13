@@ -8,7 +8,7 @@ private_ip:
     mode: auto
     ip:
 public_ip:
-    mode: auto
+    mode: none
     ip:
         
 operating_system: OL8.7-x86_64-HVM-2023-03-07
