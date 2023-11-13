@@ -83,8 +83,8 @@ export OCI_USER_KEY_FILE='<OCI_USER_KEY_FILE>'
 export OCI_USER_FINGERPRINT='<OCI_USER_FINGERPRINT>'
 export OCI_TENANCY='<OCI_TENANCY>'
 export OCI_REGION='<OCI_REGION>'
-python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py all   # All available providers
-python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py azure # Azure only
-python3 ~/dbi/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py oci   # OCI only
+python3 ~/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py all   # All available providers
+python3 ~/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py azure # Azure only
+python3 ~/yak/collections/ansible_collections/yak/misc/artifacts_providers_sync/sync.py oci   # OCI only
 ```
 
