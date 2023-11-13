@@ -42,10 +42,6 @@ custom_tags:
     Department: Development YaK
     Business_unit: YaK
 
-storage_devices:
-    max_size_gb: 100
-    specifications:
-        volume_type: gp2
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -112,7 +108,7 @@ private_ip:
    mode: auto
    ip:
 public_ip:
-   mode: auto
+   mode: none
    ip:
 operating_system: OL8.7-x86_64-HVM-2023-03-07
 ami_id: ami-065e2293a3df4c870
