@@ -11,5 +11,7 @@ availability_domain:
 security_list:
 subnet_id:
 
+# Default storage settings
+# ------------------------
 #storage_devices:
 #  max_size_gb: 100
