@@ -16,9 +16,10 @@ custom_tags:
   Department: Development YaK
   Business_unit: YaK
 
-storage_devices:
-  max_size_gb: 100
-  specifications:
-    storage_account_type: StandardSSD_LRS
+#storage_devices:
+#  max_size_gb: 100
+#  specifications:
+#    storage_account_type: StandardSSD_LRS
+#    attach_caching: read_only
 
 
