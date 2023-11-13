@@ -16,7 +16,6 @@ custom_tags:
 #    specifications:
 #      volume_type: gp3
 #      encrypted: true
-#      attach_caching: read_only
 
 #root_device_ebs_option:
 #    volume_type: gp3
