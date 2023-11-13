@@ -11,5 +11,5 @@ availability_domain:
 security_list:
 subnet_id:
 
-storage_devices:
-  max_size_gb: 100
+#storage_devices:
+#  max_size_gb: 100
