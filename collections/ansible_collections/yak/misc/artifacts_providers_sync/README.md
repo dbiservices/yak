@@ -5,6 +5,8 @@ Sync artifacts from s3 to other storage providers (Azure and OCI):
     - One file at a time
     - Skype files that already exists on Azure with the same size
 
+Currently directories are not synchronized it must be integrated
+
 ## Local temporary directory
 
 The script will by default store one file at a time in the `/tmp` directory.
@@ -12,6 +14,12 @@ If you want to change the directory, use the environment variable `YAK_ARTIFACTS
 
 ```bash
 export YAK_ARTIFACTS_SYNC_TMP_DIRECTORY="/home/yak/tmp-sync-dir"
+```
+
+## Install python3-venv packages
+
+```bash
+sudo apt-get install python3-venv
 ```
 
 ## Create a Python environment
