@@ -16,6 +16,8 @@ custom_tags:
   Department: Development YaK
   Business_unit: YaK
 
+# Default storage settings
+# ------------------------
 #storage_devices:
 #  max_size_gb: 100
 #  specifications:
