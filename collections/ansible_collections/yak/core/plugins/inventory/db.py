@@ -116,7 +116,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             raise AnsibleError("No YAK_ANSIBLE_HTTP_TOKEN defined.")
 
         # Checking ssl_verify_certificate
-
         if self.get_option('ssl_verify_certificate') is not None:
             self.ssl_verify_certificate = self.get_option('ssl_verify_certificate')
         if environ.get('YAK_ANSIBLE_SSL_VERIFY_CERTIFICATE') is not None and \
@@ -236,29 +235,47 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._set_gvars('all', 'yak_local_ssh_config_file', "{}/config".format(self.local_ssh_config_file))
         os.makedirs(self.local_ssh_config_file, exist_ok=True)
 
+    def _write_secret(self, secret_id, attribute, value):
+        os.makedirs("{}/{}".format(self.secret_dir, secret_id), exist_ok=True)
+        descriptor = os.open(
+            path="{}/{}/{}".format(self.secret_dir, secret_id, attribute),
+            flags=(
+                os.O_WRONLY   # access mode: write only
+                | os.O_CREAT  # create if not exists
+                | os.O_TRUNC  # truncate the file to zero
+            ),
+            mode=0o600
+        )
+        f = open(descriptor, "w")
+        f.write(value)
+        f.close()
+
+        if attribute == "PRIVATE_KEY": # Needed by some playbooks
+            os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
+                        .format(self.secret_dir, secret_id, attribute, self.secret_dir, secret_id))
+
     def _populate_secrets(self):
 
         for secret in self.gql_resultset["vSecrets"]["nodes"]:
 
-            if secret["typeId"] == 5 or secret["typeId"] == 6:  # SSH(5) or WINRM(6)
-                os.makedirs("{}/{}".format(self.secret_dir, secret["id"]), exist_ok=True)
-                for secretValue in secret["secretValues"]:
-                    descriptor = os.open(
-                        path="{}/{}/{}".format(self.secret_dir, secret["id"], secretValue["attribute"]),
-                        flags=(
-                            os.O_WRONLY   # access mode: write only
-                            | os.O_CREAT  # create if not exists
-                            | os.O_TRUNC  # truncate the file to zero
-                        ),
-                        mode=0o600
-                    )
-                    f = open(descriptor, "w")
-                    f.write(secretValue["value"])
-                    f.close()
+            self._log_debug(secret)
 
-                    if secretValue["attribute"] == "PRIVATE_KEY":
-                        os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
-                                  .format(self.secret_dir, secret["id"], secretValue["attribute"], self.secret_dir, secret["id"]))
+            if secret["typeId"] == 5 or secret["typeId"] == 6:  # SSH(5) or WINRM(6)
+                for secretValue in secret["secretValues"]:
+                    self._write_secret(
+                        secret_id=secret["id"],
+                        attribute=secretValue["attribute"],
+                        value=secretValue["value"]
+                    )
+
+            if secret["typeId"] == 4:  # OCI credentials (we need to write the SSK key in a file):
+                for secretValue in secret["secretValues"]:
+                    if secretValue["attribute"] == "OCI_USER_KEY_FILE":
+                        self._write_secret(
+                            secret_id=secret["id"],
+                            attribute=secretValue["attribute"],
+                            value=secretValue["value"]
+                        )
 
     def _populate_providers(self):
 
@@ -280,6 +297,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_child(infra["providerName"], infra_name)
             self._append_gvars(infra_name, infra["variables"])
             for secret in infra["secrets"]:
+                self._log_debug(secret)
                 if secret["type_id"] == 5:
                     self._set_gvars(infra_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
                     self._set_gvars(infra_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
