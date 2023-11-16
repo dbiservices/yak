@@ -93,7 +93,7 @@ class CallbackModule(CallbackBase):
            server_state = "failed"
         )
 
-    def v2_runner_on_failed(self, result):
+    def v2_runner_on_failed(self, result, ignore_errors=False):
         self.yak_api_update_server(
            server_name = str(result._host),
            server_state = "failed"
