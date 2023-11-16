@@ -16,6 +16,9 @@ custom_tags:
   Department: Development YaK
   Business_unit: YaK
 
+# If domain_name is required
+# domain_name: dbi-services.com
+
 # Default storage settings
 # ------------------------
 #storage_devices:
