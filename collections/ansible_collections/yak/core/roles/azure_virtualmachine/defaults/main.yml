@@ -6,3 +6,4 @@ custom_tags: "{}"
 role_storage_devices:
   specifications:
     storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
+role_root_device_storage_account_type: "{{ root_device_storage_account_type|default('StandardSSD_LRS') }}"

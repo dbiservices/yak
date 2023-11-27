@@ -33,7 +33,7 @@
       sku: "{{ image.sku }}"
       version: "{{ image.version }}"
     os_type: "{{ os_type | capitalize }}"
-    managed_disk_type: "{{ role_storage_devices.specifications.storage_account_type }}"
+    managed_disk_type: "{{ role_root_device_storage_account_type }}"
     custom_data: "{{ winrm_script }}"
     tags: "{{ custom_tags }}"
   register: r_azure
