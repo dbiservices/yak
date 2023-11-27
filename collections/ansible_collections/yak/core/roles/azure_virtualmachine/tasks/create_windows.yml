@@ -19,6 +19,7 @@
   delegate_to: localhost
   azure.azcollection.azure_rm_virtualmachine:
     resource_group: "{{ resource_group }}"
+    zones: "{{ zones|default(omit) }}"
     name: "{{ server_name }}"
     short_hostname: "{{ server_name }}"
     admin_username: "{{ ansible_user }}"

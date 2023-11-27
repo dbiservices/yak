@@ -6,8 +6,7 @@ component_type: os_storage/storage
 yak_manifest_my_servers:
     - aws/srv-linux-01
     - aws/srv-windows-01
-    - azure/srv-linux-01
-    - azure/srv-windows-01
+    - azure
     - oci
 
 # Overwrite "os_storage" from component variables
