@@ -13,7 +13,7 @@
 - name: Get a public IP
   delegate_to: localhost
   azure.azcollection.azure_rm_publicipaddress:
-    zones: "{{ zones|default(omit) }}"
+    zones: "{{ zone_id|default(omit) }}"
     sku: "standard"
     resource_group: "{{ resource_group }}"
     name: "{{ server_name }}-public-ip-01"

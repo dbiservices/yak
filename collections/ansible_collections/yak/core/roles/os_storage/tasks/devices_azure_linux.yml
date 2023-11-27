@@ -19,6 +19,7 @@
   azure.azcollection.azure_rm_manageddisk:
     name: "{{ machine_name }}_disk{{ item }}"
     resource_group: "{{ resource_group }}"
+    zone: "{{ zone_id|default(omit) }}"
     disk_size_gb: "{{ role_storage_devices.max_size_gb }}"
     managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
