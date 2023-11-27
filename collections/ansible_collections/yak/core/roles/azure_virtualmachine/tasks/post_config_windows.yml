@@ -23,6 +23,7 @@
 
 - name: Return facts to playbook
   delegate_to: localhost
+  no_log: True
   set_fact:
     returned:
       instance: "{{ r_azure_rm_virtualmachine_info }}"
@@ -31,3 +32,5 @@
       public_ip_address: "{{ azure_public_ip|default('none') }}"
       os_admin_username: "{{ ansible_user|default('unchanged') }}"
       os_admin_password: "{{ os_admin_password|default('unchanged') }}"
+
+- include_tasks: "update_detail_file.yml"

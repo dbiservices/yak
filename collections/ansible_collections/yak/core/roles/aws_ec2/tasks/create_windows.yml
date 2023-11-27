@@ -103,6 +103,7 @@
 
 - name: Define return
   delegate_to: localhost
+  no_log: True
   set_fact:
     returned:
       instance: "{{ r_aws.instances[0] }}"

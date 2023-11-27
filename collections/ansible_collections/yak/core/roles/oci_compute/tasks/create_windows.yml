@@ -48,6 +48,7 @@
     state: absent
 
 - delegate_to: localhost
+  no_log: True
   set_fact:
     returned:
       instance: "{{ r_oci_compute_instance_present.instance }}"

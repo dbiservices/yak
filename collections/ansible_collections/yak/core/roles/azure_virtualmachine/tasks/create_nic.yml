@@ -7,6 +7,8 @@
       - "  private_ip | ip   = '{{ private_ip.ip|default('none') }}'"
       - "  public_ip  | mode = '{{ public_ip.mode }}'"
       - "  public_ip  | ip   = '{{ public_ip.ip|default('none') }}'"
+  when:
+    - debug|bool
 
 - name: Retrieve the public IP name from IP
   delegate_to: localhost

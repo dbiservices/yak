@@ -69,3 +69,5 @@
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
       public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+
+- include_tasks: "update_detail_file.yml"

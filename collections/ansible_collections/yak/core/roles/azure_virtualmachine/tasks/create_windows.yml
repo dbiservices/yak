@@ -72,7 +72,9 @@
     settings: '{"commandToExecute": "powershell -ExecutionPolicy Unrestricted -File %SYSTEMDRIVE%\AzureData\CustomData.ps1"}'
     auto_upgrade_minor_version: true
 
-- delegate_to: localhost
+- name: Return facts to playbook
+  delegate_to: localhost
+  no_log: True
   set_fact:
     returned:
       instance: "{{ r_azure.ansible_facts.azure_vm }}"

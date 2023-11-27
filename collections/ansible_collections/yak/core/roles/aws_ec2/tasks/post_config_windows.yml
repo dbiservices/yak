@@ -32,6 +32,13 @@
     server_state: running
   when: yak_inventory_type == "database"
 
-- delegate_to: localhost
-  debug:
-    msg: "The Windows VM is ready. Its private IP is: {{ r_ec2_instance_info.instances[0].private_ip_address}}"
+- name: Return facts to playbook
+  delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_ec2_instance_info.instances[0] }}"
+      administrative_ip: "{{ administrative_ip }}"
+      private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
+      public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+
+- include_tasks: "update_detail_file.yml"

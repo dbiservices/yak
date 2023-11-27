@@ -52,3 +52,5 @@
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ oci_private_ip }}"
       public_ip_address: "{{ oci_public_ip|default('none') }}"
+
+- include_tasks: "update_detail_file.yml"

@@ -55,22 +55,24 @@ class CallbackModule(CallbackBase):
         if "YAK_CORE_COMPONENT" in environ:
             self.is_component_specific = True
 
+        self.output_separator = "==============================================================================="
+
     def yak_api_update_server(self, server_name, server_state):
         if self.mode == "database" and self.is_component_specific == False:
-            self._display.display("================================================================")
+            self._display.display(self.output_separator)
             self._display.display("= YaK Core: update server '{}' state to '{}'.".format(server_name, server_state))
-            self._display.display("================================================================")
+            self._display.display(self.output_separator)
             api_update_server(
                 server_name = server_name,
                 server_state = server_state
             )
 
     def yak_display_playbook_info(self, playbook):
-        self._display.display("================================================================")
+        self._display.display(self.output_separator)
         self._display.display("= YaK Core: starting in mode '{}'.".format(self.mode))
         self._display.display("= YaK Core: is_component_specific '{}'.".format(self.is_component_specific))
         self._display.display("= Thanks for using YaK :)")
-        self._display.display("================================================================")
+        self._display.display(self.output_separator)
 
     #
     # Manage start
