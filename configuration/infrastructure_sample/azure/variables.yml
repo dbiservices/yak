@@ -29,5 +29,7 @@ custom_tags:
 #   specifications:
 #     storage_account_type: StandardSSD_LRS
 #     attach_caching: read_only
-
+#
+# zone_id is mandatory (Availability Zone), if you want to use storage_account_type = UltraSSD_LRS
+# zone_id: 2 
 
