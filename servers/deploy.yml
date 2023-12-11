@@ -53,3 +53,15 @@
       loop: "{{ yak_inventory_os_storages|default([]) }}"
       loop_control:
         loop_var: os_storage
+
+- name: Show Credentials/details file path
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  tasks:
+
+    - delegate_to: localhost
+      debug:
+        msg: |
+          Credentials/details available in local file '~/.yak/server.{{ target|replace('/','.') }}'
+      when: os_type == 'windows'
