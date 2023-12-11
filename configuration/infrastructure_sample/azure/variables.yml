@@ -16,15 +16,18 @@ custom_tags:
   Department: Development YaK
   Business_unit: YaK
 
-# If domain_name is required
+# Default Root disk setting
+# root_device_storage_account_type: Standard_LRS
+
+# If domain_name is required 
 # domain_name: dbi-services.com
 
 # Default storage settings
 # ------------------------
-#storage_devices:
-#  max_size_gb: 100
-#  specifications:
-#    storage_account_type: StandardSSD_LRS
-#    attach_caching: read_only
+# storage_devices:
+#   max_size_gb: 100
+#   specifications:
+#     storage_account_type: StandardSSD_LRS
+#     attach_caching: read_only
 
 
