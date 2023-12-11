@@ -49,6 +49,16 @@
   vars:
     state: absent
 
+# Enabling SSD would need to be cast in a proper Ansible way once Microsoft
+# add the feature during the VM creation. An issue is opened for that:
+# https://github.com/ansible-collections/azure/issues/1356
+- name: Enable ultra SSD
+  delegate_to: localhost
+  ansible.builtin.shell: |
+    az vm deallocate -n {{ server_name }} -g {{ resource_group }}
+    az vm update -n {{ server_name }} -g {{ resource_group }} --ultra-ssd-enabled true
+    az vm start -n {{ server_name }} -g {{ resource_group }}
+
 - name: VM Extension[copy file from custom data]
   delegate_to: localhost
   azure.azcollection.azure_rm_virtualmachineextension:
