@@ -48,6 +48,13 @@
       vars:
         host_name: "{{ hostname }}"
 
+- name: Apply server storage
+  tags: storage
+  hosts: "{{ target }}"
+  vars:
+    debug: false
+  tasks:
+
     - include_role:
         name: yak.core.os_storage
       loop: "{{ yak_inventory_os_storages|default([]) }}"

@@ -41,6 +41,9 @@
     az vm deallocate -n {{ server_name }} -g {{ resource_group }}
     az vm update -n {{ server_name }} -g {{ resource_group }} --ultra-ssd-enabled true
     az vm start -n {{ server_name }} -g {{ resource_group }}
+  when:
+    - storage_devices.specifications.storage_account_type is defined
+    - storage_devices.specifications.storage_account_type == 'UltraSSD_LRS'
 
 - delegate_to: localhost
   set_fact:

@@ -1,0 +1,21 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Ensure that a zone id is valid if defined
+  ansible.builtin.assert:
+    that: >
+      zone_id == 1
+      or
+      zone_id == 2
+      or
+      zone_id == 3
+    fail_msg: "'zone_id' has an invalid value. Please use 1, 2 or 3."
+    success_msg: "'zone_id' has a valid value."
+  when: zone_id is defined
+
+- name: Ensure that a zone id is set when using UltraSSD disks
+  ansible.builtin.assert:
+    that: zone_id is defined
+    fail_msg: "'zone_id' must be defined when 'storage_account_type' = 'UltraSSD_LRS'"
+    success_msg: "'zone_id' is defined properly for 'storage_account_type' = 'UltraSSD_LRS'"
+  when: role_storage_devices.specifications.storage_account_type == 'UltraSSD_LRS'
+...
