@@ -302,8 +302,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self._set_gvars(infra_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
                     self._set_gvars(infra_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
                 if secret["type_id"] == 6:
-                    self._set_gvars(infra_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICAT_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
-                    self._set_gvars(infra_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICAT".format(self.secret_dir, secret["id"]))
+                    self._set_gvars(infra_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICATE_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                    self._set_gvars(infra_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICATE".format(self.secret_dir, secret["id"]))
 
     def _populate_servers(self):
 
@@ -320,8 +320,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
                     self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
                 if secret["type_id"] == 6:
-                    self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICAT_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
-                    self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICAT".format(self.secret_dir, secret["id"]))
+                    self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICATE_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                    self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICATE".format(self.secret_dir, secret["id"]))
             self._set_hvars(server_name, 'storages', [])
             self._set_hvars(server_name, 'target_type', 'server')
             self._set_hvars(server_name, 'machine_name', server["name"])
