@@ -70,5 +70,5 @@
     - delegate_to: localhost
       debug:
         msg: |
-          Credentials/details available in local file '~/.yak/server.{{ target|replace('/','.') }}'
+          Credentials/details available in local file '~/yak/configuration/infrastructure/.yak/server.{{ target|replace('/','.') }}'
       when: os_type == 'windows'
