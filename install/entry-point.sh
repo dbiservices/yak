@@ -37,6 +37,7 @@ if ! id yak > /dev/null 2>&1; then
     echo "alias cdci='cd ~/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdcii='cd ~/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ~/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias yakversion='cat ~/yak/.version'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias startdemo='cd ~/yak; ~/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
     echo "" >> ${YAK_USER_HOME}/.bashrc
     echo "# Functions" >> ${YAK_USER_HOME}/.bashrc
