@@ -6,4 +6,9 @@ custom_tags: "{}"
 role_storage_devices:
   specifications:
     storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
+
 role_root_device_storage_account_type: "{{ root_device_storage_account_type|default('StandardSSD_LRS') }}"
+
+role_dns:
+  type: "{{ dns.type|default('none')}}"              # managed, custom, none
+  dns_servers: "{{ dns.dns_servers|default(omit)}}"  # List/string | Which DNS servers should the NIC lookup.
