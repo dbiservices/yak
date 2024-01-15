@@ -98,6 +98,5 @@
     subnet_name: "{{ subnet_name }}"
     security_group: "{{ security_group }}"
     ip_configurations: "{{ azure_ip_configurations }}"
+    dns_servers: "{{ role_dns.dns_servers }}"
     tags: "{{ custom_tags }}"
-
-

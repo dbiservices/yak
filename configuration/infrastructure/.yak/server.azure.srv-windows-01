@@ -1,0 +1,5 @@
+administrative_ip: "172.201.198.16"
+private_ip_address: "172.19.16.11"
+public_ip_address: "172.201.198.16"
+os_admin_username: "Ansible"
+os_admin_password: "VLDEp4f3WkulZtXoDzi58uvXaEMkxd2n"
