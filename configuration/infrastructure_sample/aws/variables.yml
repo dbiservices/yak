@@ -11,11 +11,12 @@ custom_tags:
     Department: Development YaK
     Business_unit: YaK
 
-# If domain_name is required
-# domain_name: dbi-services.com
+## If domain_name is required
+## --------------------------
+## domain_name: dbi-services.com
 
-# Default OS disk storage settings
-# --------------------------------
+## Default OS disk storage settings
+## --------------------------------
 #root_device_ebs_option:
 #    volume_type: gp3
 #    volume_size: 25
