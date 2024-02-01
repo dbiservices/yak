@@ -1,0 +1,17 @@
+version: '2.0'
+
+services:
+  synchronization_script:
+    image: artifact-sync-script
+    network_mode: bridge
+    build: . # Builds the dockerfile in the same directory
+    environment: # Those env variables are injected in the Dockerfile through shell substitution.
+      - TZ=Europe/Zurich
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - OCI_ACCESS_KEY_ID=${OCI_ACCESS_KEY_ID}
+      - OCI_SECRET_KEY=${OCI_SECRET_KEY}
