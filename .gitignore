@@ -7,3 +7,5 @@ configuration/components/*
 !configuration/components/COMP
 !configuration/components/DEMO
 .vscode
+*venv*
+.env
