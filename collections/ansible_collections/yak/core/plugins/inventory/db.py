@@ -57,6 +57,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.gql_resultset = None
         self.secret_dir = "/tmp/secrets"
         self.local_ssh_config_file = "{}/.ssh".format(os.path.expanduser('~'))
+        self.is_component_specific = False
+        self.component_name = None
 
     def verify_file(self, path):
         if super(InventoryModule, self).verify_file(path):
@@ -139,6 +141,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             'Authorization': 'Bearer {}'.format(environ.get('YAK_ANSIBLE_HTTP_TOKEN'))
         }
 
+        # Get component name
+        if "YAK_CORE_COMPONENT" in os.environ:
+            self.is_component_specific = True
+            self.component_name = os.environ.get('YAK_CORE_COMPONENT')
+
         # Populate
         self._populate()
 
@@ -147,58 +154,77 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._log_debug("Starting to populate...")
 
         query = """
-            query inventory {
-              vSecrets {
-                nodes {
-                  id
-                  name
-                  secretValues
-                  typeId
-                  typeName
-                  expirationTs
+            query inventory($vComponentsName: String) {
+                vSecrets {
+                    nodes {
+                        id
+                        name
+                        secretValues
+                        typeId
+                        typeName
+                        expirationTs
+                    }
                 }
-              }
-              vProviders {
-                nodes {
-                  id
-                  isCloudEnvironment
-                  name
-                  variables
+                vProviders {
+                    nodes {
+                        id
+                        isCloudEnvironment
+                        name
+                        variables
+                    }
                 }
-              }
-              vInfrastructures {
-                nodes {
-                  id
-                  name
-                  providerId
-                  providerName
-                  secrets
-                  variables
+                vInfrastructures {
+                    nodes {
+                        id
+                        name
+                        providerId
+                        providerName
+                        secrets
+                        variables
+                    }
                 }
-              }
-              vServers {
-                nodes {
-                  id
-                  infrastructureId
-                  infrastructureName
-                  ips
-                  name
-                  providerId
-                  providerImageId
-                  providerImageName
-                  providerImageAnsibleUser
-                  providerImageOsType
-                  providerImageSpecifications
-                  providerName
-                  providerShapeId
-                  providerShapeName
-                  providerShapeSpecifications
-                  secrets
-                  variables
+                vServers {
+                    nodes {
+                        id
+                        infrastructureId
+                        infrastructureName
+                        ips
+                        name
+                        providerId
+                        providerImageId
+                        providerImageName
+                        providerImageAnsibleUser
+                        providerImageOsType
+                        providerImageSpecifications
+                        providerName
+                        providerShapeId
+                        providerShapeName
+                        providerShapeSpecifications
+                        secrets
+                        variables
+                    }
                 }
-              }
+                vComponents(condition: {name: $vComponentsName}) {
+                    nodes {
+                        id
+                        name
+                        componentTypeName
+                        componentTypeSubname
+                        componentTypeVariables
+                        variables
+                        mergedVariables
+                        componentTypeManifest
+                        servers
+                    }
+                }
             }
             """
+        query_variables = {}
+        if self.is_component_specific:
+            query_variables = {
+                'vComponentsName': self.component_name
+            }
+
         if not self.ssl_verify_certificate:
             requests.packages.urllib3.disable_warnings()
         try:
@@ -206,7 +232,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self.yak_ansible_transport_url,
                 verify=self.ssl_verify_certificate,
                 headers=self.headers,
-                json={'query': query}
+                json={'query': query, 'variables': query_variables }
             )
         except Exception as e:
             raise AnsibleError("An exception occurred: {}".format(str(e)))
@@ -224,8 +250,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._populate_providers()
         self._populate_infrastructures()
         self._populate_servers()
-        # self._populate_group_components()
-        # self._populate_component_deployments()
+        if self.is_component_specific:
+            if len(self.gql_resultset["vComponents"]["nodes"]) != 1:
+                raise AnsibleError("Component '{}' not accesible! Component exits? Syntax is ok?".format(self.component_name))
+            self.component = self.gql_resultset["vComponents"]["nodes"][0]
+            self._populate_component()
 
     def _populate_internal_variables(self):
         self._set_gvars('all', 'yak_inventory_type', 'database')
@@ -357,51 +386,79 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self._set_hvars(server_name, 'host_ip_access', "private_ip")
 
 
-    # def _populate_group_components(self):
+    def _populate_component(self):
 
-    #     self.inventory.add_group(self.component_group_name)
-    #     for cp in self.gql_resultset["components"]["nodes"]:
-    #         self.inventory.add_group(cp["name"])
-    #         self.inventory.add_child(self.component_group_name, cp["name"])
+        self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **self.component["mergedVariables"]}
+        self.inventory.groups["all"].vars["component_name"] = self.component["name"]
+        self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
+        self.component_type_name = self.component["componentTypeName"]
+        self.inventory.groups["all"].vars["component_type_sub_name"] = self.component["componentTypeSubname"]
+        self.component_type_sub_name = self.component["componentTypeSubname"]
+        self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
+        self.component_type_manifest = self.component["componentTypeManifest"]
 
-    #         if 'templates' in cp["manifest"]:
-    #             for template in cp["manifest"]["templates"]:
-    #                 template_path = "{}/{}/templates/{}.yml".format(self.components_base, cp["name"], template["path"])
-    #                 try:
-    #                     template_yaml = yaml.load(open(template_path, 'r'), Loader=yaml.FullLoader)
-    #                 except yaml.YAMLError as ex:
-    #                     raise AnsibleError(
-    #                         "Error reading template '{}': '{}'".format(template_path, ex)
-    #                     )
+        # populate sub component type
+        if "sub_component_types" not in self.component["componentTypeManifest"]:
+            raise AnsibleError("No 'sub_component_types' in the manifest file '{}'.".format(self.component_type_name))
 
-    #                 self._log_debug(template_yaml)
-    #                 self._set_gvars(cp["name"], template["name"], template_yaml)
+        sub_component = None
+        for sub_component_item in self.component["componentTypeManifest"]["sub_component_types"]:
+            if sub_component_item["name"] == self.component_type_sub_name:
+                sub_component = sub_component_item
+                break
 
-    # def _populate_component_deployments(self):
+        if sub_component is None:
+            raise AnsibleError("No sub component name '{}' in the manifest file of component type '{}'.".format(self.component_type_sub_name, self.component_type_name))
 
-    #     for cpd in self.gql_resultset["componentDeployments"]["nodes"]:
-    #         cpd_name = cpd["name"]
-    #         if len(cpd["componentDeploymentsServers"]["nodes"]) == 1:
-    #             server = cpd["componentDeploymentsServers"]["nodes"][0]
-    #             srv_name = "{}/{}".format(server["server"]["infrastructure"]["name"], server["server"]["name"])
-    #             self.inventory.add_host(cpd_name, group=cpd["component"]["name"])
-    #             self.inventory.add_host(cpd_name, group=server["server"]["infrastructure"]["name"])
-    #             self._append_hvars(cpd_name, self.inventory.hosts[srv_name].vars)
-    #             self._append_hvars(cpd_name, cpd["variables"])
-    #             self._set_hvars(cpd_name, 'parent_target_name', srv_name)
-    #             self._set_hvars(cpd_name, 'target_type', "component")
-    #             self._set_hvars(cpd_name, 'component_deployment_uuid', cpd["uuid"])
-    #             self._set_hvars(cpd_name, 'component', cpd["component"])
-    #             self._set_hvars(cpd_name, 'storage', self.storageTemplatesPerOsTypes[str(cpd["component"]["storageTemplate"]["id"])][str(server["server"]["image"]["operatingSystem"]["operatingSystemType"]["id"])])
-    #         if len(cpd["componentDeploymentsServers"]["nodes"]) > 1:
-    #             self.inventory.add_group(cpd_name)
-    #             self.inventory.add_child(cpd["component"]["name"], cpd_name)
-    #             for server in cpd["componentDeploymentsServers"]["nodes"]:
-    #                 srv_name = "{}/{}".format(server["server"]["infrastructure"]["name"], server["server"]["name"])
-    #                 self.inventory.add_host(srv_name, group=cpd_name)
-    #                 self._append_gvars(cpd_name, cpd["variables"])
-    #                 self._set_hvars(srv_name, 'is_master', server["isMaster"])
-    #                 self._set_gvars(cpd_name, 'component_deployment_uuid', cpd["uuid"])
-    #                 self._set_gvars(cpd_name, 'component', cpd["component"])
-    #                 # TODO: component storage should be added only once
-    #                 self.inventory.hosts[srv_name].vars['storages'].append(self.storageTemplatesPerOsTypes[str(cpd["component"]["storageTemplate"]["id"])][str(server["server"]["image"]["operatingSystem"]["operatingSystemType"]["id"])])
+        for inventory_map in sub_component["inventory_maps"]:
+            self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
+            if inventory_map["group_name"] in self.inventory.groups:
+                raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
+            self.inventory.add_group(inventory_map["group_name"])
+
+            # Add hosts/group
+            for component_server in self.component["servers"]:
+                self.inventory.add_host(component_server["name"], group=component_server["group_name"])
+                self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+
+
+    def _populate_sub_component_type_storage(self, inventory_map, target):
+
+        target.vars["yak_inventory_os_storages"] = []
+        if "storage" in inventory_map:
+            storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
+            self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
+            if storage_variable_name in self.inventory.groups["all"].vars:
+                if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
+                    raise AnsibleError(
+                        "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type '{}'."
+                        .format(target.vars["os_type"], target, self.component_type_name)
+                    )
+                for storage_point in self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]:
+                    target.vars["yak_inventory_os_storages"].append(
+                        {**{"storage_point": storage_point}, **self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]][storage_point]}
+                    )
+            else:
+                raise AnsibleError(
+                    "No variables '{}' found in the variables of component '{}'."
+                    .format(storage_variable_name, self.component_type_name)
+                )
+
+    # def _remove_hosts_not_in_component(self):
+    #     for host in self.host_all_lists:
+    #         find = False
+    #         if host not in self.host_component_lists:
+    #             for group in self.group_component_lists:
+    #                 for ghost in self.inventory.groups[group].hosts:
+    #                     if host == ghost.name:
+    #                         find = True
+    #                         break
+    #                 if find is False:
+    #                     break
+    #             if find is False:
+    #                 self.inventory.remove_host(self.inventory.hosts[host])
+
+    # def _remove_groups_not_in_component(self):
+    #     for group in self.group_all_lists:
+    #         if len(self.inventory.groups[group].hosts) == 0:
+    #             self.inventory.remove_group(group)

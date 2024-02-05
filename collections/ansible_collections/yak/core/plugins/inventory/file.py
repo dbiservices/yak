@@ -154,7 +154,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Get component name
         if "YAK_CORE_COMPONENT" in os.environ:
             self.is_component_specific = True
-
             self.component_name = os.environ.get('YAK_CORE_COMPONENT')
 
         # Start populating
@@ -254,7 +253,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         return config_sanitized
 
     def _populate_infrastructure(self, path):
-        
+
         self.inventory.add_group("linux")
         self.inventory.add_group("windows")
         if not self.is_component_specific:
@@ -315,7 +314,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             if 'os_type' not in self.inventory.hosts[host].vars:
                 self.inventory.hosts[host].vars["os_type"] = \
                     self.default_server_os_type
-            
+
             self.inventory.add_host(host, group=self.inventory.hosts[host].vars["os_type"])
 
             # Add ssh key / certificates

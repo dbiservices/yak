@@ -15,4 +15,4 @@ sub_component_types:
     inventory_maps:
       - group_name: my_servers             # Name of the variable/hosts value in which the host(s) can be found
         type: host                        # Can either be host (YaK server) or group (YaK infrastructure)
-        storage: my_os_storage_config      # (optional) Name of the variable in which the storage layout to be used cna be found
+        storage: my_os_storage_config      # (optional) Name of the variable in which the storage layout to be used can be found
