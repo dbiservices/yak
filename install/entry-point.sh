@@ -125,7 +125,7 @@ if ! id yak > /dev/null 2>&1; then
        echo
        whiteLog  " Type \"startdemo aws\" and then press ENTER"
        echo
-       echo " This demo will deploy and configure a Debian 11.4 server "
+       echo " This demo will deploy and configure a Debian 11.8 server "
        echo "       Including additional storage on AWS Cloud"
        echo
        echo "==========================================================="
