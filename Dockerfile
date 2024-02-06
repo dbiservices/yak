@@ -9,8 +9,10 @@ ARG CI_COMMIT_TAG="stable"
 ARG CI_COMMIT_SHORT_SHA="xxxxxx"
 
 # COPY Sources
+COPY ./ReleaseNotes /workspace/yak/ReleaseNotes
 COPY ./collections /workspace/yak/collections
 COPY ./configuration /workspace/yak/configuration
+COPY ./install /workspace/yak/install
 COPY ./inventory /workspace/yak/inventory
 COPY ./servers /workspace/yak/servers
 COPY ./component_types /workspace/yak/component_types
