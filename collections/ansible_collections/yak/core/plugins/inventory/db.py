@@ -202,6 +202,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         providerShapeSpecifications
                         secrets
                         variables
+                        components
                     }
                 }
                 vComponents(condition: {name: $vComponentsName}) {
@@ -247,9 +248,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         self._populate_internal_variables()
         self._populate_secrets()
-        self._populate_providers()
-        self._populate_infrastructures()
-        self._populate_servers()
+        if not self.is_component_specific:
+            self._populate_providers()
+            self._populate_infrastructures()
+            self._populate_servers()
         if self.is_component_specific:
             if len(self.gql_resultset["vComponents"]["nodes"]) != 1:
                 raise AnsibleError("Component '{}' not accesible! Component exits? Syntax is ok?".format(self.component_name))
@@ -338,52 +340,57 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         self.inventory.add_group(self.server_group_name)
         for server in self.gql_resultset["vServers"]["nodes"]:
-            server_name = server["name"]
-            self.inventory.add_host(server_name, group=self.server_group_name)
-            self.inventory.add_host(server_name, group=server["infrastructureName"].replace("-", "_"))
-            self._append_hvars(server_name, server["variables"])
-            if server["providerImageOsType"].lower() == "windows":
-                self._set_hvars(server_name, "ansible_connection", "winrm")
-            for secret in server["secrets"]:
-                if secret["type_id"] == 5:
-                    self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
-                    self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
-                if secret["type_id"] == 6:
-                    self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICATE_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
-                    self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICATE".format(self.secret_dir, secret["id"]))
-            self._set_hvars(server_name, 'storages', [])
-            self._set_hvars(server_name, 'target_type', 'server')
-            self._set_hvars(server_name, 'machine_name', server["name"])
-            if "hostname" not in server:
-                self._set_hvars(server_name, 'hostname', server["name"])
 
-            # OS
-            self._set_hvars(server_name, 'ansible_user', server["providerImageAnsibleUser"])
-            self._set_hvars(server_name, 'os_type', server["providerImageOsType"].lower())
-            self._set_hvars(server_name, 'yak_image_name', server["providerImageName"].lower())
-            self._set_hvars(server_name, 'yak_shape_name', server["providerShapeName"].lower())
-            self._append_hvars(server_name, server["providerImageSpecifications"])
-            self._append_hvars(server_name, server["providerShapeSpecifications"])
+            self.inventory.add_host(server["name"], group=self.server_group_name)
+            self.inventory.add_host(server["name"], group=server["infrastructureName"].replace("-", "_"))
+            self._populate_server(server)
 
-            # IPs
-            self._set_hvars(server_name, 'ansible_host', server["name"])
-            for ip in server["ips"]:
-                if ip["admin_access"] and ip["ip"] is not None:
-                    self._set_hvars(server_name, 'ansible_host', ip["ip"])
-                    self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))
-                ip_mode = ip["mode"]
-                if ip["mode"] == "automatic":
-                    ip_mode = "auto"
-                self._set_hvars(server_name, '{}_ip'.format(ip["scope"]), {})
-                self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["mode"] = ip_mode
-                if ip["ip"]:
-                    self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["ip"] = ip["ip"]
+    def _populate_server(self, server):
+        server_name = server["name"]
+        self._append_hvars(server_name, server["variables"])
+        if server["providerImageOsType"].lower() == "windows":
+            self._set_hvars(server_name, "ansible_connection", "winrm")
+        # Secrets here must already be merged with infrastructure secrets from the backend.
+        # Because, when in component mode, we don't add Ansible group for infrastructures ans providers.
+        for secret in server["secrets"]:
+            if secret["type_id"] == 5:
+                self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
+            if secret["type_id"] == 6:
+                self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICATE_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICATE".format(self.secret_dir, secret["id"]))
+        self._set_hvars(server_name, 'target_type', 'server')
+        self._set_hvars(server_name, 'machine_name', server["name"])
+        if "hostname" not in server:
+            self._set_hvars(server_name, 'hostname', server["name"])
 
-            if 'public_ip' not in self.inventory.hosts[server_name].vars:
-                self.inventory.hosts[server_name].vars['public_ip'] = {}
-                self.inventory.hosts[server_name].vars['public_ip']["mode"] = 'none'
-            if 'host_ip_access' not in self.inventory.hosts[server_name].vars:
-                self._set_hvars(server_name, 'host_ip_access', "private_ip")
+        # OS
+        self._set_hvars(server_name, 'ansible_user', server["providerImageAnsibleUser"])
+        self._set_hvars(server_name, 'os_type', server["providerImageOsType"].lower())
+        self._set_hvars(server_name, 'yak_image_name', server["providerImageName"].lower())
+        self._set_hvars(server_name, 'yak_shape_name', server["providerShapeName"].lower())
+        self._append_hvars(server_name, server["providerImageSpecifications"])
+        self._append_hvars(server_name, server["providerShapeSpecifications"])
+
+        # IPs
+        self._set_hvars(server_name, 'ansible_host', server["name"])
+        for ip in server["ips"]:
+            if ip["admin_access"] and ip["ip"] is not None:
+                self._set_hvars(server_name, 'ansible_host', ip["ip"])
+                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))
+            ip_mode = ip["mode"]
+            if ip["mode"] == "automatic":
+                ip_mode = "auto"
+            self._set_hvars(server_name, '{}_ip'.format(ip["scope"]), {})
+            self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["mode"] = ip_mode
+            if ip["ip"]:
+                self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["ip"] = ip["ip"]
+
+        if 'public_ip' not in self.inventory.hosts[server_name].vars:
+            self.inventory.hosts[server_name].vars['public_ip'] = {}
+            self.inventory.hosts[server_name].vars['public_ip']["mode"] = 'none'
+        if 'host_ip_access' not in self.inventory.hosts[server_name].vars:
+            self._set_hvars(server_name, 'host_ip_access', "private_ip")
 
 
     def _populate_component(self):
@@ -416,9 +423,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
             self.inventory.add_group(inventory_map["group_name"])
 
-            # Add hosts/group
+            # Add hosts to group
             for component_server in self.component["servers"]:
                 self.inventory.add_host(component_server["name"], group=component_server["group_name"])
+
+                for server in self.gql_resultset["vServers"]["nodes"]:
+                    if server["name"] == component_server["name"]:
+                        self._populate_server(server)
+
                 self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
 
 
@@ -443,22 +455,3 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     "No variables '{}' found in the variables of component '{}'."
                     .format(storage_variable_name, self.component_type_name)
                 )
-
-    # def _remove_hosts_not_in_component(self):
-    #     for host in self.host_all_lists:
-    #         find = False
-    #         if host not in self.host_component_lists:
-    #             for group in self.group_component_lists:
-    #                 for ghost in self.inventory.groups[group].hosts:
-    #                     if host == ghost.name:
-    #                         find = True
-    #                         break
-    #                 if find is False:
-    #                     break
-    #             if find is False:
-    #                 self.inventory.remove_host(self.inventory.hosts[host])
-
-    # def _remove_groups_not_in_component(self):
-    #     for group in self.group_all_lists:
-    #         if len(self.inventory.groups[group].hosts) == 0:
-    #             self.inventory.remove_group(group)
