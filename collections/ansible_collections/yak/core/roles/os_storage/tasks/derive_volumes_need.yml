@@ -1,7 +1,7 @@
 ---
 - name: Derive total volume need from fS requirement of the composant
   set_fact:
-    total_volume_gb: "{{ os_storage|json_query('[*].size_gb|[]')|sum }}"
+    total_volume_gb: "{{ yak_inventory_os_storages|json_query('[*].size_gb|[]')|sum }}"
 
 - debug: var=role_storage_devices
 

@@ -3,4 +3,3 @@
 - include_tasks: assertions/main.yml
 - include_tasks: cloud_disks/{{ provider }}/{{ os_type }}.yml
 - include_tasks: os_disks/{{ os_type }}/main.yml
-

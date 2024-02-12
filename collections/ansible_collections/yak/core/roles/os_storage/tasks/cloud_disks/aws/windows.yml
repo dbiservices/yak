@@ -32,7 +32,7 @@
                 }
                 | combine(custom_tags) }}"
   register: r_ec2_volumes
-  loop: "{{ os_storage }}"
+  loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_ec2_volumes
   delegate_to: localhost

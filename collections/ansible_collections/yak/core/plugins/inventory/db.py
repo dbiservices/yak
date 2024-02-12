@@ -347,11 +347,24 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_server(self, server):
         server_name = server["name"]
+
+        # First, we add the infrastructure variables (because infra groups are not generated in composant mode)
+        for infrastrcuture in self.gql_resultset["vInfrastructures"]["nodes"]:
+            if infrastrcuture["name"] == server["infrastructureName"]:
+                self._append_hvars(server_name, infrastrcuture["variables"])
+                for secret in infrastrcuture["secrets"]:
+                    self._log_debug(secret)
+                    if secret["type_id"] == 5:
+                        self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                        self._set_hvars(server_name, "ansible_ssh_public_key_file", "{}/{}/PUBLIC_KEY".format(self.secret_dir, secret["id"]))
+                    if secret["type_id"] == 6:
+                        self._set_hvars(server_name, "ansible_winrm_cert_key_pem", "{}/{}/WINRM_CERTIFICATE_PRIVATE_KEY".format(self.secret_dir, secret["id"]))
+                        self._set_hvars(server_name, "ansible_winrm_cert_pem", "{}/{}/WINRM_CERTIFICATE".format(self.secret_dir, secret["id"]))
+
+        # Then, we process with the server variables
         self._append_hvars(server_name, server["variables"])
         if server["providerImageOsType"].lower() == "windows":
             self._set_hvars(server_name, "ansible_connection", "winrm")
-        # Secrets here must already be merged with infrastructure secrets from the backend.
-        # Because, when in component mode, we don't add Ansible group for infrastructures ans providers.
         for secret in server["secrets"]:
             if secret["type_id"] == 5:
                 self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
@@ -363,6 +376,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._set_hvars(server_name, 'machine_name', server["name"])
         if "hostname" not in server:
             self._set_hvars(server_name, 'hostname', server["name"])
+        self._set_hvars(server_name, 'provider', server["providerName"])
 
         # OS
         self._set_hvars(server_name, 'ansible_user', server["providerImageAnsibleUser"])

@@ -6,7 +6,7 @@
     name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_manageddisk_info
-  loop: "{{ os_storage }}"
+  loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_azure_rm_manageddisk_info
   delegate_to: localhost
@@ -30,7 +30,7 @@
               | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
   when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[?contains(name, `srv-linux-01_disk1`) == `true` && managed_by != null]|[]')|length==0
-  loop: "{{ os_storage }}"
+  loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_azure_rm_manageddisk
   delegate_to: localhost

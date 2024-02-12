@@ -14,7 +14,7 @@
                         }
                         | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
-  loop: "{{ os_storage }}"
+  loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_oci_blockstorage_volume_present
   delegate_to: localhost

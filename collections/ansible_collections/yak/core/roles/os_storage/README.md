@@ -1,4 +1,4 @@
-# os_storage
+# yak_inventory_os_storages
 
 Role to apply the storage template to the cloud instance.
 This role is cloud provider agnostic and will create the cloud devices, map them to the
@@ -18,7 +18,7 @@ storage_devices:
 ### In the component variables
 
 ```
-yak_manifest_[os_storage]:  # The variable name from the manifest prefixed by 'yak_manifest_' is expected by YaK core.
+yak_manifest_[yak_inventory_os_storages]:  # The variable name from the manifest prefixed by 'yak_manifest_' is expected by YaK core.
     linux:   # FS for Linux
         - { size_gb: 36, filesystem_type: "xfs", mount_point: "/u01" }
         - { size_gb: 16, filesystem_type: "xfs", mount_point: "/u02" }

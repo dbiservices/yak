@@ -7,10 +7,14 @@
     display_name: "{{ display_name }}"
     lifecycle_state: RUNNING
   register: r_oci_compute_instance_facts
-  failed_when: r_oci_compute_instance_facts.instances|length != 1
 
 - debug: var=r_oci_compute_instance_facts
   when: debug|bool
+
+- name: Fail is expected number of instance is not OK
+  ansible.builtin.fail:
+    msg: There are no or more than 1 instance in RUNNING state with the name '{{ display_name }}'.
+  when: r_oci_compute_instance_facts.instances|length != 1
 
 - set_fact:
     oci_private_ip: "{{ r_oci_compute_instance_facts.instances[0].primary_private_ip }}"

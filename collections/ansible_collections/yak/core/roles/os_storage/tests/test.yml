@@ -3,4 +3,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - os_storage
+    - yak_inventory_os_storages
