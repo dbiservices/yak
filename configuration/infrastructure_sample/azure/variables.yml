@@ -16,9 +16,32 @@ custom_tags:
   Department: Development YaK
   Business_unit: YaK
 
-storage_devices:
-  max_size_gb: 100
-  specifications:
-    storage_account_type: StandardSSD_LRS
+# Default Root disk setting
+# -------------------------
+# root_device_storage_account_type: Standard_LRS
 
+## If domain_name is required 
+## ---------------------------
+# domain_name: dbi-services.com
+
+## Default storage settings
+## ------------------------
+# storage_devices:
+#   max_size_gb: 100   
+#   specifications:
+#     storage_account_type: StandardSSD_LRS
+#     attach_caching: read_only
+#
+## zone_id is mandatory (Availability Zone), if you use storage_account_type = UltraSSD_LRS
+## -----------------------------------------
+# zone_id: 2 
+#
+## AD Integration (but not for the AD Cloud Managed services)
+## -----------------------------------------------------------
+# dns:
+#   type: custom
+#   username: ****
+#   password: *****
+#   dns_servers: *****
+#   domain_name: ******
 

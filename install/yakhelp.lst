@@ -10,6 +10,7 @@
   cdci             --> Change directory to configuration/infrastructure
   cds              --> Change directory to servers
   startdemo        --> Start a demo of the YaK
+  yakversion       --> Print the YaK version
 
 
 #######################

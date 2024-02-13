@@ -7,6 +7,8 @@
       - "  private_ip | ip   = '{{ private_ip.ip|default('none') }}'"
       - "  public_ip  | mode = '{{ public_ip.mode }}'"
       - "  public_ip  | ip   = '{{ public_ip.ip|default('none') }}'"
+  when:
+    - debug|bool
 
 - ansible.builtin.fail:
     msg: Manual mode for the public ip is not currently supported.

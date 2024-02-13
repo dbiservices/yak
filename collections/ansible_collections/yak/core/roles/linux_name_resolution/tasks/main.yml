@@ -1,0 +1,4 @@
+- include_tasks: "set_etc_hosts.yml"
+
+- include_tasks: "setup_coredns.yml"
+  when: dns_records is defined

@@ -23,10 +23,6 @@
 - set_fact:
     azure_private_ip: "{{ r_azure_rm_networkinterface_info.networkinterfaces[0].ip_configurations[0].private_ip_address }}"
 
-- set_fact:
-    administrative_ip: "{{ r_azure_rm_networkinterface_info.networkinterfaces[0].ip_configurations[0].private_ip_address }}"
-  when: host_ip_access == 'private_ip'
-
 - block:
     - name: Get facts for one Public IP
       delegate_to: localhost
@@ -39,7 +35,13 @@
       when: debug|bool
 
     - set_fact:
-        administrative_ip: "{{ r_azure_rm_publicipaddress_info.publicipaddresses[0].ip_address }}"
         azure_public_ip: "{{ r_azure_rm_publicipaddress_info.publicipaddresses[0].ip_address }}"
-  when: host_ip_access == 'public_ip'
+  when: public_ip.mode == 'manual' or public_ip.mode == 'auto'
 
+- set_fact:
+    administrative_ip: "{{ azure_private_ip }}"
+  when: host_ip_access == 'private_ip'
+
+- set_fact:
+    administrative_ip: "{{ azure_public_ip }}"
+  when: host_ip_access == 'public_ip'

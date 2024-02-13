@@ -8,8 +8,17 @@ private_ip:
     mode: auto
     ip:
 public_ip:
-    mode: auto
+    mode: none
     ip:
+        
 operating_system: OL8.7-x86_64-HVM-2023-03-07
 ami_id: ami-065e2293a3df4c870
 instance_type: t3.medium
+
+## Default OS disk storage settings
+## --------------------------------
+#root_device_ebs_option:
+#    volume_type: gp3
+#    volume_size: 10
+#    encrypted: true
+

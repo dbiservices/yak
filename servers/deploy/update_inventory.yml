@@ -17,7 +17,7 @@
 
   - debug:
       msg:
-        - "  Windows user/password: {{ returned.os_admin_username }}/{{ returned.os_admin_password }}"
+        - "  Windows user/password: {{ ansible_user }}/{{ returned.os_admin_password }}"
     when: os_type == 'windows'
   when: returned.private_ip_address is defined
 ...

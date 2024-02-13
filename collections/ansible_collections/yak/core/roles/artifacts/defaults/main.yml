@@ -2,3 +2,10 @@
 ---
 # defaults file for artifacts
 debug: false
+
+variables_to_check : 
+  - artifacts.provider 
+  - artifact_files 
+  - destination_path 
+  - destination_owner 
+  - destination_group 

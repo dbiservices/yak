@@ -1,0 +1,76 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: True
+  become: True
+  tasks:
+    - when: dns_records is not defined
+      ansible.builtin.include_vars:
+        dir: '../../defaults/'
+        extensions:
+          - 'yml'
+    
+    - name: Install bind-utils
+      package:
+        name: bind-utils
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install dns-utils
+      package:
+        name: dnsutils
+      when: ansible_os_family == 'Debian'
+
+    - name: Verify etc hosts
+      block: 
+      - name: Read content of /etc/hosts 
+        shell: cat /etc/hosts
+        register: result
+
+      - name: Assert that machine has others in etc hosts
+        when: item != inventory_hostname
+        ansible.builtin.assert:
+          that: '"{{ hostvars[item].hostname }} {{ hostvars[item].hostname }}.local.local" in result.stdout'
+        loop: "{{groups['all']}}"
+
+    - name: Verify coredns load balancing
+      block: 
+      - name: Try resolution from instance to podman coredns container
+        include_tasks: 
+          file: verify/resolv_domain.yml
+        register: result
+        loop: "{{ dns_records }}"
+        loop_control:
+          loop_var: domain
+
+    
+    - name: Reboot
+      become: True
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible after OS update"
+        reboot_timeout: 600 # wait maximum 10 minutes for a successful connection after the reboot
+        test_command: uptime
+        
+
+    - name: Verify etc hosts after reboot
+      block: 
+      - name: Read content of /etc/hosts after reboot
+        shell: cat /etc/hosts
+        register: result
+
+      - name: Assert that machine has others in etc hosts after reboot
+        when: item != inventory_hostname
+        ansible.builtin.assert:
+          that: '"{{ hostvars[item].hostname }} {{ hostvars[item].hostname }}.local.local" in result.stdout'
+        loop: "{{groups['all']}}"
+
+    - name: Verify coredns load balancing
+      block: 
+      - name: Try resolution from instance to coredns after reboot
+        include_tasks: 
+          file: verify/resolv_domain.yml
+        register: result
+        loop: "{{ dns_records }}"
+        loop_control:
+          loop_var: domain

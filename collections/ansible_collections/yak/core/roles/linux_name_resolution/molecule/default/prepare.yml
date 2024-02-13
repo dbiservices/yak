@@ -1,0 +1,56 @@
+- name: Prepare
+  hosts: all
+  connection: lxd
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+
+  tasks:
+    - name: Install basic packages to bare containers
+      tags: skip_ansible_lint
+      ansible.builtin.raw: |
+        if [ -x "$(command -v apt-get)" ]; then
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update --quiet && apt-get install --assume-yes --no-install-recommends ca-certificates curl python3 python3-apt
+        elif [ -x "$(command -v dnf)" ]; then
+          dnf --assumeyes install ca-certificates curl python3 python3-dnf
+        elif [ -x "$(command -v yum)" ]; then
+          yum install --assumeyes ca-certificates curl python
+        elif [ -x "$(command -v zypper)" ]; then
+          zypper --non-interactive --gpg-auto-import-keys refresh
+          zypper --non-interactive install ca-certificates ca-certificates-cacert ca-certificates-mozilla curl python3
+        elif [ -x "$(command -v apk)" ]; then
+          apk update && apk add ca-certificates curl python3
+        elif [ -x "$(command -v pacman)" ]; then
+          pacman -Syu --noconfirm ca-certificates curl python3
+        fi
+      register: _prepare
+      until: not _prepare.failed
+      retries: 3
+      delay: 10
+
+    - name: Gather facts 
+      ansible.builtin.gather_facts:
+
+    - name: Install tar
+      package:
+        name: tar
+        state: present 
+    
+    - name: Install NetworkManager
+      when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= "8"
+      block:
+        - name : Install network manager
+          package:
+            name: NetworkManager
+            state: present
+        
+        - name : Enable it
+          ansible.builtin.service:
+            name: NetworkManager
+            state: started
+        
+        - name: Configure eth0
+          shell: |
+            connection=$(nmcli -g name,type connection  show  --active | awk -F: '/ethernet|wireless/ { print $1 }')
+            nmcli con mod "$connection" ipv4.method auto
+            nmcli con down "$connection" && nmcli con up "$connection"

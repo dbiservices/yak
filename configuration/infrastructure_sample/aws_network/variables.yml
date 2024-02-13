@@ -1,5 +1,4 @@
 # Copyright: (c) 2022, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-#
 is_cloud_environment: yes
 provider: aws
 region_id: eu-central-1

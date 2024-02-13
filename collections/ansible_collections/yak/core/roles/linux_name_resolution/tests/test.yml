@@ -1,0 +1,5 @@
+---
+- hosts: "{{ target }}"
+  become: true
+  roles:
+    - linux_name_resolution

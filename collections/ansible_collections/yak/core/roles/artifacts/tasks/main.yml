@@ -2,14 +2,10 @@
 ---
 - name: Role needs some variables
   ansible.builtin.assert:
-    that:
-      - artifacts.provider is defined
-      - artifact_files is defined
-      - destination_path is defined
-      - destination_owner is defined
-      - destination_group is defined
-    fail_msg: "Variables not properly set. Please, check instructions in the README.md file of the role."
-    success_msg: "Variables variable properly set."
+    that: "{{ item }} is defined"
+    fail_msg: "{{ item }} variable is undefined. Please, check instructions in the README.md file of the role."
+    success_msg: "Variables properly set."
+  loop: "{{ variables_to_check }}"
 
 - name: Some artifacts providers need variables
   ansible.builtin.assert:

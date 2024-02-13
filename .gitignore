@@ -3,4 +3,7 @@ component_types/*
 !component_types/README.md
 configuration/infrastructure/@*
 configuration/infrastructure/.ssh
+configuration/components/*
+!configuration/components/COMP
+!configuration/components/DEMO
 .vscode

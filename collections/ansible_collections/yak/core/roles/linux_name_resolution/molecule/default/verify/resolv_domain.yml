@@ -1,0 +1,6 @@
+- name: Check that name resolution for domain {{ domain.domain_name }} is working 
+  include_tasks:
+    file : resolv_host.yml
+  loop: "{{ domain.aliases }}"
+  loop_control:
+    loop_var: alias

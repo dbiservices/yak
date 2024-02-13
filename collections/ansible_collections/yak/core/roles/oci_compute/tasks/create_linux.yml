@@ -2,6 +2,17 @@
 ---
 - include_tasks: create_vnic_details.yml
 
+- name: Call the role to generate the Linux init script
+  include_role:
+    name: yak.core.linux_init_script
+
+  # https://cloudinit.readthedocs.io/en/latest/explanation/format.html
+- name: Format Linux script to cloud init format
+  set_fact:
+    cloud_init_script: |
+      #!/bin/sh
+      {{ linux_init_script }}
+
 - name: Create instance
   delegate_to: localhost
   oracle.oci.oci_compute_instance:
@@ -18,8 +29,8 @@
     subnet_id: "{{ subnet_id }}"
     create_vnic_details: "{{ vnic_details }}"
     preserve_boot_volume: no
-    metadata : { "ssh_authorized_keys": "{{ lookup('file', ssh_public_key) }}" }
-    freeform_tags : "{{ custom_tags }}"
+    metadata : { "ssh_authorized_keys": "{{ lookup('file', ansible_ssh_public_key_file) }}", "user_data": "{{ cloud_init_script | b64encode }}" }
+    freeform_tags: "{{ custom_tags }}"
   register: r_oci_compute_instance_present
 
 - debug: var=r_oci_compute_instance_present

@@ -1,0 +1,25 @@
+# Override this dict with proper values to setup loadbalancing as you want with coreDNS
+dns_records:
+  - domain_name: example.com
+    aliases: 
+      - name: randomdns-test
+        ip_addresses:
+          - 8.8.8.8 
+          - 8.8.4.4
+          - 9.9.9.9
+      - name: yak-inventory-hostname-test
+        yak_inventory_hostnames:
+          - rocky8 
+          - alma9
+          
+  - domain_name: rba.com
+    aliases: 
+      - name: randomdns-test
+        ip_addresses:
+          - 8.8.8.8 
+          - 8.8.4.4
+          - 9.9.9.9
+      - name: yak-inventory-hostname-test
+        yak_inventory_hostnames:
+          - rocky8 
+          - alma9
