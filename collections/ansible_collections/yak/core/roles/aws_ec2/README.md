@@ -32,5 +32,4 @@ Including an example of how to use your role (for instance, with variables passe
         public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
     winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
     winrm_user: "{{ ansible_user }}"
-    os_admin_username: "{{ ansible_user }}"
 ```

@@ -4,5 +4,3 @@
   ansible.builtin.wait_for_connection:
     delay: 60
     timeout: 600
-  vars:
-    ansible_host: "{{ administrative_ip }}"

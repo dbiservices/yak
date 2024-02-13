@@ -5,10 +5,13 @@ machine_name: anonymous
 os_type: linux
 volume_group_name: data
 custom_tags: {}
-
-storage_devices:
-  max_size_gb: 100
+role_storage_devices:
+  # AWS,OCI,AZURE
+  max_size_gb: "{{ storage_devices.max_size_gb|default(100) }}"
   specifications:
-    volume_type: gp2
-    storage_account_type: StandardSSD_LRS
-
+    # AWS
+    volume_type: "{{ storage_devices.specifications.volume_type|default('gp3') }}"
+    encrypted: "{{ storage_devices.specifications.encrypted|default(true) }}"
+    # Azure
+    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
+    attach_caching: "{% if storage_devices.specifications.attach_caching is defined and storage_devices.specifications.attach_caching == 'none' %}{% else %}{{ storage_devices.specifications.attach_caching|default('read_only') }}{% endif %}"

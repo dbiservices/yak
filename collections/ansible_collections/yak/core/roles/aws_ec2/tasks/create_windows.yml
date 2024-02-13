@@ -5,12 +5,12 @@
   set_fact:
     os_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
 
-- name: Call role to generate the winrm_script for user_data
+- name: Call the role to generate the winrm_script for user_data
   include_role:
     name: yak.core.winrm
   vars:
     script_type: aws
-    winrm_user: "{{ os_admin_username }}"
+    winrm_user: "{{ ansible_user }}"
     winrm_user_password: "{{ os_admin_password }}"
 
 - name: Derive network configuration
@@ -42,10 +42,6 @@
           assign_public_ip: false
       when: private_ip.mode == 'auto' and ( public_ip.mode == 'manual' or public_ip.mode == 'none')
 
-- debug: var=instance_options
-  delegate_to: localhost
-  when: debug | bool
-
 - name: Add AWS instance
   delegate_to: localhost
   amazon.aws.ec2_instance:
@@ -60,7 +56,10 @@
     network: "{{ instance_network }}"
     volumes:
       - device_name: "{{ root_device_name }}"
-        ebs: "{{ root_device_ebs_option }}"
+        ebs:
+          volume_type: "{{ role_root_device_ebs_option.volume_type }}"
+          volume_size: "{{ role_root_device_ebs_option.volume_size }}"
+          encrypted: "{{ role_root_device_ebs_option.encrypted }}"
     tags: "{{ {'Name': server_name} | combine(custom_tags) }}"
     user_data: "{{ winrm_script }}"
   register: r_aws
@@ -104,12 +103,13 @@
 
 - name: Define return
   delegate_to: localhost
+  no_log: True
   set_fact:
     returned:
       instance: "{{ r_aws.instances[0] }}"
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ r_aws.instances[0].private_ip_address|default(None) }}"
       public_ip_address: "{{ r_aws.instances[0].public_ip_address|default(None) }}"
-      os_admin_username: "{{ os_admin_username }}"
+      os_admin_username: "{{ ansible_user }}"
       os_admin_password: "{{ os_admin_password }}"
 

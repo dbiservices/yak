@@ -8,9 +8,11 @@ private_ip:
 public_ip:
     mode: auto
     ip:
+
 os_type: windows
 time_zone: UTC
 image_id: ocid1.image.oc1.eu-zurich-1.aaaaaaaazdntsrzkqrxqt7x2zs4x35q2nox77ekxbv2pwzl2gxri2qijjlfa
 shape:
     name: VM.Standard2.1
+
 

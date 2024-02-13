@@ -37,6 +37,7 @@ if ! id yak > /dev/null 2>&1; then
     echo "alias cdci='cd ~/yak/configuration/infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cdcii='cd ~/yak/configuration/infrastructure/@yak_dev_infrastructure'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias cds='cd ~/yak/servers'" >> ${YAK_USER_HOME}/.bashrc
+    echo "alias yakversion='cat ~/yak/.version'" >> ${YAK_USER_HOME}/.bashrc
     echo "alias startdemo='cd ~/yak; ~/yak/configuration/demo_scripts/startdemo.sh'" >> ${YAK_USER_HOME}/.bashrc
     echo "" >> ${YAK_USER_HOME}/.bashrc
     echo "# Functions" >> ${YAK_USER_HOME}/.bashrc
@@ -124,7 +125,7 @@ if ! id yak > /dev/null 2>&1; then
        echo
        whiteLog  " Type \"startdemo aws\" and then press ENTER"
        echo
-       echo " This demo will deploy and configure a Debian 11.4 server "
+       echo " This demo will deploy and configure a Debian 11.8 server "
        echo "       Including additional storage on AWS Cloud"
        echo
        echo "==========================================================="

@@ -4,7 +4,5 @@
   vars:
     state: absent
     server_name: "{{ machine_name }}"
-    ssh_public_key: "{{ ansible_ssh_public_key_file }}"
-    ssh_private_key: "{{ ansible_ssh_private_key_file }}"
     winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
     winrm_user: "{{ ansible_user }}"

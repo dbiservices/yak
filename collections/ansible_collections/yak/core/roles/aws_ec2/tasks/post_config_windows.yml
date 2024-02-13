@@ -13,8 +13,32 @@
 - debug: var=r_ec2_instance_info
   when: debug | bool
 
+- name: Update yak inventory
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ inventory_hostname }}"
+    private_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address |default(None) }}"
+    public_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address |default(None) }}"
+
+- name: Refresh inventory to ensure IPs are up to date
+  ansible.builtin.meta: refresh_inventory
+
 - include_tasks: "wait_for_connection_{{ os_type }}.yml"
 
-- delegate_to: localhost
-  debug:
-    msg: "The Windows VM is ready. Its private IP is: {{ r_aws.instances[0].private_ip_address}}"
+- name: Update server state
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ target }}"
+    server_state: running
+  when: yak_inventory_type == "database"
+
+- name: Return facts to playbook
+  delegate_to: localhost
+  set_fact:
+    returned:
+      instance: "{{ r_ec2_instance_info.instances[0] }}"
+      administrative_ip: "{{ administrative_ip }}"
+      private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
+      public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+
+- include_tasks: "update_detail_file.yml"

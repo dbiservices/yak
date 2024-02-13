@@ -13,6 +13,13 @@
   delegate_to: localhost
   when: debug | bool
 
+- name: Remove the public IP if any
+  delegate_to: localhost
+  azure.azcollection.azure_rm_publicipaddress:
+    resource_group: "{{ resource_group }}"
+    name: "{{ server_name }}-public-ip-01"
+    state: absent
+
 - name: Delete key from ssh config file
   delegate_to: localhost
   blockinfile:

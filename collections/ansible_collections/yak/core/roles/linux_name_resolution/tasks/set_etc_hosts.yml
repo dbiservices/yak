@@ -1,0 +1,20 @@
+---
+# tasks file for linux_name_resolution
+
+- name : Define block of hosts to add in /etc/hosts. # Requires to export YAK_CORE_COMPONENT first to only have servers for your component
+  set_fact:
+    hosts_block: |
+                  {% for item in groups['all'] if inventory_hostname != item and hostvars[item].private_ip.ip is defined -%}
+                    {{ hostvars[item].private_ip.ip }} {{ hostvars[item].hostname }} {{ hostvars[item].hostname }}.{{ domain_name }}
+                  {% endfor %}
+
+
+- name: debug block of /etc/hosts
+  debug:
+    var: hosts_block
+    verbosity: 1
+
+- name: Update /etc/hosts file
+  blockinfile:
+    path: /etc/hosts
+    block: "{{ hosts_block }}"

@@ -42,10 +42,6 @@ custom_tags:
     Department: Development YaK
     Business_unit: YaK
 
-storage_devices:
-    max_size_gb: 100
-    specifications:
-        volume_type: gp2
 ```
 
 You should now see your infrastructure in the Ansible inventory:
@@ -82,7 +78,7 @@ Copy one of the below server template file for Linux or Windows under `./configu
 
 ```bash
 /configuration/infrastructure_sample/aws/srv-linux-test-01/variables.yml 
-/configuration/infrastructure_sample/aws/srv-windows-test-01/variables.yml 
+/configuration/infrastructure_sample/aws/srv-win-test-01/variables.yml 
 ```
 
 In our example we choose the Linux templates 
@@ -112,7 +108,7 @@ private_ip:
    mode: auto
    ip:
 public_ip:
-   mode: auto
+   mode: none
    ip:
 operating_system: OL8.7-x86_64-HVM-2023-03-07
 ami_id: ami-065e2293a3df4c870
@@ -170,6 +166,7 @@ $ ansible-inventory --host aws_testing/srv01
 
 ```bash
 cd ./configuration/infrastructure/aws_testing/secrets
+gen_secret
 
 # Set the name of the local user that will have the key mapped to
 USERNAME="Ansible"
