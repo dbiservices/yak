@@ -12,5 +12,5 @@
       delegate_to: localhost
     - command: "ls -ls /runner/inventory"
       delegate_to: localhost
-    - command: "ls -ls /runner/inventory/hosts"
+    - command: "cat /runner/inventory/hosts"
       delegate_to: localhost
