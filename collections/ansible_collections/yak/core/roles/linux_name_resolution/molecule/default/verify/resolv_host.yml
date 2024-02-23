@@ -1,0 +1,2 @@
+- name: Check that name resolution for  {{ alias.name }}.{{ domain.domain_name }} is working 
+  shell: nslookup -norecurse {{ alias.name }}.{{ domain.domain_name }}

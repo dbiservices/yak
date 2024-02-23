@@ -1,0 +1,83 @@
+- name: Download coredns binary
+  ansible.builtin.get_url:
+    url: "{{ core_dns_binary_url }}"
+    dest: /tmp/coredns_1.10.1_linux_amd64.tgz
+    checksum: "sha256:{{ core_dns_binary_url }}.sha256"
+
+- name: Extract coredns binary 
+  ansible.builtin.unarchive:
+    src: /tmp/coredns_1.10.1_linux_amd64.tgz
+    dest: "{{ core_dns_binary_path }}"
+    remote_src: yes
+
+- name: "Ensure config directory exists at {{ host_coredns_conf_dir }}"
+  file:
+    path: "{{ host_coredns_conf_dir }}"
+    state: directory
+
+- name: Install nmap for getting DNS server from LAN
+  ansible.builtin.package:
+    name: nmap
+    state: present
+
+- name: Get LAN DNS server ip address using DHCPDISCOVER request with nmap
+  shell: nmap --script broadcast-dhcp-discover 2> /dev/null | grep 'Domain Name Server' | awk '{ print $5 }'
+  register: lan_dns_server
+
+- name: "Template Corefile config to {{ host_coredns_conf_dir }}"
+  template:
+    src: Corefile.j2
+    dest: "{{ host_coredns_conf_dir }}/Corefile"
+  register: coredns_Corefile
+
+- name: "Template db.domain.weights config to {{ host_coredns_conf_dir }}"
+  template:
+    src: db.domain.weights.j2
+    dest: "{{ host_coredns_conf_dir }}/db.{{ domain.domain_name }}.weights"
+  register: coredns_weights
+  loop: "{{ dns_records }}"
+  loop_control:
+    loop_var: domain
+
+- name: "Template example.db config to {{ host_coredns_conf_dir }}"
+  template:
+    src: "domain.db.j2"
+    dest: "{{ host_coredns_conf_dir }}/{{ domain.domain_name }}.db"
+  register: coredns_db
+  loop: "{{ dns_records }}"
+  loop_control:
+    loop_var: domain
+
+- name: Template systemd service for running coredns
+  template:
+      src: "coredns.service"
+      dest: "/etc/systemd/system/"
+
+- name: Configure dns client to use coredns server (RedHat family)
+  when: ansible_os_family == "RedHat"
+  block: 
+    - name: Template networkmanager configuration script
+      template:
+        src: "configure_network_manager.sh"
+        dest: "/tmp/"
+    
+    - name: Run networkmanager config script
+      shell: bash /tmp/configure_network_manager.sh
+
+- name: Configure dns client to use coredns server (Debian family)
+  when: ansible_os_family == "Debian"
+  block: 
+    - name: Configure systemd resolved
+      shell: |
+        sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+        sed -i 's/#DNSStubListener=yes/DNSStubListener=no/g' /etc/systemd/resolved.conf
+        sed -i 's/#DNS=/DNS={{ ansible_default_ipv4.address }}/g' /etc/systemd/resolved.conf
+        sed -i 's/#FallbackDNS=/FallbackDNS={{ lan_dns_server.stdout }}/g' /etc/systemd/resolved.conf
+        systemctl restart systemd-resolved
+
+- name: Start coredns service
+  ansible.builtin.systemd:
+    name: coredns.service
+    daemon_reload: yes
+    state: restarted # Restart for reloading configuration
+    enabled: yes

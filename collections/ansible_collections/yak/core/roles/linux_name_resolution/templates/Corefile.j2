@@ -1,0 +1,18 @@
+.:53 { 
+    forward . {{ lan_dns_server.stdout }}
+    log 
+    errors 
+}
+
+{% for domain in dns_records -%}
+
+{{ domain.domain_name }}:53 { 
+    file {{ host_coredns_conf_dir }}{{ domain.domain_name }}.db 
+    loadbalance weighted {{ host_coredns_conf_dir }}db.{{ domain.domain_name }}.weights { 
+        reload 10s 
+    } 
+    log 
+    errors 
+}
+
+{% endfor %}

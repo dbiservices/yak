@@ -11,7 +11,7 @@
 Pull the YaK Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation:
 
 ```bash
-docker pull registry.gitlab.com/yak4all/yak:stable
+sudo docker pull registry.gitlab.com/yak4all/yak:stable
 ```
 
 FYI : The YaK Core container will including the pulling from the Yak Env Container `registry.gitlab.com/yak4all/yakenv:stable` <br>
@@ -45,9 +45,10 @@ mkdir -p \$MY_LOCAL_INFRASTRUCTURE_DIR
 mkdir -p \$MY_LOCAL_COMPONENTS_DIR
 mkdir -p \$MY_LOCAL_COMPONENT_TYPES_DIR
 
-docker run -it --rm --name yak --pull always \\
+sudo docker run -it --rm --name yak --pull always \\
            -v \${MY_LOCAL_INFRASTRUCTURE_DIR}:/workspace/yak/configuration/infrastructure \\
            -v \${MY_LOCAL_COMPONENTS_DIR}:/workspace/yak/configuration/components \\
+           -v \${MY_LOCAL_COMPONENT_TYPES_DIR}:/workspace/yak/component_types \\
            -e YAK_DEV_UID=$(id -u) -e YAK_DEV_GID=$(id -g) \\
            registry.gitlab.com/yak4all/yak:stable bash
 EOF
@@ -70,7 +71,7 @@ yak@d47a98f30c99:~/yak$
 
 ## 3. Appendix
 
-You want to allow sudo as user ROOT in the container, the parametere below must be added in the "docker run" command
+You want to allow sudo as user ROOT in the container, the parameter below must be added in the "docker run" command
 
 ```bash
 -e YAK_ENABLE_SUDO=true

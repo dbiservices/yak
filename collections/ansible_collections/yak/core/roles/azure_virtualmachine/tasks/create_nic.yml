@@ -7,6 +7,24 @@
       - "  private_ip | ip   = '{{ private_ip.ip|default('none') }}'"
       - "  public_ip  | mode = '{{ public_ip.mode }}'"
       - "  public_ip  | ip   = '{{ public_ip.ip|default('none') }}'"
+  when:
+    - debug|bool
+
+- name: Get a public IP
+  delegate_to: localhost
+  azure.azcollection.azure_rm_publicipaddress:
+    zones: "{{ zone_id|default(omit) }}"
+    sku: "standard"
+    resource_group: "{{ resource_group }}"
+    name: "{{ server_name }}-public-ip-01"
+    allocation_method: static
+  register: azure_rm_publicipaddress
+  when: public_ip.mode == 'auto'
+
+- debug: var=azure_rm_publicipaddress
+  when:
+    - debug|bool
+    - public_ip.mode == 'auto'
 
 - name: Retrieve the public IP name from IP
   delegate_to: localhost
@@ -25,8 +43,7 @@
       - name: "{{ server_name }}-ipconfig1"
         private_ip_address: "{{ private_ip.ip }}"
         private_ip_allocation_method: Static
-        public_ip_address_name: "{{ server_name }}-public_ip001"
-        public_ip_allocation_method: "Static"
+        public_ip_address_name: "{{ azure_rm_publicipaddress|json_query('state.name') }}"
         primary: True
   when: private_ip.mode == 'manual' and public_ip.mode == 'auto'
 
@@ -52,8 +69,7 @@
     azure_ip_configurations:
       - name: "{{ server_name }}-ipconfig1"
         private_ip_allocation_method: Dynamic
-        public_ip_address_name: "{{ server_name }}-public_ip001"
-        public_ip_allocation_method: "Static"
+        public_ip_address_name: "{{ azure_rm_publicipaddress|json_query('state.name') }}"
         primary: True
   when: private_ip.mode == 'auto' and public_ip.mode == 'auto'
 
@@ -76,12 +92,11 @@
 - name: Create a network interface with minimal parameters
   delegate_to: localhost
   azure.azcollection.azure_rm_networkinterface:
-    name: "{{ server_name }}-nic001"
+    name: "{{ server_name }}-nic-01"
     resource_group: "{{ resource_group }}"
     virtual_network: "{{ virtual_network_name }}"
     subnet_name: "{{ subnet_name }}"
     security_group: "{{ security_group }}"
     ip_configurations: "{{ azure_ip_configurations }}"
+    dns_servers: "{{ role_dns.dns_servers }}"
     tags: "{{ custom_tags }}"
-
-

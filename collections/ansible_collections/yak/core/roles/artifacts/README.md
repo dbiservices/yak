@@ -45,7 +45,7 @@ The configuration dictionary variable can be stored in the global `variables.yml
 artifacts:
   provider: aws_s3
   variables:
-    bucket_name: yak-artifacts
+    bucket_name: dbi-services-yak-artifacts
 ```
 
 #### Example Azure Storageblob

@@ -6,4 +6,5 @@
     resource_group: "{{ resource_group }}"
     name: "{{ server_name }}"
     started: no
+    allocated: no
 

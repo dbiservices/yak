@@ -29,28 +29,12 @@
         server_state: starting
       when: yak_inventory_type == "database"
 
+    - name: Set the CI_PIPELINE_TAGID tags if exist
+      set_fact:
+        custom_tags: "{{ custom_tags | default({}) | combine( { 'CI_PIPELINE_TAGID' : lookup('env', 'CI_PIPELINE_TAGID',default=Undefined) } ) }}"
+      when: lookup('ansible.builtin.env','CI_PIPELINE_TAGID')
+
     - include_tasks: "deploy/{{ provider }}.yml"
-
-- name: Update and refresh inventory
-  tags: server
-  strategy: linear # This play must be linear to avoid race condition when inv = file
-  hosts: "{{ target }}"
-  gather_facts: no
-  vars:
-    debug: false
-  tasks:
-
-    - include_tasks: "deploy/update_inventory.yml"
-
-    - name: Update server state
-      delegate_to: localhost
-      yak.core.yak_inventory_update:
-        server_name: "{{ target }}"
-        server_state: running
-      when: yak_inventory_type == "database"
-
-    - name: Refresh inventory to ensure IPs are up to date
-      ansible.builtin.meta: refresh_inventory
 
 - name: Apply server prerequisites
   tags: requirements
@@ -64,8 +48,27 @@
       vars:
         host_name: "{{ hostname }}"
 
+- name: Apply server storage
+  tags: storage
+  hosts: "{{ target }}"
+  vars:
+    debug: false
+  tasks:
+
     - include_role:
         name: yak.core.os_storage
       loop: "{{ yak_inventory_os_storages|default([]) }}"
       loop_control:
         loop_var: os_storage
+
+- name: Show Credentials/details file path
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  tasks:
+
+    - delegate_to: localhost
+      debug:
+        msg: |
+          Credentials/details available in local file '~/yak/configuration/infrastructure/.yak/server.{{ target|replace('/','.') }}'
+      when: os_type == 'windows'

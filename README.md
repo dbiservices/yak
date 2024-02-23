@@ -22,12 +22,13 @@ Try it, to see how it works in real life.
 
 | Steps                                                                                   |
 | --------------------------------------------------------------------------------------- |
-| Open https://yakdemo.dbi-services.com in a Web broswer  (Recommendation: Google Chrome) |
+| Open https://yakdemo.dbi-services.com in a Web browser  (Recommendation: Google Chrome) |
 | Set Username: **yak**   and Password: **yak**  and click on **"Sign in"**               |
 | <img src="/install/img/YaK_login.png"  width="300" height="250">                        |
 | Double-click on **"Yak Demo"** on the top-left corner and enter **"startdemo aws"**     |
 | <img src="/install/img/YaK_demo.png" width="600" height="300">                          |
 
+For more information about [SHELLNGN](https://shellngn.com)
 
 ## Get Started - Setup YaK Core
 
@@ -41,6 +42,10 @@ You installed your own YaK Core environment and want now to setup your own Cloud
 - [Amazon AWS Quickstart Instructions](docs/quickstart_aws.md)
 - [Microsoft Azure Quickstart Instructions](docs/quickstart_azure.md)
 - [Oracle OCI Quickstart Instructions](docs/quickstart_oci.md)
+
+If you want to manage your On-premise infrastructure with YaK
+
+- [On-premise Integration Instructions](docs/onpremise_integration.md)
 
 ## Configuration
 

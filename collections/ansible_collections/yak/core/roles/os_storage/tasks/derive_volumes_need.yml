@@ -3,9 +3,9 @@
   set_fact:
     total_volume_gb: "{{ os_storage|json_query('[*].size_gb|[]')|sum }}"
 
-- debug: var=storage_devices
+- debug: var=role_storage_devices
 
 - name: Derive number of disk needed
   set_fact:
-    number_of_devices: "{{ (total_volume_gb|int / storage_devices.max_size_gb|int) | round(0,'ceil') | int  }}"
-    allowed_device_alphabet_letter: "bcdefghijklmnopqrstuvwxyz"
+    number_of_devices: "{{ (total_volume_gb|int / role_storage_devices.max_size_gb|int) | round(0,'ceil') | int  }}"
+    allowed_device_alphabet_letter: "fghijklmnopqrstuvwxyz"

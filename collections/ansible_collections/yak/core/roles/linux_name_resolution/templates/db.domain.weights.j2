@@ -1,0 +1,15 @@
+
+{% for alias in domain.aliases -%}
+
+{{ alias.name }}.{{ domain.domain_name }}
+{% if 'ip_addresses' in alias %}
+{% for ip_address in alias.ip_addresses -%}
+{{ ip_address }} 1
+{% endfor %}
+{% endif %}
+{% if 'yak_inventory_hostnames' in alias %}
+{% for yak_inventory_hostname in alias.yak_inventory_hostnames -%}
+{{ hostvars[yak_inventory_hostname]['ansible_default_ipv4']['address'] }} 1
+{% endfor %}
+{% endif %}
+{% endfor %}

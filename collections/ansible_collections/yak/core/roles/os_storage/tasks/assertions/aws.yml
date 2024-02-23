@@ -1,0 +1,30 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Ensure that storage_devices.specifications.volume_type is valid
+  ansible.builtin.assert:
+    that: >
+      role_storage_devices.specifications.volume_type == 'standard'
+      or
+      role_storage_devices.specifications.volume_type == 'gp2'
+      or
+      role_storage_devices.specifications.volume_type == 'gp3'
+      or
+      role_storage_devices.specifications.volume_type == 'io1'
+      or
+      role_storage_devices.specifications.volume_type == 'io2'
+      or
+      role_storage_devices.specifications.volume_type == 'sc1'
+      or
+      role_storage_devices.specifications.volume_type == 'st1'
+    fail_msg: "'storage_devices.specifications.volume_type' has an invalid value. Please use 'standard', 'gp2', 'gp3', 'io1', 'io2', 'sc1' or 'st1'."
+    success_msg: "'storage_devices.specifications.volume_type' has a valid value."
+
+- name: Ensure that storage_devices.specifications.encrypted is valid
+  ansible.builtin.assert:
+    that: >
+      role_storage_devices.specifications.encrypted == true
+      or
+      role_storage_devices.specifications.encrypted == false
+    fail_msg: "'storage_devices.specifications.encrypted' has an invalid value. Please use 'true' or 'false'."
+    success_msg: "'storage_devices.specifications.encrypted' has a valid value."
+...

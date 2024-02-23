@@ -1,15 +1,27 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- name: Set timezone to {{ time_zone }} (not reboot needed)
+  community.windows.win_timezone:
+    timezone: "{{ time_zone }}"
+  register: r_win_timezone
+
 - name: Define hostname to {{ host_name }}
   ansible.windows.win_hostname:
     name: "{{ host_name }}"
   register: r_win_hostname
 
+- name: Join host to domain
+  microsoft.ad.membership:
+    dns_domain_name: "{{ dns.domain_name }}"
+    domain_admin_user: "{{ dns.username }}"
+    domain_admin_password: "{{ dns.password }}"
+    state: domain
+    reboot: false
+  register: r_ad_membership
+  when: role_dns.type == 'custom'
+
 - name: Rebooting to take configuration into account
   ansible.windows.win_reboot:
-  when: r_win_hostname.reboot_required
-
-- name: Set timezone to {{ time_zone }} (not reboot needed)
-  community.windows.win_timezone:
-    timezone: "{{ time_zone }}"
-  register: r_win_timezone
+  when: >
+    r_win_hostname.reboot_required|default(false) or
+    r_ad_membership.reboot_required|default(false)

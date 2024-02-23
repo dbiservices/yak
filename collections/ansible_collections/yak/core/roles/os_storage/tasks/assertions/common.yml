@@ -1,0 +1,20 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- debug:
+    msg:
+      - "provider: {{ provider }}"
+      - "machine_name: {{ machine_name }}"
+      - "os_type: {{ os_type }}"
+      - "volume_group_name: {{ volume_group_name }}"
+      - "custom_tags: {{ custom_tags }}"
+      - "role_storage_devices: {{ role_storage_devices }}"
+  when: debug|bool
+
+- name: Ensure that storage_devices.max_size_gb is valid
+  ansible.builtin.assert:
+    that:
+      - role_storage_devices.max_size_gb|int > 2
+      - role_storage_devices.max_size_gb|int < 10240
+    fail_msg: "'storage_devices.max_size_gb' has an invalid value. Please use a value between 3 and 10240."
+    success_msg: "'storage_devices.max_size_gb' has a valid value."
+...
