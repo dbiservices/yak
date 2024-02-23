@@ -1,0 +1,16 @@
+---
+- name: Check runner dir
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: false
+  tasks:
+    - command: "ls -ls /runner"
+      delegate_to: localhost
+    - command: "ls -ls /runner/project"
+      delegate_to: localhost
+    - command: "ls -ls /runner/inventory"
+      delegate_to: localhost
+    - command: "ls -ls /runner/inventory/hosts"
+      delegate_to: localhost
