@@ -226,6 +226,7 @@ def graphQLRequest(graphql_request, graphql_request_variables):
             "query": graphql_request,
             "variables": graphql_request_variables,
         },
+        verify=False,
     )
     if response.status_code != 200:
         raise AnsibleError("API error: {}\n".format(response))
