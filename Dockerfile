@@ -46,4 +46,6 @@ RUN mkdir -p /root/yak/configuration/infrastructure/.ssh
 RUN touch /root/yak/configuration/infrastructure/.ssh/config
 RUN echo "Include /root/yak/configuration/infrastructure/.ssh/config" >> /etc/ssh/ssh_config
 
+RUN ln -s /workspace/yak/configuration /workspace/yak/requirements_configuration
+
 WORKDIR /workspace/yak
