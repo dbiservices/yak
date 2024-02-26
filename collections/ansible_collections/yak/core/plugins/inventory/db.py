@@ -326,6 +326,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.add_group(infra_name)
             self.inventory.add_child(self.infra_grp_name, infra_name)
             self.inventory.add_child(infra["providerName"], infra_name)
+            if "custom_tags" in infra["variables"]:
+                # "Name" tag is not allowed, remove it
+                infra["variables"]["custom_tags"].pop("Name", None)
+                infra["variables"]["custom_tags"].pop("name", None)
             self._append_gvars(infra_name, infra["variables"])
             for secret in infra["secrets"]:
                 self._log_debug(secret)
@@ -346,6 +350,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._populate_server(server)
 
     def _populate_server(self, server):
+        self._set_server_tags_precedence(server)
         server_name = server["name"]
 
         # First, we add the infrastructure variables (because infra groups are not generated in composant mode)
@@ -405,6 +410,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.hosts[server_name].vars['public_ip']["mode"] = 'none'
         if 'host_ip_access' not in self.inventory.hosts[server_name].vars:
             self._set_hvars(server_name, 'host_ip_access', "private_ip")
+
+    def _set_server_tags_precedence(self, server):
+        # Server custom tags have priority over infrastructure and "Name" key is forbidden as already used by AWS
+        if "custom_tags" in server["variables"]:
+            servers_tags = server["variables"]["custom_tags"]
+            infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
+            merged_tags = servers_tags | infrastructure_tags
+            merged_tags.pop("Name", None)
+            merged_tags.pop("name", None)
+            server["variables"]["custom_tags"] = merged_tags
 
 
     def _populate_component(self):
