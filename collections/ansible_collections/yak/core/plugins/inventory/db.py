@@ -195,11 +195,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         providerImageName
                         providerImageAnsibleUser
                         providerImageOsType
-                        providerImageSpecifications
+                        providerImageVariables
                         providerName
                         providerShapeId
                         providerShapeName
-                        providerShapeSpecifications
+                        providerShapeVariables
                         secrets
                         variables
                         components
@@ -388,8 +388,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._set_hvars(server_name, 'os_type', server["providerImageOsType"].lower())
         self._set_hvars(server_name, 'yak_image_name', server["providerImageName"].lower())
         self._set_hvars(server_name, 'yak_shape_name', server["providerShapeName"].lower())
-        self._append_hvars(server_name, server["providerImageSpecifications"])
-        self._append_hvars(server_name, server["providerShapeSpecifications"])
+        self._append_hvars(server_name, server["providerImageVariables"])
+        self._append_hvars(server_name, server["providerShapeVariables"])
 
         # IPs
         self._set_hvars(server_name, 'ansible_host', server["name"])
