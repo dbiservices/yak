@@ -206,19 +206,18 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     }
                 }
                 vComponents(condition: {name: $vComponentsName}) {
-                    nodes {
+                     nodes {
                         id
                         name
+                        subcomponentTypeName
                         componentTypeName
-                        componentTypeSubname
                         componentTypeVariables
-                        variables
-                        mergedVariables
+                        subcomponentTypeVariables
                         componentTypeManifest
-                        servers
+                        groups
+                        }
                     }
                 }
-            }
             """
         query_variables = {}
         if self.is_component_specific:
@@ -254,7 +253,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._populate_servers()
         if self.is_component_specific:
             if len(self.gql_resultset["vComponents"]["nodes"]) != 1:
-                raise AnsibleError("Component '{}' not accesible! Component exits? Syntax is ok?".format(self.component_name))
+                raise AnsibleError("Component '{}' not reachable! Component exits? Syntax is ok?".format(self.component_name))
             self.component = self.gql_resultset["vComponents"]["nodes"][0]
             self._populate_component()
 
@@ -423,44 +422,33 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
 
     def _populate_component(self):
-
-        self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **self.component["mergedVariables"]}
+        # Create mergedVariables from the different scopes of variables fetched 
+        merged_variables = self.component['componentTypeVariables'] | self.component['subcomponentTypeVariables']
+        self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
         self.component_type_name = self.component["componentTypeName"]
-        self.inventory.groups["all"].vars["component_type_sub_name"] = self.component["componentTypeSubname"]
-        self.component_type_sub_name = self.component["componentTypeSubname"]
+        self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
+        self.subcomponent_type_name = self.component["subcomponentTypeName"]
         self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
         self.component_type_manifest = self.component["componentTypeManifest"]
 
-        # populate sub component type
-        if "sub_component_types" not in self.component["componentTypeManifest"]:
-            raise AnsibleError("No 'sub_component_types' in the manifest file '{}'.".format(self.component_type_name))
+        for group, hosts in self.component["groups"].items():
+            print(group)
+            self.inventory.add_group(group)
+            for host in hosts:
+                print(host["server_name"])
+                self.inventory.add_host(host["server_name"], group = group)
+        
+        # Add hosts to group
+        for component_server in self.component["servers"]:
+            self.inventory.add_host(component_server["name"], group=component_server["group_name"])
 
-        sub_component = None
-        for sub_component_item in self.component["componentTypeManifest"]["sub_component_types"]:
-            if sub_component_item["name"] == self.component_type_sub_name:
-                sub_component = sub_component_item
-                break
+            for server in self.gql_resultset["vServers"]["nodes"]:
+                if server["name"] == component_server["name"]:
+                    self._populate_server(server)
 
-        if sub_component is None:
-            raise AnsibleError("No sub component name '{}' in the manifest file of component type '{}'.".format(self.component_type_sub_name, self.component_type_name))
-
-        for inventory_map in sub_component["inventory_maps"]:
-            self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
-            if inventory_map["group_name"] in self.inventory.groups:
-                raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
-            self.inventory.add_group(inventory_map["group_name"])
-
-            # Add hosts to group
-            for component_server in self.component["servers"]:
-                self.inventory.add_host(component_server["name"], group=component_server["group_name"])
-
-                for server in self.gql_resultset["vServers"]["nodes"]:
-                    if server["name"] == component_server["name"]:
-                        self._populate_server(server)
-
-                self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+            self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
 
 
     def _populate_sub_component_type_storage(self, inventory_map, target):
