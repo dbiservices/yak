@@ -247,10 +247,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         self._populate_internal_variables()
         self._populate_secrets()
-        if not self.is_component_specific:
-            self._populate_providers()
-            self._populate_infrastructures()
-            self._populate_servers()
+        self._populate_providers()
+        self._populate_infrastructures()
+        self._populate_servers()
         if self.is_component_specific:
             if len(self.gql_resultset["vComponents"]["nodes"]) != 1:
                 raise AnsibleError("Component '{}' not reachable! Component exits? Syntax is ok?".format(self.component_name))
@@ -430,15 +429,23 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.component_type_name = self.component["componentTypeName"]
         self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
         self.subcomponent_type_name = self.component["subcomponentTypeName"]
-        self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
+        #self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
         self.component_type_manifest = self.component["componentTypeManifest"]
-
+        host_list = list()
         for group, hosts in self.component["groups"].items():
             print(group)
             self.inventory.add_group(group)
             for host in hosts:
                 print(host["server_name"])
                 self.inventory.add_host(host["server_name"], group = group)
+                host_list.append(host["server_name"])
+        
+        for server in dict(self.inventory.hosts):
+            if server not in host_list:
+                server_to_remove = self.inventory.get_host(server)
+                self.inventory.remove_host(server_to_remove)
+        
+
         
 
         # TODO: Storage ??
