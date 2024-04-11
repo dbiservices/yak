@@ -440,15 +440,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 print(host["server_name"])
                 self.inventory.add_host(host["server_name"], group = group)
         
-        # Add hosts to group
-        for component_server in self.component["servers"]:
-            self.inventory.add_host(component_server["name"], group=component_server["group_name"])
 
-            for server in self.gql_resultset["vServers"]["nodes"]:
-                if server["name"] == component_server["name"]:
-                    self._populate_server(server)
-
-            self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+        # TODO: Storage ??
+        # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
 
 
     def _populate_sub_component_type_storage(self, inventory_map, target):
