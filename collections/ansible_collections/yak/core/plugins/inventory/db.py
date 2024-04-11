@@ -10,6 +10,7 @@ import yaml
 import requests
 requests.packages.urllib3.disable_warnings()
 import os.path
+from pathlib import Path
 from os import environ
 
 # TODO: [WARNING]: Found both group and host with same name: A-test-component-04
@@ -59,6 +60,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.local_ssh_config_file = "{}/.ssh".format(os.path.expanduser('~'))
         self.is_component_specific = False
         self.component_name = None
+
+        self.yak_base = os.path.abspath(os.getcwd())
+        self.component_types_path = "{}/{}".format(self.yak_base, "component_types")
+        self.component_type_path = None
 
     def verify_file(self, path):
         if super(InventoryModule, self).verify_file(path):
@@ -431,6 +436,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.subcomponent_type_name = self.component["subcomponentTypeName"]
         #self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
         self.component_type_manifest = self.component["componentTypeManifest"]
+        self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
+        self._populate_component_type()
+
         host_list = list()
         for group, hosts in self.component["groups"].items():
             print(group)
@@ -450,6 +458,26 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         # TODO: Storage ??
         # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+
+    def _populate_component_type(self):
+
+        # variables.yml and variables/*.yml if exists
+        if os.path.exists("{}/variables.yml".format(self.component_type_path)):
+            variables_yaml = self._load_yaml_file("{}/variables.yml".format(self.component_type_path), warning_only=True)
+            self.inventory.groups["all"].vars = variables_yaml
+
+        if os.path.exists("{}/variables".format(self.component_type_path)):
+            for variables_path in Path("{}/variables".format(self.component_type_path)).rglob('*.yml'):
+                variables_yaml = self._load_yaml_file(variables_path, warning_only=True)
+                self.inventory.groups["all"].vars.update(variables_yaml)
+
+        # artifacts_requirements.yml: should exists
+        if os.path.exists("{}/artifacts_requirements.yml".format(self.component_type_path)):
+            artifacts_requirements_yaml = self._load_yaml_file(
+                "{}/artifacts_requirements.yml".format(self.component_type_path),
+                warning_only=True
+            )
+            self.inventory.groups["all"].vars["artifacts_requirements"] = artifacts_requirements_yaml
 
 
     def _populate_sub_component_type_storage(self, inventory_map, target):
@@ -473,3 +501,35 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     "No variables '{}' found in the variables of component '{}'."
                     .format(storage_variable_name, self.component_type_name)
                 )
+
+    def _load_yaml_file(self, file_path, warning_only=False):
+        yaml_content = {}
+        self._log_debug(
+            "Opening yaml file '{}'.".format(file_path)
+        )
+        try:
+            file = open(file_path, 'r')
+            self._log_debug(
+                "Loading yaml file '{}'.".format(file_path)
+            )
+            try:
+                yaml_content = yaml.load(file, Loader=yaml.FullLoader)
+            except yaml.YAMLError as ex:
+                if not warning_only:
+                    raise AnsibleError(ex)
+            file.close()
+        except Exception as ex:
+            self._log_debug(
+                "Missing expected yaml file '{}'."
+                .format(file_path)
+            )
+            if not warning_only:
+                raise AnsibleError(ex)
+            else:
+                self._log_warning(
+                    "Missing expected yaml file '{}'."
+                    .format(file_path)
+                )
+
+        self._log_debug(yaml_content)
+        return yaml_content
