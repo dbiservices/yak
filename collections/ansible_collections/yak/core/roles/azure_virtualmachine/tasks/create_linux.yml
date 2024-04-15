@@ -14,6 +14,8 @@
     virtual_network_name: "{{ virtual_network_name }}"
     subnet_name: "{{ subnet_name }}"
     ssh_password_enabled: false
+    security_profile:
+      encryption_at_host: "{{ encryption_at_host | default('false') }}" # encryption_at_host should be defined in <infrastructure_name>/variables.yml if required, see : https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_virtualmachine_module.html#parameter-security_profile/encryption_at_host
     ssh_public_keys:
       - path: "/home/{{ ansible_user }}/.ssh/authorized_keys"
         key_data: "{{ lookup('file', ansible_ssh_public_key_file) }}"
