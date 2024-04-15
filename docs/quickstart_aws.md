@@ -166,6 +166,7 @@ $ ansible-inventory --host aws_testing/srv01
 
 ```bash
 cd ./configuration/infrastructure/aws_testing/secrets
+gen_secret
 
 # Set the name of the local user that will have the key mapped to
 USERNAME="Ansible"

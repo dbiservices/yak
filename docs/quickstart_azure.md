@@ -44,6 +44,7 @@ resource_group: dbi-testing-yak-rg
 virtual_network_name: dbi-testing-yak-nsg
 subnet_name: dbi-testing-yak-subnet
 security_group: dbi-testing-yak-nsg
+encryption_at_host: false # Enables or not encryption at host
 
 custom_tags:
     Environment: Test
