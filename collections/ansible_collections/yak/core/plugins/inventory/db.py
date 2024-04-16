@@ -222,7 +222,17 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         groups
                         }
                     }
+
+                vArtifactsProviders(condition: {isDefault: true}) {
+                    nodes {
+                        isDefault
+                        providerName
+                        variables
+                        }
+                    }
                 }
+
+                 
             """
         query_variables = {}
         if self.is_component_specific:
@@ -260,6 +270,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 raise AnsibleError("Component '{}' not reachable! Component exits? Syntax is ok?".format(self.component_name))
             self.component = self.gql_resultset["vComponents"]["nodes"][0]
             self._populate_component()
+            self._populate_default_artifacts_provider()
+            
 
     def _populate_internal_variables(self):
         self._set_gvars('all', 'yak_inventory_type', 'database')
@@ -458,6 +470,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         # TODO: Storage ??
         # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+
+    def _populate_default_artifacts_provider(self):
+        self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component_type(self):
 
