@@ -231,9 +231,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         }
                     }
                 }
-
-                 
             """
+
         query_variables = {}
         if self.is_component_specific:
             query_variables = {
@@ -411,7 +410,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         for ip in server["ips"]:
             if ip["admin_access"] and ip["ip"] is not None:
                 self._set_hvars(server_name, 'ansible_host', ip["ip"])
-                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))
             ip_mode = ip["mode"]
             if ip["mode"] == "automatic":
                 ip_mode = "auto"
@@ -419,12 +417,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["mode"] = ip_mode
             if ip["ip"]:
                 self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["ip"] = ip["ip"]
+            if ip["admin_access"]:
+                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))    
 
         if 'public_ip' not in self.inventory.hosts[server_name].vars:
             self.inventory.hosts[server_name].vars['public_ip'] = {}
             self.inventory.hosts[server_name].vars['public_ip']["mode"] = 'none'
         if 'host_ip_access' not in self.inventory.hosts[server_name].vars:
-            self._set_hvars(server_name, 'host_ip_access', "private_ip")
+            raise AnsibleError("No 'admin_access' set to 'true' for any of the allocated IPs on server '{}'".format(server_name))
 
     def _set_server_tags_precedence(self, server):
         # Server custom tags have priority over infrastructure and "Name" key is forbidden as already used by AWS
