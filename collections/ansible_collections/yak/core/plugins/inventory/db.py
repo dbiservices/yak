@@ -286,12 +286,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             mode=0o600
         )
         f = open(descriptor, "w")
-        f.write(value)
+        f.write("{}\n".format(value)) # Ensure new line at the end of the file to avoid key issue
         f.close()
 
         if attribute == "PRIVATE_KEY": # Needed by some playbooks
-            os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
-                        .format(self.secret_dir, secret_id, attribute, self.secret_dir, secret_id))
+            if os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
+                            .format(self.secret_dir, secret_id, attribute, self.secret_dir, secret_id)) != 0:
+                raise Exception("Unable to generate public key from private key id '{}'.".format(secret_id))
 
     def _populate_secrets(self):
 
@@ -333,7 +334,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             infra_name = infra["name"].replace("-", "_")
             self.inventory.add_group(infra_name)
             self.inventory.add_child(self.infra_grp_name, infra_name)
-            self.inventory.add_child(infra["providerName"], infra_name)
+            self.inventory.add_child(infra["providerName"].replace("-", "_"), infra_name)
             if "custom_tags" in infra["variables"]:
                 # "Name" tag is not allowed, remove it
                 infra["variables"]["custom_tags"].pop("Name", None)
@@ -358,14 +359,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._populate_server(server)
 
     def _populate_server(self, server):
+        self._log_debug("Populating server '{}'".format(server))
         self._set_server_tags_precedence(server)
         server_name = server["name"]
 
         # First, we add the infrastructure variables (because infra groups are not generated in composant mode)
-        for infrastrcuture in self.gql_resultset["vInfrastructures"]["nodes"]:
-            if infrastrcuture["name"] == server["infrastructureName"]:
-                self._append_hvars(server_name, infrastrcuture["variables"])
-                for secret in infrastrcuture["secrets"]:
+        for infrastructure in self.gql_resultset["vInfrastructures"]["nodes"]:
+            if infrastructure["name"] == server["infrastructureName"]:
+                self._append_hvars(server_name, infrastructure["variables"])
+                for secret in infrastructure["secrets"]:
                     self._log_debug(secret)
                     if secret["type_id"] == 5:
                         self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
@@ -412,7 +414,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             if ip["ip"]:
                 self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["ip"] = ip["ip"]
             if ip["admin_access"]:
-                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))    
+                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))
 
         if 'public_ip' not in self.inventory.hosts[server_name].vars:
             self.inventory.hosts[server_name].vars['public_ip'] = {}
@@ -424,7 +426,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Server custom tags have priority over infrastructure and "Name" key is forbidden as already used by AWS
         if "custom_tags" in server["variables"]:
             servers_tags = server["variables"]["custom_tags"]
-            infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
+            infrastructure_tags = {}
+            if "custom_tags" in self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars:
+                infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
             merged_tags = servers_tags | infrastructure_tags
             merged_tags.pop("Name", None)
             merged_tags.pop("name", None)
