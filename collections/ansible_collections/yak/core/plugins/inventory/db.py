@@ -438,19 +438,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
 
     def _populate_component(self):
-        # Create mergedVariables from the different scopes of variables fetched 
         self._populate_component_type()
         self._log_debug(f"Populating component {self.component['name']}...")
+        # Create mergedVariables from the different scopes of variables fetched
         merged_variables = self.component['componentTypeVariables'] | self.component['subcomponentTypeVariables']
         self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
-        self.component_type_name = self.component["componentTypeName"]
         self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
-        self.subcomponent_type_name = self.component["subcomponentTypeName"]
         #self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
-        self.component_type_manifest = self.component["componentTypeManifest"]
-        self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
+        
 
         host_list = list()
         for group, hosts in self.component["groups"].items():
@@ -476,6 +473,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component_type(self):
+        self.component_type_name = self.component["componentTypeName"]
+        self.component_type_manifest = self.component["componentTypeManifest"]
+        self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
+        self.subcomponent_type_name = self.component["subcomponentTypeName"]
         self._log_debug(f"Populating component type {self.component['name']}...")
 
         # variables.yml and variables/*.yml if exists
