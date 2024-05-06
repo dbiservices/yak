@@ -439,6 +439,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_component(self):
         # Create mergedVariables from the different scopes of variables fetched 
+        self._populate_component_type()
+        self._log_debug(f"Populating component {self.component['name']}...")
         merged_variables = self.component['componentTypeVariables'] | self.component['subcomponentTypeVariables']
         self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
@@ -449,14 +451,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         #self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
         self.component_type_manifest = self.component["componentTypeManifest"]
         self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
-        self._populate_component_type()
 
         host_list = list()
         for group, hosts in self.component["groups"].items():
-            print(group)
+            self._log_debug(f"Found group : {group}")
             self.inventory.add_group(group)
             for host in hosts:
-                print(host["server_name"])
+                self._log_debug(f"Found host {host['server_name']} part of {group}")
                 self.inventory.add_host(host["server_name"], group = group)
                 host_list.append(host["server_name"])
         
@@ -475,6 +476,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component_type(self):
+        self._log_debug(f"Populating component type {self.component['name']}...")
 
         # variables.yml and variables/*.yml if exists
         if os.path.exists("{}/variables.yml".format(self.component_type_path)):
