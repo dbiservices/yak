@@ -430,8 +430,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Server custom tags have priority over infrastructure and "Name" key is forbidden as already used by AWS
         if "custom_tags" in server["variables"]:
             servers_tags = server["variables"]["custom_tags"]
-            infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
-            merged_tags = servers_tags | infrastructure_tags
+            merged_tags = servers_tags
+            if self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars.get("custom_tags"):
+                infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
+                merged_tags = servers_tags | infrastructure_tags
             merged_tags.pop("Name", None)
             merged_tags.pop("name", None)
             server["variables"]["custom_tags"] = merged_tags
@@ -470,6 +472,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
 
     def _populate_default_artifacts_provider(self):
+        # TODO: Check if artifacts provider variables are defined properly ??
         self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component_type(self):
