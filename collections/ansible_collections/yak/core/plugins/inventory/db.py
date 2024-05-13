@@ -222,7 +222,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         groups
                         }
                     }
-
                 vArtifactsProviders(condition: {isDefault: true}) {
                     nodes {
                         isDefault
@@ -270,7 +269,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self.component = self.gql_resultset["vComponents"]["nodes"][0]
             self._populate_component()
             self._populate_default_artifacts_provider()
-            
+
 
     def _populate_internal_variables(self):
         self._set_gvars('all', 'yak_inventory_type', 'database')
@@ -292,12 +291,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             mode=0o600
         )
         f = open(descriptor, "w")
-        f.write(value)
+        f.write("{}\n".format(value)) # Ensure new line at the end of the file to avoid key issue
         f.close()
 
         if attribute == "PRIVATE_KEY": # Needed by some playbooks
-            os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
-                        .format(self.secret_dir, secret_id, attribute, self.secret_dir, secret_id))
+            if os.system("/usr/bin/ssh-keygen -f {}/{}/{} -y > {}/{}/PUBLIC_KEY"
+                            .format(self.secret_dir, secret_id, attribute, self.secret_dir, secret_id)) != 0:
+                raise Exception("Unable to generate public key from private key id '{}'.".format(secret_id))
+
 
     def _populate_secrets(self):
 
@@ -339,7 +340,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             infra_name = infra["name"].replace("-", "_")
             self.inventory.add_group(infra_name)
             self.inventory.add_child(self.infra_grp_name, infra_name)
-            self.inventory.add_child(infra["providerName"], infra_name)
+            self.inventory.add_child(infra["providerName"].replace("-", "_"), infra_name)
             if "custom_tags" in infra["variables"]:
                 # "Name" tag is not allowed, remove it
                 infra["variables"]["custom_tags"].pop("Name", None)
@@ -364,14 +365,17 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             self._populate_server(server)
 
     def _populate_server(self, server):
+
+        self._log_debug("Populating server '{}'".format(server))
+
         self._set_server_tags_precedence(server)
         server_name = server["name"]
 
         # First, we add the infrastructure variables (because infra groups are not generated in composant mode)
-        for infrastrcuture in self.gql_resultset["vInfrastructures"]["nodes"]:
-            if infrastrcuture["name"] == server["infrastructureName"]:
-                self._append_hvars(server_name, infrastrcuture["variables"])
-                for secret in infrastrcuture["secrets"]:
+        for infrastructure in self.gql_resultset["vInfrastructures"]["nodes"]:
+            if infrastructure["name"] == server["infrastructureName"]:
+                self._append_hvars(server_name, infrastructure["variables"])
+                for secret in infrastructure["secrets"]:
                     self._log_debug(secret)
                     if secret["type_id"] == 5:
                         self._set_hvars(server_name, "ansible_ssh_private_key_file", "{}/{}/PRIVATE_KEY".format(self.secret_dir, secret["id"]))
@@ -418,7 +422,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             if ip["ip"]:
                 self.inventory.hosts[server_name].vars['{}_ip'.format(ip["scope"])]["ip"] = ip["ip"]
             if ip["admin_access"]:
-                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))    
+                self._set_hvars(server_name, 'host_ip_access', "{}_ip".format(ip["scope"]))
 
         if 'public_ip' not in self.inventory.hosts[server_name].vars:
             self.inventory.hosts[server_name].vars['public_ip'] = {}
@@ -431,13 +435,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         if "custom_tags" in server["variables"]:
             servers_tags = server["variables"]["custom_tags"]
             merged_tags = servers_tags
-            if self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars.get("custom_tags"):
+            infrastructure_tags = {}
+            if "custom_tags" in self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars:
                 infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
                 merged_tags = servers_tags | infrastructure_tags
             merged_tags.pop("Name", None)
             merged_tags.pop("name", None)
             server["variables"]["custom_tags"] = merged_tags
 
+    def _populate_default_artifacts_provider(self):
+        self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component(self):
         self._populate_component_type()
@@ -448,109 +455,83 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
         self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
-        #self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
-        
 
-        host_list = list()
-        for group, hosts in self.component["groups"].items():
-            self._log_debug(f"Found group : {group}")
-            self.inventory.add_group(group)
-            for host in hosts:
-                self._log_debug(f"Found host {host['server_name']} part of {group}")
-                self.inventory.add_host(host["server_name"], group = group)
-                host_list.append(host["server_name"])
-        
-        for server in dict(self.inventory.hosts):
-            if server not in host_list:
-                server_to_remove = self.inventory.get_host(server)
-                self.inventory.remove_host(server_to_remove)
-        
+    #     host_list = list()
+    #     for group, hosts in self.component["groups"].items():
+    #         self._log_debug(f"Found group : {group}")
+    #         self.inventory.add_group(group)
+    #         for host in hosts:
+    #             self._log_debug(f"Found host {host['server_name']} part of {group}")
+    #             self.inventory.add_host(host["server_name"], group = group)
+    #             host_list.append(host["server_name"])
 
-        
+    #     for server in dict(self.inventory.hosts):
+    #         if server not in host_list:
+    #             server_to_remove = self.inventory.get_host(server)
+    #             self.inventory.remove_host(server_to_remove)
 
-        # TODO: Storage ??
-        # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+    #     # TODO: Storage?
+    #     # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
 
-    def _populate_default_artifacts_provider(self):
-        # TODO: Check if artifacts provider variables are defined properly ??
-        self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
+    # def _populate_component(self):
 
-    def _populate_component_type(self):
-        self.component_type_name = self.component["componentTypeName"]
-        self.component_type_manifest = self.component["componentTypeManifest"]
-        self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
-        self.subcomponent_type_name = self.component["subcomponentTypeName"]
-        self._log_debug(f"Populating component type {self.component['name']}...")
+    #     self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **self.component["mergedVariables"]}
+    #     self.inventory.groups["all"].vars["component_name"] = self.component["name"]
+    #     self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
+    #     self.component_type_name = self.component["componentTypeName"]
+    #     self.inventory.groups["all"].vars["component_type_sub_name"] = self.component["componentTypeSubname"]
+    #     self.component_type_sub_name = self.component["componentTypeSubname"]
+    #     self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
+    #     self.component_type_manifest = self.component["componentTypeManifest"]
 
-        # variables.yml and variables/*.yml if exists
-        if os.path.exists("{}/variables.yml".format(self.component_type_path)):
-            variables_yaml = self._load_yaml_file("{}/variables.yml".format(self.component_type_path), warning_only=True)
-            self.inventory.groups["all"].vars = variables_yaml
+    #     # populate sub component type
+    #     if "sub_component_types" not in self.component["componentTypeManifest"]:
+    #         raise AnsibleError("No 'sub_component_types' in the manifest file '{}'.".format(self.component_type_name))
 
-        if os.path.exists("{}/variables".format(self.component_type_path)):
-            for variables_path in Path("{}/variables".format(self.component_type_path)).rglob('*.yml'):
-                variables_yaml = self._load_yaml_file(variables_path, warning_only=True)
-                self.inventory.groups["all"].vars.update(variables_yaml)
+    #     sub_component = None
+    #     for sub_component_item in self.component["componentTypeManifest"]["sub_component_types"]:
+    #         if sub_component_item["name"] == self.component_type_sub_name:
+    #             sub_component = sub_component_item
+    #             break
 
-        # artifacts_requirements.yml: should exists
-        if os.path.exists("{}/artifacts_requirements.yml".format(self.component_type_path)):
-            artifacts_requirements_yaml = self._load_yaml_file(
-                "{}/artifacts_requirements.yml".format(self.component_type_path),
-                warning_only=True
-            )
-            self.inventory.groups["all"].vars["artifacts_requirements"] = artifacts_requirements_yaml
+    #     if sub_component is None:
+    #         raise AnsibleError("No sub component name '{}' in the manifest file of component type '{}'.".format(self.component_type_sub_name, self.component_type_name))
+
+    #     for inventory_map in sub_component["inventory_maps"]:
+    #         self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
+    #         if inventory_map["group_name"] in self.inventory.groups:
+    #             raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
+    #         self.inventory.add_group(inventory_map["group_name"])
+
+    #         # Add hosts to group
+    #         for component_server in self.component["servers"]:
+    #             self.inventory.add_host(component_server["name"], group=component_server["group_name"])
+
+    #             for server in self.gql_resultset["vServers"]["nodes"]:
+    #                 if server["name"] == component_server["name"]:
+    #                     self._populate_server(server)
+
+    #             self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
 
 
-    def _populate_sub_component_type_storage(self, inventory_map, target):
+    # def _populate_sub_component_type_storage(self, inventory_map, target):
 
-        target.vars["yak_inventory_os_storages"] = []
-        if "storage" in inventory_map:
-            storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
-            self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
-            if storage_variable_name in self.inventory.groups["all"].vars:
-                if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
-                    raise AnsibleError(
-                        "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type '{}'."
-                        .format(target.vars["os_type"], target, self.component_type_name)
-                    )
-                for storage_point in self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]:
-                    target.vars["yak_inventory_os_storages"].append(
-                        {**{"storage_point": storage_point}, **self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]][storage_point]}
-                    )
-            else:
-                raise AnsibleError(
-                    "No variables '{}' found in the variables of component '{}'."
-                    .format(storage_variable_name, self.component_type_name)
-                )
-
-    def _load_yaml_file(self, file_path, warning_only=False):
-        yaml_content = {}
-        self._log_debug(
-            "Opening yaml file '{}'.".format(file_path)
-        )
-        try:
-            file = open(file_path, 'r')
-            self._log_debug(
-                "Loading yaml file '{}'.".format(file_path)
-            )
-            try:
-                yaml_content = yaml.load(file, Loader=yaml.FullLoader)
-            except yaml.YAMLError as ex:
-                if not warning_only:
-                    raise AnsibleError(ex)
-            file.close()
-        except Exception as ex:
-            self._log_debug(
-                "Missing expected yaml file '{}'."
-                .format(file_path)
-            )
-            if not warning_only:
-                raise AnsibleError(ex)
-            else:
-                self._log_warning(
-                    "Missing expected yaml file '{}'."
-                    .format(file_path)
-                )
-
-        self._log_debug(yaml_content)
-        return yaml_content
+    #     target.vars["yak_inventory_os_storages"] = []
+    #     if "storage" in inventory_map:
+    #         storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
+    #         self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
+    #         if storage_variable_name in self.inventory.groups["all"].vars:
+    #             if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
+    #                 raise AnsibleError(
+    #                     "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type '{}'."
+    #                     .format(target.vars["os_type"], target, self.component_type_name)
+    #                 )
+    #             for storage_point in self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]:
+    #                 target.vars["yak_inventory_os_storages"].append(
+    #                     {**{"storage_point": storage_point}, **self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]][storage_point]}
+    #                 )
+    #         else:
+    #             raise AnsibleError(
+    #                 "No variables '{}' found in the variables of component '{}'."
+    #                 .format(storage_variable_name, self.component_type_name)
+    #             )
