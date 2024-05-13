@@ -455,6 +455,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
         self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
+        self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
 
     #     host_list = list()
     #     for group, hosts in self.component["groups"].items():
