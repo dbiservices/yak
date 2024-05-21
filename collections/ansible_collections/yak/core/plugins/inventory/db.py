@@ -10,6 +10,7 @@ import yaml
 import requests
 requests.packages.urllib3.disable_warnings()
 import os.path
+from pathlib import Path
 from os import environ
 
 # TODO: [WARNING]: Found both group and host with same name: A-test-component-04
@@ -59,6 +60,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.local_ssh_config_file = "{}/.ssh".format(os.path.expanduser('~'))
         self.is_component_specific = False
         self.component_name = None
+
+        self.yak_base = os.path.abspath(os.getcwd())
+        self.component_types_path = "{}/{}".format(self.yak_base, "component_types")
+        self.component_type_path = None
 
     def verify_file(self, path):
         if super(InventoryModule, self).verify_file(path):
@@ -256,15 +261,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         self._populate_internal_variables()
         self._populate_secrets()
-        if not self.is_component_specific:
-            self._populate_providers()
-            self._populate_infrastructures()
-            self._populate_servers()
+        self._populate_providers()
+        self._populate_infrastructures()
+        self._populate_servers()
         if self.is_component_specific:
             if len(self.gql_resultset["vComponents"]["nodes"]) != 1:
-                raise AnsibleError("Component '{}' not accesible! Component exits? Syntax is ok?".format(self.component_name))
+                raise AnsibleError("Component '{}' not reachable! Component exits? Syntax is ok?".format(self.component_name))
             self.component = self.gql_resultset["vComponents"]["nodes"][0]
             self._populate_component()
+            self._populate_default_artifacts_provider()
+            
 
     def _populate_internal_variables(self):
         self._set_gvars('all', 'yak_inventory_type', 'database')
@@ -427,6 +433,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         if "custom_tags" in server["variables"]:
             servers_tags = server["variables"]["custom_tags"]
             infrastructure_tags = {}
+            # Check if custom tags are defined for infrastructure and set them if necessary
             if "custom_tags" in self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars:
                 infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
             merged_tags = servers_tags | infrastructure_tags
@@ -436,44 +443,74 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
 
     def _populate_component(self):
-
-        self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **self.component["mergedVariables"]}
+        self._populate_component_type()
+        self._log_debug(f"Populating component {self.component['name']}...")
+        # Create mergedVariables from the different scopes of variables fetched
+        merged_variables = self.component['componentTypeVariables'] | self.component['subcomponentTypeVariables']
+        self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
-        self.component_type_name = self.component["componentTypeName"]
-        self.inventory.groups["all"].vars["component_type_sub_name"] = self.component["componentTypeSubname"]
-        self.component_type_sub_name = self.component["componentTypeSubname"]
+        self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
         self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
+        
+
+        host_list = list()
+        for group, hosts in self.component["groups"].items():
+            self._log_debug(f"Found group : {group}")
+            self.inventory.add_group(group)
+            # If json spec defines ansible groups as array
+            if isinstance(hosts, list):
+                for host in hosts:
+                    self._log_debug(f"Found host {host['server_name']} part of {group}")
+                    self.inventory.add_host(host["server_name"], group = group)
+                    host_list.append(host["server_name"])
+            # If json spec defines ansible groups as array
+            if isinstance(hosts, str):
+                self._log_debug(f"Found host {hosts} part of {group}")
+                self.inventory.add_host(hosts, group = group)
+                host_list.append(hosts)
+
+                
+        
+        for server in dict(self.inventory.hosts):
+            if server not in host_list:
+                server_to_remove = self.inventory.get_host(server)
+                self.inventory.remove_host(server_to_remove)
+        
+
+        
+
+        # TODO: Storage ??
+        # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+
+    def _populate_default_artifacts_provider(self):
+        # TODO: Check if artifacts provider variables are defined properly ??
+        self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
+
+    def _populate_component_type(self):
+        self.component_type_name = self.component["componentTypeName"]
         self.component_type_manifest = self.component["componentTypeManifest"]
+        self.component_type_path = "{}/{}".format(self.component_types_path, self.component_type_name)
+        self.subcomponent_type_name = self.component["subcomponentTypeName"]
+        self._log_debug(f"Populating component type {self.component['name']}...")
 
-        # populate sub component type
-        if "sub_component_types" not in self.component["componentTypeManifest"]:
-            raise AnsibleError("No 'sub_component_types' in the manifest file '{}'.".format(self.component_type_name))
+        # variables.yml and variables/*.yml if exists
+        if os.path.exists("{}/variables.yml".format(self.component_type_path)):
+            variables_yaml = self._load_yaml_file("{}/variables.yml".format(self.component_type_path), warning_only=True)
+            self.inventory.groups["all"].vars = variables_yaml
 
-        sub_component = None
-        for sub_component_item in self.component["componentTypeManifest"]["sub_component_types"]:
-            if sub_component_item["name"] == self.component_type_sub_name:
-                sub_component = sub_component_item
-                break
+        if os.path.exists("{}/variables".format(self.component_type_path)):
+            for variables_path in Path("{}/variables".format(self.component_type_path)).rglob('*.yml'):
+                variables_yaml = self._load_yaml_file(variables_path, warning_only=True)
+                self.inventory.groups["all"].vars.update(variables_yaml)
 
-        if sub_component is None:
-            raise AnsibleError("No sub component name '{}' in the manifest file of component type '{}'.".format(self.component_type_sub_name, self.component_type_name))
-
-        for inventory_map in sub_component["inventory_maps"]:
-            self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
-            if inventory_map["group_name"] in self.inventory.groups:
-                raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
-            self.inventory.add_group(inventory_map["group_name"])
-
-            # Add hosts to group
-            for component_server in self.component["servers"]:
-                self.inventory.add_host(component_server["name"], group=component_server["group_name"])
-
-                for server in self.gql_resultset["vServers"]["nodes"]:
-                    if server["name"] == component_server["name"]:
-                        self._populate_server(server)
-
-                self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+        # artifacts_requirements.yml: should exists
+        if os.path.exists("{}/artifacts_requirements.yml".format(self.component_type_path)):
+            artifacts_requirements_yaml = self._load_yaml_file(
+                "{}/artifacts_requirements.yml".format(self.component_type_path),
+                warning_only=True
+            )
+            self.inventory.groups["all"].vars["artifacts_requirements"] = artifacts_requirements_yaml
 
 
     def _populate_sub_component_type_storage(self, inventory_map, target):
@@ -497,3 +534,35 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     "No variables '{}' found in the variables of component '{}'."
                     .format(storage_variable_name, self.component_type_name)
                 )
+
+    def _load_yaml_file(self, file_path, warning_only=False):
+        yaml_content = {}
+        self._log_debug(
+            "Opening yaml file '{}'.".format(file_path)
+        )
+        try:
+            file = open(file_path, 'r')
+            self._log_debug(
+                "Loading yaml file '{}'.".format(file_path)
+            )
+            try:
+                yaml_content = yaml.load(file, Loader=yaml.FullLoader)
+            except yaml.YAMLError as ex:
+                if not warning_only:
+                    raise AnsibleError(ex)
+            file.close()
+        except Exception as ex:
+            self._log_debug(
+                "Missing expected yaml file '{}'."
+                .format(file_path)
+            )
+            if not warning_only:
+                raise AnsibleError(ex)
+            else:
+                self._log_warning(
+                    "Missing expected yaml file '{}'."
+                    .format(file_path)
+                )
+
+        self._log_debug(yaml_content)
+        return yaml_content
