@@ -9,5 +9,4 @@
   tasks:
 
     - delegate_to: localhost
-      debug:
-        var: hostvars
+      shell: "ls /runner/project"
