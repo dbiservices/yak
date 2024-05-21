@@ -455,10 +455,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         for group, hosts in self.component["groups"].items():
             self._log_debug(f"Found group : {group}")
             self.inventory.add_group(group)
-            for host in hosts:
-                self._log_debug(f"Found host {host['server_name']} part of {group}")
-                self.inventory.add_host(host["server_name"], group = group)
-                host_list.append(host["server_name"])
+            # If json spec defines ansible groups as array
+            if isinstance(hosts, list):
+                for host in hosts:
+                    self._log_debug(f"Found host {host['server_name']} part of {group}")
+                    self.inventory.add_host(host["server_name"], group = group)
+                    host_list.append(host["server_name"])
+            # If json spec defines ansible groups as array
+            if isinstance(hosts, str):
+                self._log_debug(f"Found host {hosts} part of {group}")
+                self.inventory.add_host(hosts, group = group)
+                host_list.append(hosts)
+
+                
         
         for server in dict(self.inventory.hosts):
             if server not in host_list:
