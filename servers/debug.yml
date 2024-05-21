@@ -1,0 +1,13 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Check target type
+  tags: always
+  hosts: "{{ target }}"
+  gather_facts: no
+  vars:
+    debug: true
+  tasks:
+
+    - delegate_to: localhost
+      debug:
+        var: hostvars
