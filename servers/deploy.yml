@@ -19,7 +19,7 @@
   hosts: "{{ target }}"
   gather_facts: no
   vars:
-    debug: false
+    debug: true
   tasks:
 
     - name: Update server state
