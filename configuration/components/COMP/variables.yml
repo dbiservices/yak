@@ -12,11 +12,33 @@ yak_manifest_my_servers:
     - azure/srv-windows-02
     - oci
 
-# Overwrite "os_storage" from component variables
-yak_manifest_my_os_storage_config:
+# Overwrite "storage" from component variables
+storage:
     linux:
-        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u01" }
-        - { size_gb: 5, filesystem_type: "xfs", mount_point: "/u02" }
+        bin:
+            size_gb: 4
+            filesystem_type: "xfs"
+            mount_point: "/u01"
+            mount_options: "noatime"
+        data:
+            size_gb: 5
+            filesystem_type: "xfs"
+            mount_point: "/u02"
+        arch:
+            size_gb: 6
+            filesystem_type: "xfs"
+            mount_point: "/u90"
     windows:
-        - { size_gb: 5, drive_letter: F, partition_label: data   }
-        - { size_gb: 5, drive_letter: G, partition_label: backup }
+        bin:
+            size_gb: 4
+            drive_letter: F
+            partition_label: bin
+        data:
+            size_gb: 5
+            drive_letter: G
+            partition_label: data
+        arch:
+            size_gb: 6
+            drive_letter: H
+            partition_label: size
+
