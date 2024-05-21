@@ -9,4 +9,7 @@
   tasks:
 
     - delegate_to: localhost
-      shell: "ls /runner/project"
+      shell: "cat /runner/project/ansible.cfg"
+
+    - delegate_to: localhost
+      shell: "env"
