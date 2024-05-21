@@ -299,7 +299,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                             .format(self.secret_dir, secret_id, attribute, self.secret_dir, secret_id)) != 0:
                 raise Exception("Unable to generate public key from private key id '{}'.".format(secret_id))
 
-
     def _populate_secrets(self):
 
         for secret in self.gql_resultset["vSecrets"]["nodes"]:
@@ -434,11 +433,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Server custom tags have priority over infrastructure and "Name" key is forbidden as already used by AWS
         if "custom_tags" in server["variables"]:
             servers_tags = server["variables"]["custom_tags"]
-            merged_tags = servers_tags
             infrastructure_tags = {}
+            # Check if custom tags are defined for infrastructure and set them if necessary
             if "custom_tags" in self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars:
                 infrastructure_tags = self.inventory.groups[server["infrastructureName"].replace("-", "_")].vars["custom_tags"]
-                merged_tags = servers_tags | infrastructure_tags
+            merged_tags = servers_tags | infrastructure_tags
             merged_tags.pop("Name", None)
             merged_tags.pop("name", None)
             server["variables"]["custom_tags"] = merged_tags
