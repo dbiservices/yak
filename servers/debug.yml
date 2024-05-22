@@ -15,3 +15,5 @@
     - shell: "ls -la /"
 
     - shell: "ls -la /workspace/yak"
+
+    - shell: "cat .version"
