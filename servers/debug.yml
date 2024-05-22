@@ -9,7 +9,13 @@
   tasks:
 
     - delegate_to: localhost
-      shell: "cat /runner/project/ansible.cfg"
+      shell: "pwd"
 
     - delegate_to: localhost
-      shell: "env"
+      shell: "ls -la"
+
+    - delegate_to: localhost
+      shell: "ls -la /"
+
+    - delegate_to: localhost
+      shell: "ls -la /workspace/yak"
