@@ -56,7 +56,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.server_group_name = "servers"
         self.component_group_name = "components"
         self.gql_resultset = None
-        self.secret_dir = "/tmp/secrets"
+        self.secret_dir = "/data/yak/secrets"
         self.local_ssh_config_file = "{}/.ssh".format(os.path.expanduser('~'))
         self.is_component_specific = False
         self.component_name = None
