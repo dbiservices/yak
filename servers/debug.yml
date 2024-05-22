@@ -2,19 +2,16 @@
 ---
 - name: Check target type
   tags: always
+  hosts: localhost
   gather_facts: no
   vars:
     debug: true
   tasks:
 
-    - delegate_to: localhost
-      shell: "pwd"
+    - shell: "pwd"
 
-    - delegate_to: localhost
-      shell: "ls -la"
+    - shell: "ls -la"
 
-    - delegate_to: localhost
-      shell: "ls -la /"
+    - shell: "ls -la /"
 
-    - delegate_to: localhost
-      shell: "ls -la /workspace/yak"
+    - shell: "ls -la /workspace/yak"
