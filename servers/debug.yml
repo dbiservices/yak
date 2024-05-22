@@ -2,7 +2,6 @@
 ---
 - name: Check target type
   tags: always
-  hosts: "{{ target }}"
   gather_facts: no
   vars:
     debug: true
