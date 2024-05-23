@@ -8,10 +8,10 @@
     debug: true
   tasks:
 
-    - shell: "pwd"
+    - shell: "ls -la /etc/ansible"
 
-    - shell: "ls -la"
+    - shell: "cat /etc/ansible/ansible.cfg"
 
-    - shell: "ls -la .."
+    - shell: "ls -la /root/.ansible"
 
-    - shell: "cat ../.version"
+    - shell: "cat /root/.ansible/ansible.cfg"
