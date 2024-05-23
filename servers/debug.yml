@@ -8,10 +8,4 @@
     debug: true
   tasks:
 
-    - shell: "ls -la /etc/ansible"
-
-    - shell: "cat /etc/ansible/ansible.cfg"
-
-    - shell: "ls -la /root/.ansible"
-
-    - shell: "cat /root/.ansible/ansible.cfg"
+    - shell: "echo $ANSIBLE_ROLES_PATH"
