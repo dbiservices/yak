@@ -49,6 +49,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.debug = False
         self.ssl_verify_certificate = True
         self.yak_ansible_transport_url = None
+        self.yak_core_group_name = "yak"
         self.windows_ansible_user = "Ansible"
         self.default_server_os_type = "linux"
         self.prov_grp_name = "providers"
@@ -207,7 +208,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         providerShapeVariables
                         secrets
                         variables
-                        components
                     }
                 }
                 vComponents(condition: {name: $vComponentsName}) {
@@ -218,8 +218,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         componentTypeName
                         componentTypeVariables
                         subcomponentTypeVariables
-                        componentTypeManifest
-                        groups
+                        groupsServers
                         }
                     }
                 vArtifactsProviders(condition: {isDefault: true}) {
@@ -323,8 +322,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         )
 
     def _populate_providers(self):
-
+        self.inventory.add_group(self.yak_core_group_name)
         self.inventory.add_group(self.prov_grp_name)
+        self.inventory.add_child(self.yak_core_group_name, self.prov_grp_name)
         for provider in self.gql_resultset["vProviders"]["nodes"]:
             self.inventory.add_group(self._fmt_std(provider["name"]))
             self.inventory.add_child(self.prov_grp_name, self._fmt_std(provider["name"].replace("-", "_")))
@@ -335,6 +335,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     def _populate_infrastructures(self):
 
         self.inventory.add_group(self.infra_grp_name)
+        self.inventory.add_child(self.yak_core_group_name, self.infra_grp_name)
         for infra in self.gql_resultset["vInfrastructures"]["nodes"]:
             infra_name = infra["name"].replace("-", "_")
             self.inventory.add_group(infra_name)
@@ -357,6 +358,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     def _populate_servers(self):
 
         self.inventory.add_group(self.server_group_name)
+        self.inventory.add_child(self.yak_core_group_name, self.server_group_name)
         for server in self.gql_resultset["vServers"]["nodes"]:
 
             self.inventory.add_host(server["name"], group=self.server_group_name)
@@ -446,92 +448,21 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component(self):
-        self._populate_component_type()
         self._log_debug(f"Populating component {self.component['name']}...")
-        # Create mergedVariables from the different scopes of variables fetched
         merged_variables = self.component['componentTypeVariables'] | self.component['subcomponentTypeVariables']
         self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
         self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
-        self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
 
-    #     host_list = list()
-    #     for group, hosts in self.component["groups"].items():
-    #         self._log_debug(f"Found group : {group}")
-    #         self.inventory.add_group(group)
-    #         for host in hosts:
-    #             self._log_debug(f"Found host {host['server_name']} part of {group}")
-    #             self.inventory.add_host(host["server_name"], group = group)
-    #             host_list.append(host["server_name"])
+        for group_servers in self.component['groupsServers']:
+            self.inventory.add_group(group_servers["group_name"].lower())
 
-    #     for server in dict(self.inventory.hosts):
-    #         if server not in host_list:
-    #             server_to_remove = self.inventory.get_host(server)
-    #             self.inventory.remove_host(server_to_remove)
+            for server in group_servers['servers']:
+                self.inventory.add_host(server["name"], group = group_servers["group_name"].lower())
+                self._set_hvars(server["name"], "yak_inventory_os_storages", [])
 
-    #     # TODO: Storage?
-    #     # self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
+                for storage_point in server["os_storage"].values():
+                    self._log_debug(f"Populating storage_point: {storage_point}...")
+                    self.inventory.hosts[server["name"]].vars["yak_inventory_os_storages"].append(storage_point)
 
-    # def _populate_component(self):
-
-    #     self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **self.component["mergedVariables"]}
-    #     self.inventory.groups["all"].vars["component_name"] = self.component["name"]
-    #     self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
-    #     self.component_type_name = self.component["componentTypeName"]
-    #     self.inventory.groups["all"].vars["component_type_sub_name"] = self.component["componentTypeSubname"]
-    #     self.component_type_sub_name = self.component["componentTypeSubname"]
-    #     self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
-    #     self.component_type_manifest = self.component["componentTypeManifest"]
-
-    #     # populate sub component type
-    #     if "sub_component_types" not in self.component["componentTypeManifest"]:
-    #         raise AnsibleError("No 'sub_component_types' in the manifest file '{}'.".format(self.component_type_name))
-
-    #     sub_component = None
-    #     for sub_component_item in self.component["componentTypeManifest"]["sub_component_types"]:
-    #         if sub_component_item["name"] == self.component_type_sub_name:
-    #             sub_component = sub_component_item
-    #             break
-
-    #     if sub_component is None:
-    #         raise AnsibleError("No sub component name '{}' in the manifest file of component type '{}'.".format(self.component_type_sub_name, self.component_type_name))
-
-    #     for inventory_map in sub_component["inventory_maps"]:
-    #         self._log_debug("_populate_sub_component_type.sub_component_types.group_name: {}".format(inventory_map["group_name"]))
-    #         if inventory_map["group_name"] in self.inventory.groups:
-    #             raise AnsibleError("Duplicated group name '{}' in inventory_maps of component type'{}'.".format(inventory_map["group_name"], self.component_type_name))
-    #         self.inventory.add_group(inventory_map["group_name"])
-
-    #         # Add hosts to group
-    #         for component_server in self.component["servers"]:
-    #             self.inventory.add_host(component_server["name"], group=component_server["group_name"])
-
-    #             for server in self.gql_resultset["vServers"]["nodes"]:
-    #                 if server["name"] == component_server["name"]:
-    #                     self._populate_server(server)
-
-    #             self._populate_sub_component_type_storage(inventory_map, self.inventory.hosts[component_server["name"]])
-
-
-    # def _populate_sub_component_type_storage(self, inventory_map, target):
-
-    #     target.vars["yak_inventory_os_storages"] = []
-    #     if "storage" in inventory_map:
-    #         storage_variable_name = "yak_manifest_{}".format(inventory_map["storage"])
-    #         self._log_debug("_populate_sub_component_type.storage_variable_name: {}".format(storage_variable_name))
-    #         if storage_variable_name in self.inventory.groups["all"].vars:
-    #             if target.vars["os_type"] not in self.inventory.groups["all"].vars[storage_variable_name]:
-    #                 raise AnsibleError(
-    #                     "No storage for os type '{}' (server '{}') in the variable of inventory_maps of component type '{}'."
-    #                     .format(target.vars["os_type"], target, self.component_type_name)
-    #                 )
-    #             for storage_point in self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]]:
-    #                 target.vars["yak_inventory_os_storages"].append(
-    #                     {**{"storage_point": storage_point}, **self.inventory.groups["all"].vars[storage_variable_name][target.vars["os_type"]][storage_point]}
-    #                 )
-    #         else:
-    #             raise AnsibleError(
-    #                 "No variables '{}' found in the variables of component '{}'."
-    #                 .format(storage_variable_name, self.component_type_name)
-    #             )
