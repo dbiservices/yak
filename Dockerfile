@@ -28,6 +28,8 @@ COPY ./install/yakhelp.lst /yakhelp.lst
 
 RUN mkdir /root/.ssh
 RUN touch /root/.ssh/config 
+RUN mkdir /root/.azure
+RUN touch /root/.azure/azureProfile.json
 RUN chmod u+x /entry-point.sh
 RUN chmod ugo+x /yakhelp.lst
 RUN echo "CI_COMMIT_TAG: $CI_COMMIT_TAG"
