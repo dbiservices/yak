@@ -26,6 +26,8 @@ COPY ./README.md /workspace/yak
 COPY ./install/entry-point.sh /entry-point.sh
 COPY ./install/yakhelp.lst /yakhelp.lst
 
+RUN mkdir /root/.oci
+RUN touch /root/.oci/config
 RUN mkdir /root/.ssh
 RUN touch /root/.ssh/config 
 RUN mkdir /root/.azure
