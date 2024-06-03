@@ -215,6 +215,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         id
                         name
                         subcomponentTypeName
+                        componentTypeManifest
                         componentTypeName
                         componentTypeVariables
                         subcomponentTypeVariables
@@ -454,6 +455,12 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
         self.inventory.groups["all"].vars["subcomponent_type_name"] = self.component["subcomponentTypeName"]
+        # TODO: Remove exposure on component_type_manifest in the future release.
+        print("""\033[0;31m
+        WARNING: the variable 'component_type_manifest' will be deprecated in the future release.
+                 Stop using it and start to rely on the component variables. Thanks :)
+        \033[0m""")
+        self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
 
         for group_servers in self.component['groupsServers']:
             self.inventory.add_group(group_servers["group_name"].lower())
@@ -466,3 +473,53 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self._log_debug(f"Populating storage_point: {storage_point}...")
                     self.inventory.hosts[server["name"]].vars["yak_inventory_os_storages"].append(storage_point)
 
+        # TODO: The variables should be parsed when uploading new component
+        #       type and the variables retrived from the DB, not from the component files.
+        self.component_type_path = "{}/{}".format(self.component_types_path, self.component["componentTypeName"])
+        if os.path.exists("{}/variables".format(self.component_type_path)):
+            for variables_path in Path("{}/variables".format(self.component_type_path)).rglob('*.yml'):
+                variables_yaml = self._load_yaml_file(variables_path, warning_only=True)
+                self.inventory.groups["all"].vars.update(variables_yaml)
+
+        # TODO: The artifact variables should be parsed when uploading new component
+        #       type and the variables retrived from the DB, not from the component files.
+        if os.path.exists("{}/artifacts_requirements.yml".format(self.component_type_path)):
+            artifacts_requirements_yaml = self._load_yaml_file(
+                "{}/artifacts_requirements.yml".format(self.component_type_path),
+                warning_only=True
+            )
+            self.inventory.groups["all"].vars["artifacts_requirements"] = artifacts_requirements_yaml
+
+
+    # TODO: _load_yaml_file() Should be removed when all variables comes from the DB.
+    def _load_yaml_file(self, file_path, warning_only=False):
+        yaml_content = {}
+        self._log_debug(
+            "Opening yaml file '{}'.".format(file_path)
+        )
+        try:
+            file = open(file_path, 'r')
+            self._log_debug(
+                "Loading yaml file '{}'.".format(file_path)
+            )
+            try:
+                yaml_content = yaml.load(file, Loader=yaml.FullLoader)
+            except yaml.YAMLError as ex:
+                if not warning_only:
+                    raise AnsibleError(ex)
+            file.close()
+        except Exception as ex:
+            self._log_debug(
+                "Missing expected yaml file '{}'."
+                .format(file_path)
+            )
+            if not warning_only:
+                raise AnsibleError(ex)
+            else:
+                self._log_warning(
+                    "Missing expected yaml file '{}'."
+                    .format(file_path)
+                )
+
+        self._log_debug(yaml_content)
+        return yaml_content
