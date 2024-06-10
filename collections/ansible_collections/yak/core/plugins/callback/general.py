@@ -59,7 +59,7 @@ class CallbackModule(CallbackBase):
         self.output_separator = "==============================================================================="
 
     def yak_api_update_server(self, server_name, server_state):
-        if self.mode == "database" and self.is_component_specific:
+        if self.mode == "database" and not self.is_component_specific:
             self._display.display(self.output_separator)
             self._display.display(f"= YaK Core: update server '{server_name}' state to '{server_state}'.")
             self._display.display(self.output_separator)
