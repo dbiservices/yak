@@ -446,7 +446,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             server["variables"]["custom_tags"] = merged_tags
 
     def _populate_default_artifacts_provider(self):
-        self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
+        if len(self.gql_resultset["vArtifactsProviders"]["nodes"]) != 0:
+            self.inventory.groups["all"].vars["artifacts"] =  self.gql_resultset["vArtifactsProviders"]["nodes"][0]["variables"]["artifacts"]
 
     def _populate_component(self):
         self._log_debug(f"Populating component {self.component['name']}...")
@@ -462,11 +463,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         \033[0m""")
         self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
 
-        for group_servers in self.component['groupsServers']:
-            self.inventory.add_group(group_servers["group_name"].lower())
+        for group_name, servers_list in self.component['groupsServers'].items():
+            self.inventory.add_group(group_name.lower())
 
-            for server in group_servers['servers']:
-                self.inventory.add_host(server["name"], group = group_servers["group_name"].lower())
+            for server in servers_list:
+                self.inventory.add_host(server["name"], group = group_name.lower())
                 self._set_hvars(server["name"], "yak_inventory_os_storages", [])
 
                 for storage_point in server["os_storage"].values():
