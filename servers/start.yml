@@ -11,7 +11,7 @@
       delegate_to: localhost
       yak.core.yak_inventory_update:
         server_name: "{{ target }}"
-        server_state: deploying
+        server_state: starting
       when: yak_inventory_type == "database"
 
     - include_tasks: "start/{{ provider }}.yml"
