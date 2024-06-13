@@ -26,7 +26,7 @@
       delegate_to: localhost
       yak.core.yak_inventory_update:
         server_name: "{{ target }}"
-        server_state: starting
+        server_state: deploying
       when: yak_inventory_type == "database"
 
     - name: Set the CI_PIPELINE_TAGID tags if exist

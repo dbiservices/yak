@@ -181,6 +181,23 @@ def api_update_server(server_name, server_state=None, private_ip=None, public_ip
     """
     graphql_request_variables = {"pServerName": server_name, "pServerStateName": server_state, "pPrivateIp": private_ip, "pPublicIp": public_ip}
     graphQLRequest(graphql_request, graphql_request_variables)
+    
+def api_update_component(component_name: str, component_type_variables: dict = None, subcomponent_type_variables: dict = None, component_state_name: str=None):
+    graphql_request = """
+    mutation componentUpdate ($pComponentName: String!, $pComponentTypeVariables: JSON, $pSubcomponentTypeVariables: JSON, $pComponentStateName: String! ) {
+        componentUpdate(
+                input: {pComponentName: $pComponentName, 
+                pSubcomponentTypeVariables: $pSubcomponentTypeVariables,
+                pComponentTypeVariables: $pComponentTypeVariables,
+                pComponentStateName: $pComponentStateName}
+            ) { integer } 
+        }
+    """
+    graphql_request_variables = {"pComponentName": component_name, 
+                                 "pComponentTypeVariables": component_type_variables, 
+                                 "pSubcomponentTypeVariables": subcomponent_type_variables,
+                                 "pComponentStateName": component_state_name}
+    graphQLRequest(graphql_request, graphql_request_variables)
 
 def api_get_infrastructure_variables(infrastructure_name):
 
@@ -229,7 +246,7 @@ def graphQLRequest(graphql_request, graphql_request_variables):
         verify=False
     )
     if response.status_code != 200:
-        raise AnsibleError("API error: {}\n".format(response))
+        raise AnsibleError(f"API error: {response}\n{response.text}")
     if "errors" in response.json():
         raise AnsibleError("GraphQL error: {}\n".format(response.json()["errors"][0]["message"]))
     if graphql_request.lstrip().startswith('query'):
