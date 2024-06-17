@@ -184,18 +184,18 @@ def api_update_server(server_name, server_state=None, private_ip=None, public_ip
     
 def api_update_component(component_name: str, component_type_variables: dict = None, subcomponent_type_variables: dict = None, component_state_name: str=None):
     graphql_request = """
-    mutation componentUpdate ($pComponentName: String!, $pComponentTypeVariables: JSON, $pSubcomponentTypeVariables: JSON, $pComponentStateName: String! ) {
+    mutation componentUpdate ($pComponentName: String!, $pBasicVariables: JSON, $pAdvancedVariables: JSON, $pComponentStateName: String! ) {
         componentUpdate(
                 input: {pComponentName: $pComponentName, 
-                pSubcomponentTypeVariables: $pSubcomponentTypeVariables,
-                pComponentTypeVariables: $pComponentTypeVariables,
+                pAdvancedVariables: $pAdvancedVariables,
+                pBasicVariables: $pBasicVariables,
                 pComponentStateName: $pComponentStateName}
             ) { integer } 
         }
     """
     graphql_request_variables = {"pComponentName": component_name, 
-                                 "pComponentTypeVariables": component_type_variables, 
-                                 "pSubcomponentTypeVariables": subcomponent_type_variables,
+                                 "pBasicVariables": component_type_variables, 
+                                 "pAdvancedVariables": subcomponent_type_variables,
                                  "pComponentStateName": component_state_name}
     graphQLRequest(graphql_request, graphql_request_variables)
 
