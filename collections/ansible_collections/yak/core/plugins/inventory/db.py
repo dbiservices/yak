@@ -217,8 +217,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         subcomponentTypeName
                         componentTypeManifest
                         componentTypeName
-                        componentTypeVariables
-                        subcomponentTypeVariables
+                        basicVariables
+                        advancedVariables
                         groupsServers
                         }
                     }
@@ -451,7 +451,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_component(self):
         self._log_debug(f"Populating component {self.component['name']}...")
-        merged_variables = self.component['componentTypeVariables'] | self.component['subcomponentTypeVariables']
+        merged_variables = self.component['advancedVariables'] | self.component['basicVariables']
         self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
         self.inventory.groups["all"].vars["component_type_name"] = self.component["componentTypeName"]
