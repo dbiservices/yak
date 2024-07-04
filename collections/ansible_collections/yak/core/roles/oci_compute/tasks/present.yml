@@ -1,9 +1,14 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 - include_tasks: checks.yml
+
 - block:
     - include_tasks: create_{{ os_type }}.yml
     - include_tasks: post_config_{{ os_type }}.yml
   when: filtered_instance_id|length == 0
-- debug:
-    msg: "The instance already exists. Skipping instance creation..."
-  when: filtered_instance_id|length > 0
+
+- when: filtered_instance_id|length > 0
+  block:
+    - debug:
+        msg: "The instance already exists. Skipping instance creation..."
+
+    - include_tasks: started.yml
