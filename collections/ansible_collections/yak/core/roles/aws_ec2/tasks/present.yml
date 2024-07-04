@@ -13,9 +13,4 @@
         msg: "The instance already exists. Skipping instance creation..."
 
     - name: Start EC2 instance if not already started
-      delegate_to: localhost
-      amazon.aws.ec2_instance:
-        region: "{{ region_id }}"
-        state: started
-        instance_ids:
-          - "{{ r_ec2_instance_info.instances[0].instance_id }}"
+      include_tasks: started.yml
