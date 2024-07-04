@@ -8,7 +8,7 @@
 
 - name: Fails if no instance exists
   ansible.builtin.fail:
-    msg: No instance '{{ server_name }}' found in state 'running', 'shutting-down', 'stopping' or stopped'.
+    msg: No instance '{{ server_name }}' found in state 'pending', 'running', 'shutting-down', 'stopping' or 'stopped'.
   when: r_ec2_instance_info.instances|length != 1
 
 - name: Stop EC2 instance
