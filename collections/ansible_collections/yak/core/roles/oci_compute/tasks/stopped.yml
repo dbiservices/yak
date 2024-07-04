@@ -5,7 +5,7 @@
   oracle.oci.oci_compute_instance_facts:
     compartment_id: "{{ compartment_id }}"
     display_name: "{{ display_name }}"
-    lifecycle_state: RUNNING
+    #lifecycle_state: RUNNING # No reason to check the state and fail if no running instance found
   register: r_oci_compute_instance_facts
   failed_when: r_oci_compute_instance_facts.instances|length != 1
 
