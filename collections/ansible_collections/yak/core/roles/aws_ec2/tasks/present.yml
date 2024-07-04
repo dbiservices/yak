@@ -12,5 +12,5 @@
     - debug:
         msg: "The instance already exists. Skipping instance creation..."
 
-    - name: Start EC2 instance if not already started
+    - name: Starting the instance
       include_tasks: started.yml

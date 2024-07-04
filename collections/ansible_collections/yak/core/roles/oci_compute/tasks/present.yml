@@ -11,4 +11,5 @@
     - debug:
         msg: "The instance already exists. Skipping instance creation..."
 
-    - include_tasks: started.yml
+    - name: Starting the instance
+      include_tasks: started.yml
