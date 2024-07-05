@@ -8,5 +8,13 @@
   when: r_get_vm_state|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length == 0
 
 - when: r_get_vm_state|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length > 0
-  fail:
-    msg: "Cannot deploy as the instance already exists."
+  block:
+    - fail:
+        msg: "Cannot Deploy as the instance already exists."
+  always:
+    - name: Update server state
+      delegate_to: localhost
+      yak.core.yak_inventory_update:
+        server_name: "{{ target }}"
+        server_state: stopped
+      when: yak_inventory_type == "database"
