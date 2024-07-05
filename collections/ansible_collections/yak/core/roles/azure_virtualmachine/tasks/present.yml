@@ -8,9 +8,5 @@
   when: r_get_vm_state|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length == 0
 
 - when: r_get_vm_state|json_query('vms[?state==`present` && name==`'+server_name+'`]')|length > 0
-  block:
-    - debug:
-        msg: "The instance already exists. Skipping instance creation..."
-
-    - name: Starting the instance
-      include_tasks: started.yml
+  fail:
+    msg: "Cannot deploy as the instance already exists."

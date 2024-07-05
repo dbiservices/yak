@@ -7,9 +7,5 @@
   when: filtered_instance_id|length == 0
 
 - when: filtered_instance_id|length > 0
-  block:
-    - debug:
-        msg: "The instance already exists. Skipping instance creation..."
-
-    - name: Starting the instance
-      include_tasks: started.yml
+  fail:
+    msg: "Cannot deploy as the instance already exists."

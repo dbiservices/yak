@@ -8,9 +8,6 @@
   when: number_of_instances | int == 0
 
 - when: number_of_instances | int > 0
-  block:
-    - debug:
-        msg: "The instance already exists. Skipping instance creation..."
+  fail:
+    msg: "Cannot Deploy as the instance already exists."
 
-    - name: Starting the instance
-      include_tasks: started.yml
