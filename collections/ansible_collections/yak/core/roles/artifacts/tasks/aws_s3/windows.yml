@@ -1,5 +1,16 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- block:
+  - name: Get the current caller identity - Verifying credentials are valid
+    delegate_to: localhost
+    amazon.aws.aws_caller_info:
+    environment:
+      AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+      AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+      AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+  rescue:
+  - fail:
+      msg: 'Please ensure your AWS credentials are valid.'
 
 - name: Install NuGet Package
   become: yes
