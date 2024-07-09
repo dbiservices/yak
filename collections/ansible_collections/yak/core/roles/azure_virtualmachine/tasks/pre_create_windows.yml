@@ -1,0 +1,9 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Check maximun length for azure virtual machine name
+  ansible.builtin.assert:
+    that:
+      - server_name | length >= 1
+      - server_name | length <= 15
+      - server_name is match('^(\w+(-\w+)*\[a-zA-Z]+)$')
+    fail_msg: "Windows computer name: {{ server_name }} cannot be more than 15 characters long. It cannot contains any special characters except hyphen. It cannot end with hyphen."
