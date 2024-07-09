@@ -5,7 +5,7 @@ Role to apply the minimum requirements (minimal packages, hostname, and server t
 ## Requirements
 
 - `host_name`.
-- `time_zone`:
+- `role_time_zone`:
   - default: `Europe/Zurich`.
 - `os_type`:
   - default `linux`.
