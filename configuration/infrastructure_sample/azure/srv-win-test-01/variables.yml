@@ -9,7 +9,7 @@ public_ip:
     mode: auto
     ip:
 os_type: windows
-time_zone: UTC
+role_time_zone: UTC
 #vm_size: Standard_B2ms
 vm_size: Standard_D2as_v5 #without tempororary Storage : Issue yak4all/yak#5
 image:

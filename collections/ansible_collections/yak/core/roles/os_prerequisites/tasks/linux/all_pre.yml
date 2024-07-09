@@ -12,8 +12,8 @@
     line: "{{ ansible_default_ipv4.address }} {{ host_name }} {{ host_name }}.{{ domain_name }}"
     state: present
 
-- name: Set timezone to {{ time_zone }}
+- name: Set timezone to {{ role_time_zone }}
   become: yes
   community.general.timezone:
-    name: "{{ time_zone }}"
+    name: "{{ role_time_zone }}"
 
