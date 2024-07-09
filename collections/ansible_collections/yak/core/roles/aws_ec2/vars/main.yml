@@ -2,7 +2,7 @@
 ---
 role_root_device_ebs_option: #https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
     volume_type: "{{ root_device_ebs_option.volume_type | default('gp3') }}"
-    volume_size: "{{ root_device_ebs_option.volume_size | default(role_os_default_values[os_type].root_device_ebs_default_volume_size) | default(role_os_default_values.default.root_device_ebs_default_volume_size) }}"
+    volume_size: "{{ root_device_ebs_option.volume_size | default(role_os_default_values[os_type|lower].root_device_ebs_default_volume_size) | default(role_os_default_values.default.root_device_ebs_default_volume_size) }}"
     encrypted: "{{ root_device_ebs_option.encrypted | default(true) }}"
 
 role_os_default_values:

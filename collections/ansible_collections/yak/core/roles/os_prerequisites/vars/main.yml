@@ -1,7 +1,7 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 # vars file for os_prerequisites
-role_time_zone: "{{ time_zone | default(role_os_default_values[os_type].time_zone) | default(role_os_default_values.default.time_zone) }}"
+role_time_zone: "{{ time_zone | default(role_os_default_values[os_type|lower].time_zone) | default(role_os_default_values.default.time_zone) }}"
 role_dns:
   type: "{{ dns.type|default('none')}}"              # managed, custom, none
   domain_name: "{{ dns.domain_name|default(omit)}}"  # The DNS name of the domain to which the targeted Windows host should be joined.
