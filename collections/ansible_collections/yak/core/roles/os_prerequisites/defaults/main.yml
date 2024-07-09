@@ -2,13 +2,6 @@
 ---
 # defaults file for os_prerequisites
 host_name: localhost
-role_time_zone: Europe/Zurich
 os_type: linux
 domain_name: local.local
-
-role_dns:
-  type: "{{ dns.type|default('none')}}"              # managed, custom, none
-  domain_name: "{{ dns.domain_name|default(omit)}}"  # The DNS name of the domain to which the targeted Windows host should be joined.
-  username: "{{ dns.username|default(omit)}}"        # Username of a domain admin for the target domain (required to join or leave the domain).
-  password: "{{ dns.password|default(omit)}}"        # Password for the specified username.
 

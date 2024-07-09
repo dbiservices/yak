@@ -17,7 +17,7 @@ ami:
 
 instance_type: t3.large
 os_type: windows
-role_time_zone: UTC
+time_zone: UTC
 
 ## Default OS disk storage settings
 ## --------------------------------

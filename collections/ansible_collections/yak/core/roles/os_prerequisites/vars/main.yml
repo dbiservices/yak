@@ -1,3 +1,18 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 # vars file for os_prerequisites
+role_time_zone: "{{ time_zone | default(role_os_default_values[os_type].time_zone) | default(role_os_default_values.default.time_zone) }}"
+role_dns:
+  type: "{{ dns.type|default('none')}}"              # managed, custom, none
+  domain_name: "{{ dns.domain_name|default(omit)}}"  # The DNS name of the domain to which the targeted Windows host should be joined.
+  username: "{{ dns.username|default(omit)}}"        # Username of a domain admin for the target domain (required to join or leave the domain).
+  password: "{{ dns.password|default(omit)}}"        # Password for the specified username.
+
+
+role_os_default_values:
+    windows:
+        time_zone: "W. Europe Standard Time"
+    linux:
+        time_zone: "Europe/Zurich"
+    default:
+        time_zone: "Europe/Zurich"
