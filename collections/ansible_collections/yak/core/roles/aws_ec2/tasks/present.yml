@@ -1,5 +1,10 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-- include_tasks: get_number_of_instances.yml
+- include_tasks: get_ec2_instance_info.yml
+
+- delegate_to: localhost
+  set_fact:
+    number_of_instances: "{{ r_ec2_instance_info.instances | length }}"
+
 - block:
   - include_tasks: set_key_if_not_exists.yml
   - include_tasks: derive_image_id.yml
