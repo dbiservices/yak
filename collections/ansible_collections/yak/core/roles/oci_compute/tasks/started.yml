@@ -5,7 +5,7 @@
   oracle.oci.oci_compute_instance_facts:
     compartment_id: "{{ compartment_id }}"
     display_name: "{{ display_name }}"
-    #lifecycle_state: STOPPED # No reason to check the state and fail the task if no stopped instance found
+    lifecycle_state: STOPPED
   register: r_oci_compute_instance_facts
   failed_when: r_oci_compute_instance_facts.instances|length != 1
 
