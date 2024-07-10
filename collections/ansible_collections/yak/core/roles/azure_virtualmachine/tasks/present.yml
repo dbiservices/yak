@@ -11,10 +11,10 @@
   block:
     - fail:
         msg: "Cannot Deploy as the instance already exists."
-  always:
-    - name: Update server state
-      delegate_to: localhost
-      yak.core.yak_inventory_update:
-        server_name: "{{ target }}"
-        server_state: stopped
-      when: yak_inventory_type == "database"
+  # always:
+  #   - name: Update server state
+  #     delegate_to: localhost
+  #     yak.core.yak_inventory_update:
+  #       server_name: "{{ target }}"
+  #       server_state: stopped
+  #     when: yak_inventory_type == "database"
