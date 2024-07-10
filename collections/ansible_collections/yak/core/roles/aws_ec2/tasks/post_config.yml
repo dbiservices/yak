@@ -1,20 +1,29 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 - name: Get instance info to find ID
-  include_tasks: get_ec2_instance_info.yml
-  apply:
-    until: host_ip_access == 'private_ip' or (r_ec2_instance_info.instances[0].public_ip_address is defined and r_ec2_instance_info.instances[0].public_ip_address != "") 
-    retries: 12
-    delay: 10
+  ansible.builtin.include_tasks: 
+    file: get_ec2_instance_info.yml
+  vars:
+    _get_ec2_instance_info_until: host_ip_access == 'private_ip' or (r_ec2_instance_info.instances[0].public_ip_address is defined and r_ec2_instance_info.instances[0].public_ip_address != "")
+    _get_ec2_instance_info_retries: 20
+    _get_ec2_instance_info_delay: 5
 
 - debug: var=r_ec2_instance_info
   when: debug | bool
+
+- set_fact:
+    administrative_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address }}"
+  when: host_ip_access == 'private_ip'
+
+- set_fact:
+    administrative_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address }}"
+  when: host_ip_access == 'public_ip'
 
 - name: Update yak inventory
   delegate_to: localhost
   yak.core.yak_inventory_update:
     server_name: "{{ inventory_hostname }}"
-    private_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address |default(None) }}"
-    public_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address |default(None) }}"
+    private_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address | default(None) }}"
+    public_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address | default(None) }}"
 
 - name: Refresh inventory to ensure IPs are up to date
   ansible.builtin.meta: refresh_inventory
@@ -30,22 +39,18 @@
     server_state: running
   when: yak_inventory_type == "database"
 
-- set_fact:
-    administrative_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address }}"
-  when: host_ip_access == 'private_ip'
-
-- set_fact:
-    administrative_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address }}"
-  when: host_ip_access == 'public_ip'
-
-- name: Return facts to playbook
+- name: Prepare Return facts to playbook
   delegate_to: localhost
-  set_fact:
-    returned:
-      instance: "{{ r_ec2_instance_info.instances[0] }}"
-      administrative_ip: "{{ administrative_ip }}"
-      private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
-      public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+  block:
+    - set_fact:
+        _returned:
+          #instance: "{{ r_ec2_instance_info.instances[0] }}" #Is that needed ? 
+          administrative_ip: "{{ administrative_ip }}"
+          private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
+          public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+
+    - set_fact:
+        returned: '{{ returned|default({}) | ansible.builtin.combine(_returned, recursive=true) }}'
 
 - include_tasks: "update_detail_file.yml"
 

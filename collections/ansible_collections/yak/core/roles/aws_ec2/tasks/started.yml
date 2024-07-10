@@ -19,4 +19,4 @@
     instance_ids:
       - "{{ r_ec2_instance_info.instances[0].instance_id }}"
 
-- include_tasks: "post_config_{{ os_type }}.yml"
+- include_tasks: "post_config.yml"
