@@ -1,5 +1,7 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- include_tasks: pre_create_windows.yml
+
 - name: Set password for Windows Admin account
   no_log: true
   set_fact:

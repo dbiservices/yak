@@ -1,8 +1,8 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Set timezone to {{ time_zone }} (not reboot needed)
+- name: Set timezone to {{ role_time_zone }} (not reboot needed)
   community.windows.win_timezone:
-    timezone: "{{ time_zone }}"
+    timezone: "{{ role_time_zone }}"
   register: r_win_timezone
 
 - name: Define hostname to {{ host_name }}
