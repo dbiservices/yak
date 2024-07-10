@@ -1,6 +1,8 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Get the list of existing instances not terminated
+
+- when: not get_ec2_instance_info_wait_for_public_ip | default(false)
+  name: Get the list of existing instances not terminated
   delegate_to: localhost
   amazon.aws.ec2_instance_info:
     region: "{{ region_id }}"
@@ -8,3 +10,23 @@
       "tag:Name": "{{ server_name }}"
       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
   register: r_ec2_instance_info
+  failed_when: r_ec2_instance_info.instances|length > 1
+
+
+# - when: get_ec2_instance_info_wait_for_public_ip | default(false)
+#   name: Get the list of existing instances not terminated and wait until public IP is available
+#   delegate_to: localhost
+#   amazon.aws.ec2_instance_info:
+#     region: "{{ region_id }}"
+#     filters:
+#       "tag:Name": "{{ server_name }}"
+#       instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+#   register: r_ec2_instance_info
+#   until: (r_ec2_instance_info.instances[0].public_ip_address is defined and r_ec2_instance_info.instances[0].public_ip_address != "") 
+#   retries: 12
+#   delay: 10
+
+# - when: r_ec2_instance_info.instances|length > 1
+#   name: Fail if more than one instance with tag:Name identical
+#   ansible.builtin.fail:
+#     msg: 'Failing due to having multiple instances with identical tag:Name = {{ server_name }}'

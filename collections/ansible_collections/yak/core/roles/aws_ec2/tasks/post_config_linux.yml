@@ -1,45 +1,11 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-- name: Get instance info to find ID
-  include_tasks: get_ec2_instance_info.yml
-
-- when: r_ec2_instance_info.instances|length > 1
-  name: Fail if more than one instance with tag:Name identical
-  ansible.builtin.fail:
-    msg: 'Failing due to having multiple instances with identical tag:Name = {{ server_name }}'
-
-- debug: var=r_ec2_instance_info
-  when: debug | bool
-
-- name: Update yak inventory
-  delegate_to: localhost
-  yak.core.yak_inventory_update:
-    server_name: "{{ inventory_hostname }}"
-    private_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address |default(None) }}"
-    public_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address |default(None) }}"
-
-- name: Refresh inventory to ensure IPs are up to date
-  ansible.builtin.meta: refresh_inventory
-
-- name: Create the ssh config file if not exists
-  delegate_to: localhost
-  copy:
-    content: ""
-    dest: "{{ yak_local_ssh_config_file }}"
-    force: no
-    mode: 0600
-
-- set_fact:
-    administrative_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address }}"
-  when: host_ip_access == 'private_ip'
-
-- set_fact:
-    administrative_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address }}"
-  when: host_ip_access == 'public_ip'
 
 - name: Insert/Update ssh config file
   delegate_to: localhost
   blockinfile:
     path: "{{ yak_local_ssh_config_file }}"
+    create: true
+    mode: 0600
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
     block: |
       Host {{ administrative_ip }} {{ inventory_hostname }}
@@ -50,22 +16,3 @@
           IdentityFile {{ local_ssh_key.path }}/{{ local_ssh_key.private_key_name }}
           ServerAliveInterval 60
 
-- include_tasks: "wait_for_connection_{{ os_type }}.yml"
-
-- name: Update server state
-  delegate_to: localhost
-  yak.core.yak_inventory_update:
-    server_name: "{{ target }}"
-    server_state: running
-  when: yak_inventory_type == "database"
-
-- name: Return facts to playbook
-  delegate_to: localhost
-  set_fact:
-    returned:
-      instance: "{{ r_ec2_instance_info.instances[0] }}"
-      administrative_ip: "{{ administrative_ip }}"
-      private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
-      public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
-
-- include_tasks: "update_detail_file.yml"
