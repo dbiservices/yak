@@ -106,6 +106,6 @@
   delegate_to: localhost
   no_log: True
   set_fact:
-    returned: 
+    returned_instance_configuration: 
       os_admin_username: "{{ ansible_user }}"
       os_admin_password: "{{ os_admin_password }}"

@@ -13,4 +13,4 @@
     regexp: '^{{ item.key }}'
     line: '{{ item.key }}: "{{ item.value }}"'
     create: true
-  loop: '{{ returned | dict2items }}'
+  loop: '{{ returned_instance_configuration | dict2items }}'

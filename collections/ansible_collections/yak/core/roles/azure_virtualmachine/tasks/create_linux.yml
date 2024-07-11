@@ -49,7 +49,7 @@
 
 - delegate_to: localhost
   set_fact:
-    returned:
+    returned_instance_configuration:
       instance: "{{ r_azure.ansible_facts.azure_vm }}"
 
 - block:

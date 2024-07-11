@@ -44,14 +44,14 @@
   delegate_to: localhost
   block:
     - set_fact:
-        _returned:
+        _returned_instance_configuration:
           #instance: "{{ r_ec2_instance_info.instances[0] }}" #Is that needed ? 
           administrative_ip: "{{ administrative_ip }}"
           private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
           public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
 
     - set_fact:
-        returned: '{{ returned|default({}) | ansible.builtin.combine(_returned, recursive=true) }}'
+        returned_instance_configuration: '{{ returned_instance_configuration|default({}) | ansible.builtin.combine(_returned_instance_configuration, recursive=true) }}'
 
 - include_tasks: "update_detail_file.yml"
 
