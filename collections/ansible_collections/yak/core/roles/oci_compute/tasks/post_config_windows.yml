@@ -14,7 +14,6 @@
 
 - name: Wait for the OS to be reachable by YaK
   ansible.builtin.wait_for_connection:
-    delay: 60
     timeout: 600
 
 - name: Update server state
