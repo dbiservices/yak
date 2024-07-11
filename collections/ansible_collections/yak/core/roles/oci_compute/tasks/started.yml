@@ -17,4 +17,4 @@
     action: start
     action_type: softreset
 
-- include_tasks: "post_config_{{ os_type }}.yml"
+- include_tasks: "post_config.yml"
