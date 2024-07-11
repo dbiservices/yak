@@ -10,15 +10,7 @@
 - name: Refresh inventory to ensure IPs are up to date
   ansible.builtin.meta: refresh_inventory
 
-- name: Create the ssh config file if not exists
-  delegate_to: localhost
-  copy:
-    content: ""
-    dest: "{{ yak_local_ssh_config_file }}"
-    force: no
-    mode: 0600
-
-- include_tasks: post_config_{{ os_type }}.yml"
+- include_tasks: "post_config_{{ os_type }}.yml"
 
 - name: Wait for connection to the server
   ansible.builtin.wait_for_connection:
@@ -35,14 +27,14 @@
   delegate_to: localhost
   block:
     - set_fact:
-      no_log: true
         _returned_instance_configuration:
           administrative_ip: "{{ administrative_ip }}"
           private_ip_address: "{{ azure_private_ip }}"
           public_ip_address: "{{ azure_public_ip|default('none') }}"
+      no_log: true
 
     - set_fact:
-      no_log: true
         returned_instance_configuration: '{{ returned_instance_configuration|default({}) | ansible.builtin.combine(_returned_instance_configuration, recursive=true) }}'
+      no_log: true
 
 - include_tasks: "update_detail_file.yml"

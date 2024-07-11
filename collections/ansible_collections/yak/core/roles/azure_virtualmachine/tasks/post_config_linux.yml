@@ -4,6 +4,8 @@
   delegate_to: localhost
   blockinfile:
     path: "{{ yak_local_ssh_config_file }}"
+    create: true
+    mode: 0600
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
     block: |
       Host {{ administrative_ip }} {{ inventory_hostname }}
