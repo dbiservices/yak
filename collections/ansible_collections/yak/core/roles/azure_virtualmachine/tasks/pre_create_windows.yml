@@ -5,5 +5,6 @@
     that:
       - server_name | length >= 1
       - server_name | length <= 15
-      - server_name is match('^(\w+(-\w+)*\[a-zA-Z]+)$')
+      - server_name is match('^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)$') 
+      - server_name is search('[a-zA-Z]') #At least a word characters
     fail_msg: "Windows computer name: {{ server_name }} cannot be more than 15 characters long. It cannot contains any special characters except hyphen. It cannot end with hyphen."

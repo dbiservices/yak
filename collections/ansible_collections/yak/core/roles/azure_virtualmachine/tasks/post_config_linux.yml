@@ -1,29 +1,11 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- include_tasks: derive_variables.yml
-
-- name: Update yak inventory
-  delegate_to: localhost
-  yak.core.yak_inventory_update:
-    server_name: "{{ inventory_hostname }}"
-    private_ip: "{{ azure_private_ip|default(None) }}"
-    public_ip: "{{ azure_public_ip|default(None) }}"
-
-- name: Refresh inventory to ensure IPs are up to date
-  ansible.builtin.meta: refresh_inventory
-
-- name: Create the ssh config file if not exists
-  delegate_to: localhost
-  copy:
-    content: ""
-    dest: "{{ yak_local_ssh_config_file }}"
-    force: no
-    mode: 0600
-
 - name: Insert/Update ssh config file
   delegate_to: localhost
   blockinfile:
     path: "{{ yak_local_ssh_config_file }}"
+    create: true
+    mode: 0600
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
     block: |
       Host {{ administrative_ip }} {{ inventory_hostname }}
@@ -33,23 +15,3 @@
           StrictHostKeyChecking no
           IdentityFile {{ ansible_ssh_private_key_file }}
           ServerAliveInterval 60
-
-- include_tasks: "wait_for_connection_{{ os_type }}.yml"
-
-- name: Update server state
-  delegate_to: localhost
-  yak.core.yak_inventory_update:
-    server_name: "{{ target }}"
-    server_state: running
-  when: yak_inventory_type == "database"
-
-- name: Return facts to playbook
-  delegate_to: localhost
-  set_fact:
-    returned_instance_configuration:
-      instance: "{{ r_azure_rm_virtualmachine_info }}"
-      administrative_ip: "{{ administrative_ip }}"
-      private_ip_address: "{{ azure_private_ip }}"
-      public_ip_address: "{{ azure_public_ip|default('none') }}"
-
-- include_tasks: "update_detail_file.yml"
