@@ -6,6 +6,15 @@
   - include_tasks: "create_{{ os_type }}.yml"
   - include_tasks: post_config_{{ os_type }}.yml
   when: number_of_instances | int == 0
-- debug:
-    msg: "The instance already exists. Skipping instance creation..."
-  when: number_of_instances | int > 0
+
+- when: number_of_instances | int > 0
+  block:
+    - fail:
+        msg: "Cannot Deploy as the instance already exists."
+  # always:
+  #   - name: Update server state
+  #     delegate_to: localhost
+  #     yak.core.yak_inventory_update:
+  #       server_name: "{{ target }}"
+  #       server_state: stopped
+  #     when: yak_inventory_type == "database"

@@ -1,20 +1,14 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Get instance ID
-  delegate_to: localhost
-  amazon.aws.ec2_instance_info:
-    region: "{{ region_id }}"
-    filters:
-      "tag:Name": "{{ server_name }}"
-      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
-  register: r_ec2_instance_info
-
+- name: Get instance info to find ID
+  include_tasks: get_ec2_instance_info.yml
+  
 - debug: var=r_ec2_instance_info
   when: debug | bool
 
 - name: Fails if no instance exists
   ansible.builtin.fail:
-    msg: No instance '{{ server_name }}' found in state 'running', 'shutting-down', 'stopping' or stopped'.
+    msg: No instance '{{ server_name }}' found in state 'pending', 'running', 'shutting-down', 'stopping' or 'stopped'.
   when: r_ec2_instance_info.instances|length != 1
 
 - name: Stop EC2 instance
