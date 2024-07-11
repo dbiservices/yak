@@ -5,19 +5,19 @@
     delegate_to: localhost
     yak.core.yak_inventory_update:
       server_name: "{{ inventory_hostname }}"
-      private_ip: "{{ returned.private_ip_address|default(None) }}"
-      public_ip: "{{ returned.public_ip_address|default(None) }}"
+      private_ip: "{{ returned_instance_configuration.private_ip_address|default(None) }}"
+      public_ip: "{{ returned_instance_configuration.public_ip_address|default(None) }}"
 
   - debug:
       msg:
         - "The instance is ready. Connection details:"
         - "  administrative_ip: {{ administrative_ip }}"
-        - "  private_ip: {{ returned.private_ip_address }}"
-        - "  public_ip: {{ returned.public_ip_address }}"
+        - "  private_ip: {{ returned_instance_configuration.private_ip_address }}"
+        - "  public_ip: {{ returned_instance_configuration.public_ip_address }}"
 
   - debug:
       msg:
-        - "  Windows user/password: {{ ansible_user }}/{{ returned.os_admin_password }}"
+        - "  Windows user/password: {{ ansible_user }}/{{ returned_instance_configuration.os_admin_password }}"
     when: os_type == 'windows'
-  when: returned.private_ip_address is defined
+  when: returned_instance_configuration.private_ip_address is defined
 ...

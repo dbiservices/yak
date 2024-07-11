@@ -25,7 +25,7 @@
   delegate_to: localhost
   no_log: True
   set_fact:
-    returned:
+    returned_instance_configuration:
       instance: "{{ r_azure_rm_virtualmachine_info }}"
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ azure_private_ip }}"

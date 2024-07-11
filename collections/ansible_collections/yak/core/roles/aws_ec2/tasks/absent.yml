@@ -3,11 +3,6 @@
 - name: Get instance info to find ID
   include_tasks: get_ec2_instance_info.yml
 
-- when: r_ec2_instance_info.instances|length > 1
-  name: Fail if more than one instance with tag:Name identical
-  ansible.builtin.fail:
-    msg: 'Failing due to having multiple instances with identical tag:Name = {{ server_name }}'
-
 - debug: var=r_ec2_instance_info
   delegate_to: localhost
   when: debug|bool

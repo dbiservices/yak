@@ -11,9 +11,9 @@
   ansible.builtin.copy:
     dest: "~/yak/configuration/infrastructure/.yak/server.{{ target|replace('/','.') }}"
     content: |
-      administrative_ip: "{{ returned.administrative_ip|default('none')  }}"
-      private_ip_address: "{{ returned.private_ip_address|default('none')  }}"
-      public_ip_address: "{{ returned.public_ip_address|default('none') }}"
-      os_admin_username: "{{ returned.os_admin_username|default('none') }}"
-      os_admin_password: "{{ returned.os_admin_password|default('none') }}"
+      administrative_ip: "{{ returned_instance_configuration.administrative_ip|default('none')  }}"
+      private_ip_address: "{{ returned_instance_configuration.private_ip_address|default('none')  }}"
+      public_ip_address: "{{ returned_instance_configuration.public_ip_address|default('none') }}"
+      os_admin_username: "{{ returned_instance_configuration.os_admin_username|default('none') }}"
+      os_admin_password: "{{ returned_instance_configuration.os_admin_password|default('none') }}"
 ...

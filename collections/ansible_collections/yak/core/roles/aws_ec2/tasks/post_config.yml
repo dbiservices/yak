@@ -1,0 +1,64 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+- name: Get instance info to find ID
+  ansible.builtin.include_tasks: 
+    file: get_ec2_instance_info.yml
+  vars:
+    _get_ec2_instance_info_until: host_ip_access == 'private_ip' or (r_ec2_instance_info.instances[0].public_ip_address is defined and r_ec2_instance_info.instances[0].public_ip_address != "")
+    _get_ec2_instance_info_retries: 20
+    _get_ec2_instance_info_delay: 5
+
+- debug: var=r_ec2_instance_info
+  when: debug | bool
+
+- set_fact:
+    administrative_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address }}"
+  when: host_ip_access == 'private_ip'
+
+- set_fact:
+    administrative_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address }}"
+  when: host_ip_access == 'public_ip'
+
+- name: Update yak inventory
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ inventory_hostname }}"
+    private_ip: "{{ r_ec2_instance_info.instances[0].private_ip_address | default(None) }}"
+    public_ip: "{{ r_ec2_instance_info.instances[0].public_ip_address | default(None) }}"
+
+- name: Refresh inventory to ensure IPs are up to date
+  ansible.builtin.meta: refresh_inventory
+
+- include_tasks: "post_config_{{ os_type }}.yml"
+
+- name: Wait for connection to the server
+  ansible.builtin.wait_for_connection:
+
+- name: Update server state
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ target }}"
+    server_state: running
+  when: yak_inventory_type == "database"
+
+- name: Prepare Return facts to playbook
+  delegate_to: localhost
+  block:
+    - set_fact:
+        _returned_instance_configuration:
+          #instance: "{{ r_ec2_instance_info.instances[0] }}" #Is that needed ? 
+          administrative_ip: "{{ administrative_ip }}"
+          private_ip_address: "{{ r_ec2_instance_info.instances[0].private_ip_address|default(None) }}"
+          public_ip_address: "{{ r_ec2_instance_info.instances[0].public_ip_address|default(None) }}"
+
+    - set_fact:
+        returned_instance_configuration: '{{ returned_instance_configuration|default({}) | ansible.builtin.combine(_returned_instance_configuration, recursive=true) }}'
+
+- include_tasks: "update_detail_file.yml"
+
+
+
+
+
+
+
+
