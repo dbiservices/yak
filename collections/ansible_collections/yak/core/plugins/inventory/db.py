@@ -451,6 +451,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_component(self):
         self._log_debug(f"Populating component {self.component['name']}...")
+        if self.component.get('groupsServers') is None:
+            raise AnsibleError(f"No servers are assigned to component {self.component['name']} !!")
         merged_variables = self.component['advancedVariables'] | self.component['basicVariables']
         self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
@@ -464,6 +466,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
 
         global_component_servers_list = []
+        
         for group_name, servers_list in self.component['groupsServers'].items():
             self.inventory.add_group(group_name.lower())
             global_component_servers_list.extend([server["name"] for server in servers_list])
