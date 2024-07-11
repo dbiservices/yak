@@ -30,7 +30,8 @@
 
 - include_tasks: "post_config_{{ os_type }}.yml"
 
-- include_tasks: "wait_for_connection_{{ os_type }}.yml"
+- name: Wait for connection to the server
+  ansible.builtin.wait_for_connection:
 
 - name: Update server state
   delegate_to: localhost
