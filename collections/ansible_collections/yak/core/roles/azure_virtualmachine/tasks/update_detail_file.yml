@@ -8,12 +8,9 @@
 - name: Creating the instance file with instance details
   delegate_to: localhost
   no_log: True
-  ansible.builtin.copy:
-    dest: "~/yak/configuration/infrastructure/.yak/server.{{ target|replace('/','.') }}"
-    content: |
-      administrative_ip: "{{ returned.administrative_ip|default('none')  }}"
-      private_ip_address: "{{ returned.private_ip_address|default('none')  }}"
-      public_ip_address: "{{ returned.public_ip_address|default('none') }}"
-      os_admin_username: "{{ returned.os_admin_username|default('none') }}"
-      os_admin_password: "{{ returned.os_admin_password|default('none') }}"
-...
+  ansible.builtin.lineinfile:
+    path: "~/yak/configuration/infrastructure/.yak/server.{{ target|replace('/','.') }}"
+    regexp: '^{{ item.key }}'
+    line: '{{ item.key }}: "{{ item.value }}"'
+    create: true
+  loop: '{{ returned_instance_configuration | dict2items }}'

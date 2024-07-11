@@ -46,6 +46,7 @@
   delegate_to: localhost
   amazon.aws.ec2_instance:
     region: "{{ region_id }}"
+    state: "started"
     key_name: "{{ machine_name }}"
     instance_type: "{{ instance_type }}"
     image:
@@ -105,11 +106,6 @@
   delegate_to: localhost
   no_log: True
   set_fact:
-    returned:
-      instance: "{{ r_aws.instances[0] }}"
-      administrative_ip: "{{ administrative_ip }}"
-      private_ip_address: "{{ r_aws.instances[0].private_ip_address|default(None) }}"
-      public_ip_address: "{{ r_aws.instances[0].public_ip_address|default(None) }}"
+    returned_instance_configuration: 
       os_admin_username: "{{ ansible_user }}"
       os_admin_password: "{{ os_admin_password }}"
-

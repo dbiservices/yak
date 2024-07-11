@@ -1,16 +1,9 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Get the list of existing instances not terminated
-  delegate_to: localhost
-  ec2_instance_info:
-    region: "{{ region_id }}"
-    filters:
-      "tag:Name": "{{ server_name }}"
-      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
-  failed_when: r_ec2_instances.instances|length > 1
-  register: r_ec2_instances
+- name: Get instance info to find ID
+  include_tasks: get_ec2_instance_info.yml
 
-- debug: var=r_ec2_instances
+- debug: var=r_ec2_instance_info
   delegate_to: localhost
   when: debug|bool
 
@@ -19,10 +12,10 @@
   amazon.aws.ec2_instance:
     state: absent
     region: "{{ region_id }}"
-    instance_ids: '{{ r_ec2_instances.instances[0].instance_id }}'
+    instance_ids: '{{ r_ec2_instance_info.instances[0].instance_id }}'
     wait: yes
     wait_timeout: 600
-  when: r_ec2_instances.instances|length > 0
+  when: r_ec2_instance_info.instances|length > 0
 
 - name: Delete key from ssh config file
   delegate_to: localhost

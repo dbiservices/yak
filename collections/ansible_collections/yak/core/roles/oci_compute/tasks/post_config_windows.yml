@@ -14,7 +14,6 @@
 
 - name: Wait for the OS to be reachable by YaK
   ansible.builtin.wait_for_connection:
-    delay: 60
     timeout: 600
 
 - name: Update server state
@@ -28,7 +27,7 @@
   delegate_to: localhost
   no_log: True
   set_fact:
-    returned:
+    returned_instance_configuration:
       instance: "{{ r_oci_compute_instance_facts.instances[0] }}"
       administrative_ip: "{{ administrative_ip|default('none')  }}"
       private_ip_address: "{{ oci_private_ip|default('none')  }}"

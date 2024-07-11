@@ -37,6 +37,7 @@
   delegate_to: localhost
   amazon.aws.ec2_instance:
     region: "{{ region_id }}"
+    state: "started"
     key_name: "{{ machine_name }}"
     instance_type: "{{ instance_type }}"
     image:

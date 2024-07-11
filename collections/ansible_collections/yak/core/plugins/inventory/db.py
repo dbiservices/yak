@@ -451,6 +451,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate_component(self):
         self._log_debug(f"Populating component {self.component['name']}...")
+        if self.component.get('groupsServers') is None:
+            raise AnsibleError(f"No servers are assigned to component {self.component['name']} !!")
         merged_variables = self.component['advancedVariables'] | self.component['basicVariables']
         self.inventory.groups["all"].vars = {**self.inventory.groups["all"].vars, **merged_variables}
         self.inventory.groups["all"].vars["component_name"] = self.component["name"]
@@ -463,17 +465,26 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         \033[0m""")
         self.inventory.groups["all"].vars["component_type_manifest"] = self.component["componentTypeManifest"]
 
+        global_component_servers_list = []
+        
         for group_name, servers_list in self.component['groupsServers'].items():
             self.inventory.add_group(group_name.lower())
+            global_component_servers_list.extend([server["name"] for server in servers_list])
 
             for server in servers_list:
                 self.inventory.add_host(server["name"], group = group_name.lower())
                 self._set_hvars(server["name"], "yak_inventory_os_storages", [])
 
+
                 for storage_point in server["os_storage"].values():
                     self._log_debug(f"Populating storage_point: {storage_point}...")
                     self.inventory.hosts[server["name"]].vars["yak_inventory_os_storages"].append(storage_point)
 
+        for server in dict(self.inventory.hosts):
+            if server not in global_component_servers_list:
+                server_to_remove = self.inventory.get_host(server)
+                self.inventory.remove_host(server_to_remove)
+                    
         # TODO: The variables should be parsed when uploading new component
         #       type and the variables retrived from the DB, not from the component files.
         self.component_type_path = "{}/{}".format(self.component_types_path, self.component["componentTypeName"])

@@ -47,7 +47,7 @@
 - name: Return facts to playbook
   delegate_to: localhost
   set_fact:
-    returned:
+    returned_instance_configuration:
       instance: "{{ r_oci_compute_instance_facts.instances[0] }}"
       administrative_ip: "{{ administrative_ip }}"
       private_ip_address: "{{ oci_private_ip }}"
