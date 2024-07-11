@@ -7,7 +7,7 @@
 
 - name: Creating the instance file with instance details
   delegate_to: localhost
-  no_log: False
+  no_log: True
   ansible.builtin.lineinfile:
     path: "~/yak/configuration/infrastructure/.yak/server.{{ target|replace('/','.') }}"
     regexp: '^{{ item.key }}'
