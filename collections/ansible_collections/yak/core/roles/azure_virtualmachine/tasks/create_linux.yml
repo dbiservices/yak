@@ -34,26 +34,10 @@
   delegate_to: localhost
   when: debug | bool
 
-# Enabling SSD would need to be cast in a proper Ansible way once Microsoft
-# add the feature during the VM creation. An issue is opened for that:
-# https://github.com/ansible-collections/azure/issues/1356
-- name: Enable ultra SSD
-  delegate_to: localhost
-  ansible.builtin.shell: |
-    az vm deallocate -n {{ server_name }} -g {{ resource_group }}
-    az vm update -n {{ server_name }} -g {{ resource_group }} --ultra-ssd-enabled true
-    az vm start -n {{ server_name }} -g {{ resource_group }}
-  when:
-    - storage_devices.specifications.storage_account_type is defined
-    - storage_devices.specifications.storage_account_type == 'UltraSSD_LRS'
+- include_tasks: enable_ultra_ssd.yml
 
-- delegate_to: localhost
-  set_fact:
-    returned_instance_configuration:
-      instance: "{{ r_azure.ansible_facts.azure_vm }}"
-
-- block:
-
+- when: ansible_port|default(22) != 22
+  block:
   - name: Call the role to generate the Linux init script
     include_role:
       name: yak.core.linux_init_script
@@ -71,4 +55,3 @@
         commandToExecute: "{{ linux_init_script }}"
       auto_upgrade_minor_version: true
 
-  when: ansible_port|default(22) != 22

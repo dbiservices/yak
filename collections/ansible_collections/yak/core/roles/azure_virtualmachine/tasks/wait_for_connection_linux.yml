@@ -1,4 +1,0 @@
-# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
----
-- name: Wait for SSH to come up
-  wait_for_connection:

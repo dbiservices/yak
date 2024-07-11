@@ -1,5 +1,0 @@
-# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
----
-- name: Wait for the OS to be reachable by YaK
-  ansible.builtin.wait_for_connection:
-    timeout: 600

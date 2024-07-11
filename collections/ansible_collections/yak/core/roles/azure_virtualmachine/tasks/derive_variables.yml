@@ -1,14 +1,6 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Get facts by name
-  delegate_to: localhost
-  azure_rm_virtualmachine_info:
-    resource_group: "{{ resource_group }}"
-    name: "{{ server_name }}"
-  register: r_azure_rm_virtualmachine_info
-
-- debug: var=r_azure_rm_virtualmachine_info
-  when: debug|bool
+- include_tasks: get_vm_state.yml
 
 - name: Get facts for one network interface
   delegate_to: localhost

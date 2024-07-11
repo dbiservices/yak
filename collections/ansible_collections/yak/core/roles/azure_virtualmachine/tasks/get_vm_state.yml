@@ -1,11 +1,11 @@
 ---
-- name: Get VM by name
+- name: Get facts by name
   delegate_to: localhost
   azure.azcollection.azure_rm_virtualmachine_info:
     resource_group: "{{ resource_group }}"
-  register: r_get_vm_state
+    name: "{{ server_name }}"
+  register: r_azure_rm_virtualmachine_info
 
-- debug: var=r_get_vm_state
+- debug: var=r_azure_rm_virtualmachine_info
   delegate_to: localhost
   when: debug | bool
-...

@@ -1,0 +1,48 @@
+- include_tasks: derive_variables.yml
+
+- name: Update yak inventory
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ inventory_hostname }}"
+    private_ip: "{{ azure_private_ip|default(None) }}"
+    public_ip: "{{ azure_public_ip|default(None) }}"
+
+- name: Refresh inventory to ensure IPs are up to date
+  ansible.builtin.meta: refresh_inventory
+
+- name: Create the ssh config file if not exists
+  delegate_to: localhost
+  copy:
+    content: ""
+    dest: "{{ yak_local_ssh_config_file }}"
+    force: no
+    mode: 0600
+
+- include_tasks: post_config_{{ os_type }}.yml"
+
+- name: Wait for connection to the server
+  ansible.builtin.wait_for_connection:
+    timeout: 600
+
+- name: Update server state
+  delegate_to: localhost
+  yak.core.yak_inventory_update:
+    server_name: "{{ target }}"
+    server_state: running
+  when: yak_inventory_type == "database"
+
+- name: Prepare Return facts to playbook
+  delegate_to: localhost
+  block:
+    - set_fact:
+      no_log: true
+        _returned_instance_configuration:
+          administrative_ip: "{{ administrative_ip }}"
+          private_ip_address: "{{ azure_private_ip }}"
+          public_ip_address: "{{ azure_public_ip|default('none') }}"
+
+    - set_fact:
+      no_log: true
+        returned_instance_configuration: '{{ returned_instance_configuration|default({}) | ansible.builtin.combine(_returned_instance_configuration, recursive=true) }}'
+
+- include_tasks: "update_detail_file.yml"
