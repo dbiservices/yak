@@ -36,8 +36,3 @@
 - debug: var=r_oci_compute_instance_present
   delegate_to: localhost
   when: debug | bool
-
-- delegate_to: localhost
-  set_fact:
-    returned_instance_configuration:
-      instance: "{{ r_oci_compute_instance_present.instance }}"

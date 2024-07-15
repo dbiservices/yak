@@ -4,8 +4,8 @@
   vars:
     state: present
     server_name: "{{ machine_name }}"
-    local_ssh_key:
-        path: "{{ ansible_ssh_private_key_file|dirname }}"
-        private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
-        public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
     winrm_cert_pem_path: "{{ ansible_winrm_cert_pem }}"
+    # local_ssh_key:
+    #     path: "{{ ansible_ssh_private_key_file|dirname }}"
+    #     private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
+    #     public_key_name: "{{ ansible_ssh_public_key_file|basename }}"

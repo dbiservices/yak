@@ -10,7 +10,7 @@ custom_tags: {}
 instance_type: t3.large
 region_id: eu-central-1
 availability_zone: eu-central-1a
-local_ssh_key:
-    path: "{{ ansible_ssh_private_key_file|dirname }}"
-    private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
-    public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
+# local_ssh_key:
+#     path: "{{ ansible_ssh_private_key_file|dirname }}"
+#     private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
+#     public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
