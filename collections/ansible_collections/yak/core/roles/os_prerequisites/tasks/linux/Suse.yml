@@ -1,5 +1,11 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+
+- name: Add openSUSE Tumbleweed repository
+  become: yes
+  community.general.zypper_repository:
+    repo: 'https://download.opensuse.org/repositories/home:ecsos:monitoring/openSUSE_Tumbleweed/home:ecsos:monitoring.repo'
+
 - name: Update cache and install Install LVM (may retry)
   become: yes
   community.general.zypper:
@@ -7,6 +13,8 @@
     name:
       - 'lvm*'
       - xfsprogs
+      - htop
+      - iotop
     state: present
   register: r_zypper
   retries: 5
