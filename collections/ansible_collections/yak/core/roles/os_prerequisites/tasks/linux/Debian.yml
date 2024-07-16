@@ -7,3 +7,5 @@
     name:
       - 'lvm*'
       - xfsprogs
+      - htop
+      - iotop

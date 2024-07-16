@@ -8,4 +8,3 @@
 - debug: var=r_get_vm_state
   delegate_to: localhost
   when: debug | bool
-...

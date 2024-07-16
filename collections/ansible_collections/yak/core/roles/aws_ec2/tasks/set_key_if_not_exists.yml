@@ -5,6 +5,6 @@
   amazon.aws.ec2_key:
     region: "{{ region_id }}"
     name: "{{ machine_name }}"
-    key_material: "{{ lookup('file', local_ssh_key.path + '/' + local_ssh_key.public_key_name) }}"
+    key_material: "{{ lookup('file', ansible_ssh_public_key_file) }}"
   register: r_ec2_key
 

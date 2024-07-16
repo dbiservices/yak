@@ -11,7 +11,7 @@
     delegate_to: localhost
     yak.core.yak_inventory_update:
       server_name: "{{ server_name }}"
-      server_state: starting
+      server_state: deploying
 
   - name: Update private_ip variable
     delegate_to: localhost

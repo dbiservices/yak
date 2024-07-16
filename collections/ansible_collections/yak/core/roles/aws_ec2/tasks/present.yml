@@ -1,11 +1,26 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
-- include_tasks: get_number_of_instances.yml
+- ansible.builtin.include_tasks: 
+    file: get_ec2_instance_info.yml
+
+- delegate_to: localhost
+  set_fact:
+    number_of_instances: "{{ r_ec2_instance_info.instances | length }}"
+
 - block:
   - include_tasks: set_key_if_not_exists.yml
   - include_tasks: derive_image_id.yml
   - include_tasks: "create_{{ os_type }}.yml"
-  - include_tasks: post_config_{{ os_type }}.yml
+  - include_tasks: post_config.yml
   when: number_of_instances | int == 0
-- debug:
-    msg: "The instance already exists. Skipping instance creation..."
-  when: number_of_instances | int > 0
+
+- when: number_of_instances | int > 0
+  block:
+    - fail:
+        msg: "Cannot Deploy as the instance already exists."
+  # always:
+  #   - name: Update server state
+  #     delegate_to: localhost
+  #     yak.core.yak_inventory_update:
+  #       server_name: "{{ target }}"
+  #       server_state: stopped
+  #     when: yak_inventory_type == "database"

@@ -1,0 +1,18 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get the list of existing instances not terminated
+  delegate_to: localhost
+  amazon.aws.ec2_instance_info:
+    region: "{{ region_id }}"
+    filters:
+      "tag:Name": "{{ server_name }}"
+      instance-state-name: [ "pending", "running", "shutting-down", "stopping", "stopped" ]
+  register: r_ec2_instance_info
+  until: '{{ _get_ec2_instance_info_until | default(true) }}'
+  retries: '{{ _get_ec2_instance_info_retries | default(omit) }}'
+  delay: '{{ _get_ec2_instance_info_delay | default(omit) }}'
+
+- when: r_ec2_instance_info.instances|length > 1
+  name: Fail if more than one instance with tag:Name identical
+  ansible.builtin.fail:
+    msg: 'Failing due to having multiple instances with identical tag:Name = {{ server_name }}'

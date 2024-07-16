@@ -7,4 +7,4 @@
     name: "{{ server_name }}"
     started: yes
 
-- include_tasks: "post_config_{{ os_type }}.yml"
+- include_tasks: "post_config.yml"
