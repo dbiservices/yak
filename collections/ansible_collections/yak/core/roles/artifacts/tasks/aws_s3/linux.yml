@@ -1,15 +1,33 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
----
-- name: Install python3-pip
+# ---
+- name: Install python3-pip 
   become: true
   ansible.builtin.package:
     name: python3-pip
     state: present
+  retries: 5
+  delay: 10
+
+- when: ansible_os_family == 'Debian'
+  name: Prerequisite Debian - python3-venv
+  become: true
+  ansible.builtin.package:
+    name: 'python3-venv'
+    state: present
+  retries: 5
+  delay: 10
 
 - name: Install boto3
   become: true
   ansible.builtin.pip:
     name: boto3
+    virtualenv: '{{ ansible_user_dir }}/.venv/env.ansible'
+    virtualenv_command: "/usr/bin/python3 -m venv"
+    virtualenv_site_packages: true
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
+  retries: 5
+  delay: 10
 
 - block:
   - name: Get the current caller identity - Verifying credentials are valid
@@ -19,6 +37,8 @@
       AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
       AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
       AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+    retries: 3
+    delay: 5
   rescue:
   - fail:
       msg: 'Please ensure your AWS credentials are valid.'
@@ -35,4 +55,7 @@
     AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
     AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
     AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+  vars:
+    ansible_python_interpreter: '{{ ansible_user_dir }}/.venv/env.ansible/bin/python3'
   loop: "{{ artifact_files }}"
+

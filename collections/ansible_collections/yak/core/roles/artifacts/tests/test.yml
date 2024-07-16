@@ -2,7 +2,7 @@
 ---
 - name: Test aws_s3 linux
   tags: aws_s3_linux
-  hosts: aws_dbi_test/srv-linux-test-01
+  hosts: rhel
   vars:
     artifacts:
       provider: aws_s3
@@ -12,11 +12,11 @@
     - name: yak.core.artifacts
       vars:
         artifact_files:
-          - rdbms/oracle/dmk/dmk_dbbackup-21-02.zip
-          - rdbms/oracle/dmk/dmk-22-01-unix.zip
+          - rdbms/oracle/dmk/oracle_dmk_dbbackup-2.1.0.zip
+          - rdbms/oracle/dmk/Oracle-DMK-dbbackup-22-06.zip
         destination_path: /tmp
-        destination_owner: "{{ ansible_user }}"
-        destination_group: "{{ ansible_user }}"
+        destination_owner: "{{ ansible_user_uid }}"
+        destination_group: "{{ ansible_user_gid }}"
 
 - name: Test aws_s3 Windows
   tags: aws_s3_windows
@@ -53,7 +53,7 @@
           - rdbms/oracle/dmk/dmk-22-01-unix.zip
         destination_path: /tmp
         destination_owner: "{{ ansible_user }}"
-        destination_group: "{{ ansible_user }}"
+        destination_group: "{{ ansible_user_gid }}"
 
 - name: Test azure storageblob Windows
   tags: azure_storageblob_windows
@@ -91,7 +91,7 @@
           - rdbms/oracle/dmk/dmk-22-01-unix.zip
         destination_path: /tmp
         destination_owner: "{{ ansible_user }}"
-        destination_group: "{{ ansible_user }}"
+        destination_group: "{{ ansible_user_gid }}"
 
 - name: Test OCI Object Storage Windows
   tags: oci_storageblob_windows
@@ -128,7 +128,7 @@
           - rdbms/oracle/dmk/dmk-22-01-unix.zip
         destination_path: /tmp
         destination_owner: "{{ ansible_user }}"
-        destination_group: "{{ ansible_user }}"
+        destination_group: "{{ ansible_user_gid }}"
 
 - name: Test YAK local storage Windows
   tags: yak_local_storage_windows
