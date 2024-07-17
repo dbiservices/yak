@@ -476,7 +476,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self._set_hvars(server["name"], "yak_inventory_os_storages", [])
 
 
-                for storage_point in server["os_storage"].values():
+                for storage_point in server["os_storage"]:
                     self._log_debug(f"Populating storage_point: {storage_point}...")
                     self.inventory.hosts[server["name"]].vars["yak_inventory_os_storages"].append(storage_point)
 
