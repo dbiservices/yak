@@ -69,6 +69,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self.host_all_lists = []
         self.host_component_lists = []
         self.group_component_lists = []
+        self.copies = 1
 
     # Functions used by Ansible
     def verify_file(self, path):
@@ -285,111 +286,129 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self.inventory.hosts['infrastructure/{}'.format(group_name)].vars = self.inventory.groups[group].vars
                 self.inventory.hosts['infrastructure/{}'.format(group_name)].vars["target_type"] = 'infrastructure'
 
+            if 'copies' in self.inventory.groups[group].vars:
+                self.copies = self.inventory.groups[group].vars['copies']
+
             # Add ssh key / certificates
             self._set_auth_secrets(self.inventory.groups[group], "{}/{}/secrets".format(path, group))
 
             self._add_hosts(path, group)
 
+
     def _add_hosts(self, path, group):
 
         self._log_debug('Discovering servers in {}'.format(path))
+
         for host_file in glob.glob("{}/{}/*/".format(
                 path,
                 group)):
             if os.path.basename(host_file[:-1]) == 'secrets':
                 continue
-            host = "{}/{}".format(group, os.path.basename(host_file[:-1]))
-            machine_name = os.path.basename(host_file[:-1])
-            self.inventory.add_host(host, group=group)
-            self.host_all_lists.append(host)
-            if not self.is_component_specific:
-                self.inventory.add_host(host, group=self.server_group_name)
 
-            # Add host vars
-            host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, host))
-            self.inventory.hosts[host].vars = host_config_yaml
+            master_host = "{}/{}".format(group, os.path.basename(host_file[:-1]))
 
-            # Default variable for hosts
-            self.inventory.hosts[host].vars["target_type"] = 'server'
-            self.inventory.hosts[host].vars["machine_name"] = machine_name
-            if 'os_type' not in self.inventory.hosts[host].vars:
-                self.inventory.hosts[host].vars["os_type"] = \
-                    self.default_server_os_type
-            
-            self.inventory.add_host(host, group=self.inventory.hosts[host].vars["os_type"])
+            for index in range(1,self.copies+1):
 
-            # Add ssh key / certificates
-            self._set_auth_secrets(self.inventory.hosts[host], "{}/{}/secrets".format(path, host))
+                if self.copies > 1:
+                    host = "{}/{}-{}".format(group, os.path.basename(host_file[:-1]), index)
+                    machine_name = f"{os.path.basename(host_file[:-1])}-{index}"
+                else:
+                    host = "{}/{}".format(group, os.path.basename(host_file[:-1]))
+                    machine_name = {os.path.basename(host_file[:-1])}
 
-            # IPs policy
-            # ** When host_ip_access doesn't exists, set default to private
-            if 'host_ip_access' not in self.inventory.hosts[host].vars:
-                self.inventory.hosts[host].vars["host_ip_access"] = 'private_ip'
-            # ** When private_ip doesn't exists or is null, set to auto
-            if 'private_ip' not in self.inventory.hosts[host].vars or \
-                    self.inventory.hosts[host].vars["private_ip"] is None:
-                self.inventory.hosts[host].vars["private_ip"] = {
-                    "mode": "auto"}
-            # ** When public_ip doesn't exists or is null, set to auto
-            if 'public_ip' not in self.inventory.hosts[host].vars or  \
-                    self.inventory.hosts[host].vars["public_ip"] is None:
-                self.inventory.hosts[host].vars["public_ip"] = {
-                    "mode": "none"}
-            # ** When private_ip and is a string, set manual IP
-            if type(self.inventory.hosts[host].vars["private_ip"]) is str:
-                self.inventory.hosts[host].vars["private_ip"] = {
-                    "mode": "manual",
-                    "ip": self.inventory.hosts[host].vars["private_ip"]
-                }
-            # ** When public_ip and is a string, set manual IP
-            if type(self.inventory.hosts[host].vars["public_ip"]) is str:
-                self.inventory.hosts[host].vars["public_ip"] = {
-                    "mode": "manual",
-                    "ip": self.inventory.hosts[host].vars["public_ip"]
-                }
-            # ** When private_ip.mode doesn't exists, set default
-            if 'mode' not in self.inventory.hosts[host].vars["private_ip"]:
-                self.inventory.hosts[host].vars["private_ip"]["mode"] = \
-                    'auto'
-            # ** When public_ip.mode doesn't exists, set default
-            if 'mode' not in self.inventory.hosts[host].vars["public_ip"]:
-                self.inventory.hosts[host].vars["public_ip"]["mode"] = \
-                    'auto'
-            # ** When private_ip.mode exists check allowed values
-            if self.inventory.hosts[host].vars["private_ip"]["mode"] not in \
-                    ['manual', 'auto']:
-                raise AnsibleError((
-                    "private_ip.mode can be 'manual' or 'auto'."
-                    " Current for server '{}' is '{}'")
-                    .format(
-                        host,
-                        self.inventory.hosts[host].vars["private_ip"]["mode"]
-                ))
-            # ** When public_ip.mode exists check allowed values
-            if self.inventory.hosts[host].vars["public_ip"]["mode"] not in \
-                    ['none', 'manual', 'auto']:
-                raise AnsibleError((
-                    "private_ip.mode can be 'none', 'manual' or 'auto'."
-                    " Current for server '{}' is '{}'")
-                    .format(
-                        host,
-                        self.inventory.hosts[host].vars["public_ip"]["mode"]
-                ))
-            # ** Set ansible_host
-            if self.inventory.hosts[host].vars['host_ip_access'] == 'public_ip' and \
-                    self.inventory.hosts[host].vars["public_ip"]["mode"] == 'none':
-                raise AnsibleError((
-                    "[{}] 'host_ip_access' is set to 'public_ip' "
-                    "but 'public_ip.mode' is set to none."
-                ).format(host))
-            # ** Set ansible_host
-            if 'ip' in self.inventory.hosts[host].vars[
-                    self.inventory.hosts[host].vars['host_ip_access']
-            ]:
-                self.inventory.hosts[host].vars["ansible_host"] = \
-                    self.inventory.hosts[host].vars[
+                self._log_debug(f"Working on {host} (machine_name={machine_name}) from group {group}. Master is {master_host}")
+
+                self.inventory.add_host(host, group=group)
+                self.host_all_lists.append(host)
+
+                if not self.is_component_specific:
+                    self.inventory.add_host(host, group=self.server_group_name)
+
+                # Add host vars
+                host_config_yaml = self._load_yaml_file("{}/{}/variables.yml".format(path, master_host))
+                self.inventory.hosts[host].vars = host_config_yaml
+
+                # Default variable for hosts
+                self.inventory.hosts[host].vars["target_type"] = 'server'
+                self.inventory.hosts[host].vars["machine_name"] = machine_name
+                if 'os_type' not in self.inventory.hosts[host].vars:
+                    self.inventory.hosts[host].vars["os_type"] = \
+                        self.default_server_os_type
+                
+                self.inventory.add_host(host, group=self.inventory.hosts[host].vars["os_type"])
+
+                # Add ssh key / certificates
+                self._set_auth_secrets(self.inventory.hosts[host], "{}/{}/secrets".format(path, master_host))
+
+                # IPs policy
+                # ** When host_ip_access doesn't exists, set default to private
+                if 'host_ip_access' not in self.inventory.hosts[host].vars:
+                    self.inventory.hosts[host].vars["host_ip_access"] = 'private_ip'
+                # ** When private_ip doesn't exists or is null, set to auto
+                if 'private_ip' not in self.inventory.hosts[host].vars or \
+                        self.inventory.hosts[host].vars["private_ip"] is None:
+                    self.inventory.hosts[host].vars["private_ip"] = {
+                        "mode": "auto"}
+                # ** When public_ip doesn't exists or is null, set to auto
+                if 'public_ip' not in self.inventory.hosts[host].vars or  \
+                        self.inventory.hosts[host].vars["public_ip"] is None:
+                    self.inventory.hosts[host].vars["public_ip"] = {
+                        "mode": "none"}
+                # ** When private_ip and is a string, set manual IP
+                if type(self.inventory.hosts[host].vars["private_ip"]) is str:
+                    self.inventory.hosts[host].vars["private_ip"] = {
+                        "mode": "manual",
+                        "ip": self.inventory.hosts[host].vars["private_ip"]
+                    }
+                # ** When public_ip and is a string, set manual IP
+                if type(self.inventory.hosts[host].vars["public_ip"]) is str:
+                    self.inventory.hosts[host].vars["public_ip"] = {
+                        "mode": "manual",
+                        "ip": self.inventory.hosts[host].vars["public_ip"]
+                    }
+                # ** When private_ip.mode doesn't exists, set default
+                if 'mode' not in self.inventory.hosts[host].vars["private_ip"]:
+                    self.inventory.hosts[host].vars["private_ip"]["mode"] = \
+                        'auto'
+                # ** When public_ip.mode doesn't exists, set default
+                if 'mode' not in self.inventory.hosts[host].vars["public_ip"]:
+                    self.inventory.hosts[host].vars["public_ip"]["mode"] = \
+                        'auto'
+                # ** When private_ip.mode exists check allowed values
+                if self.inventory.hosts[host].vars["private_ip"]["mode"] not in \
+                        ['manual', 'auto']:
+                    raise AnsibleError((
+                        "private_ip.mode can be 'manual' or 'auto'."
+                        " Current for server '{}' is '{}'")
+                        .format(
+                            host,
+                            self.inventory.hosts[host].vars["private_ip"]["mode"]
+                    ))
+                # ** When public_ip.mode exists check allowed values
+                if self.inventory.hosts[host].vars["public_ip"]["mode"] not in \
+                        ['none', 'manual', 'auto']:
+                    raise AnsibleError((
+                        "private_ip.mode can be 'none', 'manual' or 'auto'."
+                        " Current for server '{}' is '{}'")
+                        .format(
+                            host,
+                            self.inventory.hosts[host].vars["public_ip"]["mode"]
+                    ))
+                # ** Set ansible_host
+                if self.inventory.hosts[host].vars['host_ip_access'] == 'public_ip' and \
+                        self.inventory.hosts[host].vars["public_ip"]["mode"] == 'none':
+                    raise AnsibleError((
+                        "[{}] 'host_ip_access' is set to 'public_ip' "
+                        "but 'public_ip.mode' is set to none."
+                    ).format(host))
+                # ** Set ansible_host
+                if 'ip' in self.inventory.hosts[host].vars[
                         self.inventory.hosts[host].vars['host_ip_access']
-                ]['ip']
+                ]:
+                    self.inventory.hosts[host].vars["ansible_host"] = \
+                        self.inventory.hosts[host].vars[
+                            self.inventory.hosts[host].vars['host_ip_access']
+                    ]['ip']
 
     def _populate_component(self):
         self.component_path = "{}/{}".format(self.components_path, self.component_name)
