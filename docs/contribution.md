@@ -11,7 +11,7 @@
 1. pull the Yak Core container `registry.gitlab.com/yak4all/yak:stable` to your workstation
 
 ```bash
-docker pull registry.gitlab.com/yak4all/yak:latest
+docker pull registry.gitlab.com/yak4all/yak:stable
 ```
 
 FYI : The YaK Core container will pull the Yak Env docker container image from GitLab container registry `registry.gitlab.com/yak4all/yakenv:1.0.0` <br>
@@ -36,13 +36,13 @@ git clone git@gitlab.com:yak4all/yak.git
 
 4. Start the container with the below command
 ```
-docker run -it --rm -e YAK_ENABLE_SUDO=true --name yak --pull always -v ${HOME}/.ssh:/workspace/.ssh -v ${MY_LOCAL_YAK_DIR}:/workspace/yak registry.gitlab.com/yak4all/yak:latest bash
+docker run -it --rm -e YAK_ENABLE_SUDO=true --name yak --pull always -v ${HOME}/.ssh:/workspace/.ssh -v ${MY_LOCAL_YAK_DIR}:/workspace/yak registry.gitlab.com/yak4all/yak:stable bash
 ```
 
 If it works you should be inside the container with the YaK repository available for contribution
 
 ```bash
-docker run -it --rm -e YAK_ENABLE_SUDO=true --name yak --pull always -v ${HOME}/.ssh:/workspace/.ssh -v ${MY_LOCAL_YAK_DIR}:/workspace/yak registry.gitlab.com/yak4all/yak:latest bash
+docker run -it --rm -e YAK_ENABLE_SUDO=true --name yak --pull always -v ${HOME}/.ssh:/workspace/.ssh -v ${MY_LOCAL_YAK_DIR}:/workspace/yak registry.gitlab.com/yak4all/yak:stable bash
 
 INFO: type 'yakhelp' to display the help of YaK
 
