@@ -1,10 +1,5 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Check that env. variable AZURE_AZCOPY_BLOB_SAS_TOKEN is set
-  fail:
-    msg: "Missing environment variable 'AZURE_AZCOPY_BLOB_SAS_TOKEN'. Please refer to the artifacts documentation."
-  when: lookup('env','AZURE_AZCOPY_BLOB_SAS_TOKEN') is undefined or lookup('env','AZURE_AZCOPY_BLOB_SAS_TOKEN')|length == 0
-
 - name: Download azcopy
   ansible.builtin.win_get_url:
     url: https://aka.ms/downloadazcopy-v10-windows
@@ -29,11 +24,7 @@
 - debug: var=r_azcopy
   when: debug|bool
 
-- name: Copy blob
-  no_log: yes
-  ansible.builtin.win_command: >
-    {{ r_azcopy.output[0] }} cp
-    "https://{{ artifacts.variables.storage_account_name }}.blob.core.windows.net/{{ artifacts.variables.container }}/{{ item }}?{{ lookup('env','AZURE_AZCOPY_BLOB_SAS_TOKEN') }}"
-    "{{ destination_path }}/{{ item }}"
+- include_tasks: windows_blob_download.yml
   loop: "{{ artifact_files }}"
-...
+  loop_control:
+    loop_var: artifact_path

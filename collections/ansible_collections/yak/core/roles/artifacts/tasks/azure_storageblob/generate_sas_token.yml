@@ -1,0 +1,31 @@
+- name: Set expiration period
+  set_fact:
+    sas_time_start: '{{ ansible_date_time.iso8601_micro }}'
+    sas_time_expire: >-
+      {{ ('%Y-%m-%dT%H:%M:%S'
+        | strftime(ansible_date_time.epoch|int + 1200, utc=true))
+        ~ (ansible_date_time.iso8601_micro | splitext)[1] }}
+
+    
+- name: Generate access signature
+  delegate_to: localhost
+  azure.azcollection.azure_rm_resource:
+    resource_group: "{{ lookup('env','AZURE_RESOURCE_GROUP') }}"
+    method: POST
+    url: "/subscriptions/{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}\
+          /resourceGroups/{{ lookup('env','AZURE_RESOURCE_GROUP') }}/providers/\
+          Microsoft.Storage/storageAccounts/\
+          {{ artifacts.variables.storage_account_name }}/ListServiceSas/"
+    body:
+      canonicalizedResource: '/blob/{{ artifacts.variables.storage_account_name }}/{{ artifacts.variables.container }}/{{ artifact_path }}'
+      signedResource: b
+      signedPermission: r
+      signedStart: '{{ sas_time_start }}'
+      signedExpiry: '{{ sas_time_expire }}'
+  register: response_azure_sas
+  environment:
+    AZURE_SUBSCRIPTION_ID: "{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}"
+    AZURE_CLIENT_ID: "{{ lookup('env','AZURE_CLIENT_ID') }}"
+    AZURE_SECRET: "{{ lookup('env','AZURE_SECRET') }}"
+    AZURE_TENANT: "{{ lookup('env','AZURE_TENANT') }}"
+

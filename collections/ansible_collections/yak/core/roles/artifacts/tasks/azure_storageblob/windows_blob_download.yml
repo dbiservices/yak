@@ -1,0 +1,9 @@
+- include_tasks: generate_sas_token.yml
+
+- name: Copy blob
+  # no_log: yes
+  ansible.builtin.win_command: >
+    {{ r_azcopy.output[0] }} cp
+    "https://{{ artifacts.variables.storage_account_name }}.blob.core.windows.net/{{ artifacts.variables.container }}/{{ artifact_path }}?{{ response_azure_sas.response.serviceSasToken }}"
+    "{{ destination_path }}/{{ artifact_path }}"
+
