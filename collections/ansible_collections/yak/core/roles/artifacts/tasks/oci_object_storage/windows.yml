@@ -6,12 +6,13 @@
   become_method: runas
   ansible.windows.win_powershell:
     script: |
+      New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
       ### https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm#InstallingCLI__windows
       ### Full path of the file
       $file = 'C:\Windows\install.ps1'
       ### If the file does not exist, install OCI client.
       if (-not(Test-Path -Path $file -PathType Leaf)) {
-        Set-ExecutionPolicy RemoteSigned
+        Set-ExecutionPolicy RemoteSigned -Force
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         Invoke-WebRequest https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.ps1 -OutFile install.ps1
         ./install.ps1 -AcceptAllDefaults
@@ -45,21 +46,19 @@
   become: yes
   become_user: "{{ ansible_user }}"
   become_method: runas
-  ansible.windows.win_powershell:
-    script: >
-      oci os object get --namespace "{{ artifacts.variables.namespace_name }}" `
-                        --bucket-name "{{ artifacts.variables.bucket_name }}" `
-                        --name "{{ item }}" `
-                        --file "{{ destination_path }}\\{{ item|replace('/','\\') }}"
+  ansible.windows.win_shell: |
+    oci os object get `
+      --namespace {{ artifacts.variables.namespace_name }} `
+      --bucket-name {{ artifacts.variables.bucket_name }} `
+      --name {{ item }} `
+      --file "{{ destination_path }}\\{{ item | replace('/','\\') }}"
   environment:
       OCI_CLI_AUTH            : "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE') }}"
       OCI_CLI_USER            : "{{ lookup('env','OCI_USER_ID') }}"
       OCI_CLI_FINGERPRINT     : "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
       OCI_CLI_TENANCY         : "{{ lookup('env','OCI_TENANCY') }}"
       OCI_CLI_REGION          : "{{ lookup('env','OCI_REGION') }}"
-      OCI_CLI_KEY_FILE        : C:\Users\Ansible\.oci\oci_key
-  register: r_copy_s3object
-  failed_when: r_copy_s3object.error|length > 0
+      OCI_CLI_KEY_FILE        : 'C:\Users\Ansible\.oci\oci_key'
   loop: "{{ artifact_files }}"
 
 - name: Remove Key File
@@ -69,4 +68,3 @@
   ansible.builtin.win_file:
     path: C:\Users\Ansible\.oci\oci_key
     state: absent
-...

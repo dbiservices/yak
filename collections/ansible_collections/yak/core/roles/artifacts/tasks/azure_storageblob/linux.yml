@@ -24,13 +24,8 @@
     mode: '0755'
     remote_src: yes
 
-- name: Copy blob
-  become: true
-  shell: >
-    /usr/local/bin/azcopy cp
-    "https://{{ artifacts.variables.storage_account_name }}.blob.core.windows.net/{{ artifacts.variables.container }}/{{ item }}?${AZURE_AZCOPY_BLOB_SAS_TOKEN}"
-    "{{ destination_path }}/{{ item }}"
-  environment:
-    AZURE_AZCOPY_BLOB_SAS_TOKEN: "{{ lookup('env','AZURE_AZCOPY_BLOB_SAS_TOKEN') }}"
+
+- include_tasks: linux_blob_download.yml
   loop: "{{ artifact_files }}"
-...
+  loop_control:
+    loop_var: artifact_path
