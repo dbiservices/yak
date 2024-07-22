@@ -4,7 +4,6 @@
 state: started
 os_type: linux
 server_name: "test-srv-01"
-root_device_name: /dev/sda1
 debug: False
 custom_tags: {}
 instance_type: t3.large
