@@ -32,6 +32,7 @@
     dest: "~/.oci/key"
     mode: '0600'
 
+
 - name: Download artifact
   become: true
   oracle.oci.oci_object_storage_object:
@@ -41,7 +42,7 @@
     force: true
     dest: "{{ destination_path }}/{{ item }}"
     ## Authentication data
-    auth_type: "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE') | default('api_key') }}"
+    auth_type: "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE',default='api_key') }}"
     api_user: "{{ lookup('env','OCI_USER_ID') }}"
     api_user_fingerprint: "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
     tenancy: "{{ lookup('env','OCI_TENANCY') }}"

@@ -53,7 +53,7 @@
       --name {{ item }} `
       --file "{{ destination_path }}\\{{ item | replace('/','\\') }}"
   environment:
-      OCI_CLI_AUTH            : "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE') | default('api_key') }}"
+      OCI_CLI_AUTH            : "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE',default='api_key') }}"
       OCI_CLI_USER            : "{{ lookup('env','OCI_USER_ID') }}"
       OCI_CLI_FINGERPRINT     : "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
       OCI_CLI_TENANCY         : "{{ lookup('env','OCI_TENANCY') }}"
