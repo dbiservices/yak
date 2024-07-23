@@ -33,6 +33,16 @@
   include_role:
     name: yak.core.linux_init_script
 
+- name: gather information about an AMI using ami-id
+  delegate_to: localhost
+  amazon.aws.ec2_ami_info:
+    image_ids: '{{ image_id }}'
+    region: "{{ region_id }}"
+  register: result_ec2_ami_info
+
+- debug:
+    msg: '{{ result_ec2_ami_info }}'
+    
 - name: Add AWS instance
   delegate_to: localhost
   amazon.aws.ec2_instance:
@@ -47,7 +57,7 @@
     vpc_subnet_id: "{{ subnet_id }}"
     network: "{{ instance_network }}"
     volumes:
-      - device_name: "{{ root_device_name }}"
+      - device_name: "{{ result_ec2_ami_info.images[0].root_device_name }}"
         ebs:
           volume_type: "{{ role_root_device_ebs_option.volume_type }}"
           volume_size: "{{ role_root_device_ebs_option.volume_size }}"
