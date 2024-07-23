@@ -10,10 +10,10 @@
 - name: Generate access signature
   delegate_to: localhost
   azure.azcollection.azure_rm_resource:
-    resource_group: "{{ lookup('env','AZURE_RESOURCE_GROUP') }}"
+    resource_group: "{{ artifacts.variables.resource_group }}"
     method: POST
     url: "/subscriptions/{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}\
-          /resourceGroups/{{ lookup('env','AZURE_RESOURCE_GROUP') }}/providers/\
+          /resourceGroups/{{ artifacts.variables.resource_group }}/providers/\
           Microsoft.Storage/storageAccounts/\
           {{ artifacts.variables.storage_account_name }}/ListServiceSas/"
     body:
