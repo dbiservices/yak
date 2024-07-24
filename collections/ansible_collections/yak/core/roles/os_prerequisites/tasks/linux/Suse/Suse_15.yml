@@ -1,0 +1,11 @@
+- name: Update cache and install Install LVM (may retry)
+  become: yes
+  community.general.zypper:
+    update_cache: yes
+    name:
+      - htop
+    state: present
+  register: r_zypper
+  retries: 5
+  delay: 10
+  until: r_zypper.rc == 0
