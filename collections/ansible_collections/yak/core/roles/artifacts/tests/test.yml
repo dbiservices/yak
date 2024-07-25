@@ -3,9 +3,10 @@
 # - name: Test aws_s3 linux
 #   tags: aws_s3_linux
 #   hosts:
-#     - t-oci-ol89-1
-#     - t-aws-debian11-1
 #     - t-az-ol87-lvm-1
+#     - t-oci-ol89-1
+#     - t-aws-debian11-amd64-1
+#     - t-aws-debian11-1
 #   vars:
 #     artifacts:
 #       provider: aws_s3
@@ -108,27 +109,27 @@
 #         destination_owner: "{{ ansible_user }}"
 #         destination_group: "{{ ansible_user_gid }}"
 
-- name: Test OCI Object Storage Windows
-  tags: oci_storageblob_windows
-  hosts: 
-    - t-oci-win2022-1
-    - t-aws-win2019-1
-    - t-az-win2022-1
-  vars:
-    artifacts:
-      provider: oci_object_storage
-      variables:
-        namespace_name: zrbhy7g7atj1
-        bucket_name: dbi-services-yak-artifacts
-  roles:
-    - name: yak.core.artifacts
-      vars:
-        artifact_files:
-          - rdbms/oracle/dmk/oracle_dmk_dbbackup-2.1.0.zip
-          - rdbms/oracle/dmk/Oracle-DMK-dbbackup-22-06.zip
-        destination_path: C:\Users\Ansible
-        destination_owner: "{{ ansible_user }}"
-        destination_group: ""
+# - name: Test OCI Object Storage Windows
+#   tags: oci_storageblob_windows
+#   hosts: 
+#     - t-oci-win2022-1
+#     - t-aws-win2019-1
+#     - t-az-win2022-1
+#   vars:
+#     artifacts:
+#       provider: oci_object_storage
+#       variables:
+#         namespace_name: zrbhy7g7atj1
+#         bucket_name: dbi-services-yak-artifacts
+#   roles:
+#     - name: yak.core.artifacts
+#       vars:
+#         artifact_files:
+#           - rdbms/oracle/dmk/oracle_dmk_dbbackup-2.1.0.zip
+#           - rdbms/oracle/dmk/Oracle-DMK-dbbackup-22-06.zip
+#         destination_path: C:\Users\Ansible
+#         destination_owner: "{{ ansible_user }}"
+#         destination_group: ""
 
 # - name: Test YAK local storage linux
 #   tags: yak_local_storage_linux

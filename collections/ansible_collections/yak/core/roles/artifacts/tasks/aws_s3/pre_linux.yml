@@ -1,0 +1,46 @@
+
+
+- debug:
+    msg: '{{ ansible_python_version }}'
+
+- when: ansible_os_family == 'Suse' and ansible_distribution_major_version == '12'
+  name: custom manual install of python 3 for Suse 12
+  include_tasks: "install_python3_manually.yml"
+      
+- when: 
+  - ansible_os_family != 'Suse' or (ansible_os_family == 'Suse' and ansible_distribution_major_version|int > 12)
+  - ansible_python_version is version('3.8.0', '<', version_type='pep440')
+  name: install python 3.8
+  ansible.builtin.package:
+    name: "python3.8"
+    state: present
+  become: true
+
+- name: Install python3-pip 
+  become: true
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+  retries: 5
+  delay: 10
+
+- when: ansible_os_family == 'Debian'
+  name: Prerequisite Debian - python3-venv
+  become: true
+  ansible.builtin.package:
+    name: 'python3-venv'
+    state: present
+  retries: 5
+  delay: 10
+
+- name: Install boto3
+  become: true
+  ansible.builtin.pip:
+    name: boto3
+    virtualenv: '{{ ansible_user_dir }}/.venv/env.ansible'
+    virtualenv_command: "{{ artifact_aws_s3_custom_python3_bin | default('/usr/bin/python3') }} -m venv"
+    virtualenv_site_packages: true
+  vars:
+    ansible_python_interpreter: "{{ artifact_aws_s3_custom_python3_bin | default('/usr/bin/python3') }}"
+  retries: 5
+  delay: 10
