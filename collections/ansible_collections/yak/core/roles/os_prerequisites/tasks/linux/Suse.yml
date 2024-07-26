@@ -13,10 +13,12 @@
     name:
       - 'lvm*'
       - xfsprogs
-      - htop
       - iotop
     state: present
   register: r_zypper
   retries: 5
   delay: 10
   until: r_zypper.rc == 0
+
+- when: ansible_distribution_major_version == '15'
+  include_tasks: "Suse/Suse_15.yml"
