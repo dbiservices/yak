@@ -2,6 +2,8 @@
 ---
 - include_tasks: derive_volumes_need.yml
 
+- include_tasks: assertions/azure_disk.yml
+
 - name: Check if disks already exist
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:

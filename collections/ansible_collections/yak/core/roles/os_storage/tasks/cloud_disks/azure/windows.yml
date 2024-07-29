@@ -1,5 +1,7 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- include_tasks: assertions/azure_disk.yml
+
 - name: Check if disks already exist
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
