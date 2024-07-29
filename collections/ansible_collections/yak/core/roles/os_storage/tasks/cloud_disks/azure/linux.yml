@@ -2,7 +2,7 @@
 ---
 - include_tasks: derive_volumes_need.yml
 
-- name: Check if disks already exist
+- name: Check if using old naming convention
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
     name: "{{ machine_name }}_disk{{ item }}"
@@ -14,10 +14,12 @@
   delegate_to: localhost
   when: debug | bool
 
+- include_tasks: assert_old_naming.yml
+
 - name: Create and attach the managed disk to VM
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk:
-    name: "{{ machine_name }}_disk{{ item }}"
+    name: "{{ machine_name }}-disk{{ item }}"
     resource_group: "{{ resource_group }}"
     zone: "{{ zone_id|default(omit) }}"
     disk_size_gb: "{{ role_storage_devices.max_size_gb }}"
@@ -27,7 +29,6 @@
     attach_caching: "{{ role_storage_devices.specifications.attach_caching }}"
     tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
-  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[?contains(name, `srv-linux-01_disk1`) == `true` && managed_by != null]|[]')|length==0
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
 
 - debug: var=r_azure_rm_manageddisk

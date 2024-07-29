@@ -1,0 +1,6 @@
+- name: Ensure that the old suffix with _ are not used anymore for disks in Azure.
+  ansible.builtin.assert:
+    that: r_azure_rm_manageddisk_info|json_query("results[*].ansible_info.azure_managed_disk[?contains(name, '_disk')]") | length == 0
+    fail_msg: "Please rename the disk suffix using dash '-' instead of '_'. For example, '_disk1' to '-disk1', '_disk_F_default' to '-disk-F-default'."
+    success_msg: "No issue with the naming for disk."
+

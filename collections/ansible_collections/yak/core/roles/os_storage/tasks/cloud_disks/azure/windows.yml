@@ -1,6 +1,6 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Check if disks already exist
+- name: Check if using old naming convention
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
     name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
@@ -12,10 +12,12 @@
   delegate_to: localhost
   when: debug | bool
 
+- include_tasks: assert_old_naming.yml
+
 - name: Create and attach the managed disk to VM
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk:
-    name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
+    name: "{{ machine_name }}-disk-{{ item.drive_letter }}-{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
     zone: "{{ zone_id|default(omit) }}"
     disk_size_gb: "{{ role_storage_devices.max_size_gb }}"
@@ -23,15 +25,16 @@
     os_type: "{{ os_type }}"
     storage_account_type: "{{ role_storage_devices.specifications.storage_account_type }}"
     tags: "{{ {
-                'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
+                'Name': 'disk-'+item.drive_letter+'-'+item.partition_label,
                 'Partition_label': item.partition_label,
                 'Drive_letter': item.drive_letter
               }
               | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
-  when: r_azure_rm_manageddisk_info|json_query('results[*].ansible_info.azure_managed_disk[?contains(name, `srv-linux-01_disk1`) == `true` && managed_by != null]|[]')|length==0
   loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_azure_rm_manageddisk
   delegate_to: localhost
   when: debug | bool
+
+
