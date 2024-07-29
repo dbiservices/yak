@@ -1,18 +1,13 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
-- name: Check if using old naming convention
+- name: Failing if finding a disk with old naming convention
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
     name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_manageddisk_info
+  failed_when: r_azure_rm_manageddisk_info.ansible_info.azure_managed_disk | length > 0
   loop: "{{ yak_inventory_os_storages }}"
-
-- debug: var=r_azure_rm_manageddisk_info
-  delegate_to: localhost
-  when: debug | bool
-
-- include_tasks: assert_old_naming.yml
 
 - name: Create and attach the managed disk to VM
   delegate_to: localhost
