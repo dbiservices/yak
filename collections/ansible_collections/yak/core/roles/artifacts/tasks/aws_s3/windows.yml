@@ -2,7 +2,7 @@
 ---
 - ansible.builtin.include_role:
     name: yak.core.aws_ec2
-    tasks_from: check_credentials.yml
+    tasks_from: check_credential.yml
 
 - name: Install NuGet Package
   become: yes
