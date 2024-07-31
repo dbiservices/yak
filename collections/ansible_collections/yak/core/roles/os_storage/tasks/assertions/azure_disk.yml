@@ -1,0 +1,31 @@
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+---
+- name: Get facts for one resource group
+  delegate_to: localhost
+  azure.azcollection.azure_rm_resourcegroup_info:
+    name: '{{ resource_group }}'
+  environment:
+    AZURE_SUBSCRIPTION_ID: "{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}"
+    AZURE_CLIENT_ID: "{{ lookup('env','AZURE_CLIENT_ID') }}"
+    AZURE_SECRET: "{{ lookup('env','AZURE_SECRET') }}"
+    AZURE_TENANT: "{{ lookup('env','AZURE_TENANT') }}"
+  register: rm_resourcegroup_info
+
+- name: Get virtual machine size info for eastus for Standard_A1_v2
+  delegate_to: localhost
+  azure.azcollection.azure_rm_virtualmachinesize_info:
+    location: '{{ rm_resourcegroup_info.resourcegroups[0].location }}'
+    name: '{{ vm_size }}'
+  register: register_vm_size_info
+
+- when: os_type == 'linux'
+  ansible.builtin.assert:
+    that: register_vm_size_info.sizes[0].max_data_disk_count >= number_of_devices|int
+    fail_msg: "VM Size {{ vm_size }} max data disk count is {{ register_vm_size_info.sizes[0].max_data_disk_count }}. Current configured number of devices is {{ number_of_devices }}"
+    success_msg: "Enough capacity of disk for VM Size {{ vm_size }}. Capacity max: {{ register_vm_size_info.sizes[0].max_data_disk_count }}. Current capacity: {{ number_of_devices }}"
+
+- when: os_type == 'windows'
+  ansible.builtin.assert:
+    that: register_vm_size_info.sizes[0].max_data_disk_count >= yak_inventory_os_storages|length
+    fail_msg: "VM Size {{ vm_size }} max data disk count is {{ register_vm_size_info.sizes[0].max_data_disk_count }}. Current configured number of devices is {{ yak_inventory_os_storages|length }}"
+    success_msg: "Enough capacity of disk for VM Size {{ vm_size }}. Capacity max: {{ register_vm_size_info.sizes[0].max_data_disk_count }}. Current capacity: {{ yak_inventory_os_storages|length }}"
