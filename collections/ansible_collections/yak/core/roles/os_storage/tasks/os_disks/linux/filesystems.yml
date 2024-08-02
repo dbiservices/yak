@@ -1,4 +1,4 @@
-# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
+# Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3  
 - name: Create a logical volume
   become: yes
   community.general.lvol:
@@ -6,6 +6,7 @@
     lv: "{{ item.mount_point | replace('/','') }}"
     size: "{{ item.size_gb }}g"
     shrink: no
+    opts: "-i {{ number_of_devices }} -I {{ role_storage_devices.os_storage_linux_stripe_size }}"
   with_items: "{{ yak_inventory_os_storages }}"
 
 - name: Create a filesystem on logical volume

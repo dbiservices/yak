@@ -8,6 +8,7 @@ custom_tags: {}
 role_storage_devices:
   # AWS,OCI,AZURE
   max_size_gb: "{{ storage_devices.max_size_gb|default(100) }}"
+  os_storage_linux_stripe_size: "{{ storage_devices.stripe_size|default(64) }}"
   specifications:
     # AWS
     volume_type: "{{ storage_devices.specifications.volume_type|default('gp3') }}"
