@@ -1,5 +1,9 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+- ansible.builtin.include_role:
+    name: yak.core.azure_virtualmachine
+    tasks_from: check_credential.yml
+
 - name: Download azcopy
   ansible.builtin.win_get_url:
     url: https://aka.ms/downloadazcopy-v10-windows
