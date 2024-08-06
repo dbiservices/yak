@@ -18,7 +18,7 @@ custom_tags:
 
 # Default Root disk setting
 # -------------------------
-# root_device_storage_account_type: Standard_LRS
+# root_azure_device_storage_account_type: Standard_LRS
 
 ## If domain_name is required 
 ## ---------------------------

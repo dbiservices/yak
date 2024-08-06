@@ -41,7 +41,7 @@
         instance_id: "{{ filtered_instance_id[0] }}"
         display_name: "{{ display_name }}"
         state: absent
-        preserve_boot_volume: false
+        preserve_boot_volume: "{{ not role_root_oci_boot_volume_options.delete_on_termination }}"
       register: r_oci_compute_instance_absent
 
     - debug: var=r_oci_compute_instance_absent

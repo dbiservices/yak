@@ -6,7 +6,14 @@ role_storage_devices:
   specifications:
     storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
 
-role_root_device_storage_account_type: "{{ root_device_storage_account_type|default('StandardSSD_LRS') }}"
+role_root_azure_device_storage_account_type: "{{ root_azure_device_storage_account_type|default('StandardSSD_LRS') }}"
+role_root_azure_os_disk_caching: "{{ root_azure_os_disk_caching|default('ReadWrite') }}"
+role_root_azure_os_disk_size_gb: "{{ root_os_disk_size_gb | default(role_os_default_values[os_type|lower].root_os_default_volume_size) | default(role_os_default_values.default.root_os_default_volume_size) }}"
+
+root_azure_os_disk_delete_on_termination: true
+root_azure_data_disk_delete_on_termination: true
+role_root_azure_remove_on_absent: "{% if root_azure_os_disk_delete_on_termination and root_azure_data_disk_delete_on_termination %}['all']{% else %}['network_interfaces','public_ips']{% endif %}"
+
 
 role_dns:
   type: "{{ dns.type|default('none')}}"              # managed, custom, none
@@ -19,3 +26,12 @@ yak_azure_virtualmachine_azure_tenant: "{{ lookup('env','AZURE_TENANT') }}"
 
 # Encryption at host for azure is enable if it is set to true at server or infra scope level.
 encryption_at_host: '{{ infra_encryption_at_host|default(false) or server_encryption_at_host|default(false) }}'
+
+role_os_default_values:
+    windows:
+        root_os_default_volume_size: 130
+    linux:
+        root_os_default_volume_size: 30
+    default:
+        root_os_default_volume_size: 30
+

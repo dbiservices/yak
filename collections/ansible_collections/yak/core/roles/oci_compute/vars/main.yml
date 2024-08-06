@@ -1,3 +1,16 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 # vars file for ./roles/oci_compute
+role_root_oci_boot_volume_options: 
+    boot_volume_size_in_gbs: "{{ root_oci_boot_volume_options.boot_volume_size_in_gbs | default(role_os_default_values[os_type|lower].root_default_boot_volume_size_in_gbs) | default(role_os_default_values.default.root_default_boot_volume_size_in_gbs) }}"
+    boot_volume_vpus_per_gb: "{{ root_oci_boot_volume_options.boot_volume_vpus_per_gb | default(10) }}"
+    delete_on_termination: "{{ root_oci_boot_volume_options.delete_on_termination|default(true) | bool }}"
+    is_pv_encryption_in_transit_enabled: '{{ root_oci_boot_volume_options.is_pv_encryption_in_transit_enabled | default(true) }}'
+    
+role_os_default_values:
+    windows:
+        root_default_boot_volume_size_in_gbs: 50
+    linux:
+        root_default_boot_volume_size_in_gbs: 50
+    default:
+        root_default_boot_volume_size_in_gbs: 50

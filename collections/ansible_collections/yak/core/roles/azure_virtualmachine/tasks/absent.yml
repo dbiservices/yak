@@ -1,13 +1,71 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+# Check if the VM is still present
+# No need to tag disks if all disks will be deleted as the azure.azcollection.azure_rm_virtualmachine can delete all disks
+# Only tags data disks as there is an issue with os_disk and tagging via ansible
+- when: 
+    - not (root_azure_os_disk_delete_on_termination and root_azure_data_disk_delete_on_termination)
+    - root_azure_data_disk_delete_on_termination
+  name: Tag data disks to be deleted
+  block:
+    - include_tasks: get_vm_state.yml
+
+    - when: r_get_vm_state|json_query('vms[?name==`'+server_name+'`]')|length > 0
+      block:
+        - include_tasks: stopped.yml
+        - name: Tag data disks for deletion
+          delegate_to: localhost
+          retries: 5
+          delay: 5
+          azure.azcollection.azure_rm_manageddisk:
+            resource_group: "{{ resource_group }}"
+            name: "{{ item.name }}"
+            tags:
+              YakState: 'deletion'
+              YakServerName: '{{ server_name }}'
+          loop: '{{ r_azure_vm_stopped.ansible_facts.azure_vm.storage_profile.data_disks }}'
+
 - name: Delete the VM
   delegate_to: localhost
   azure.azcollection.azure_rm_virtualmachine:
     resource_group: "{{ resource_group }}"
     name: "{{ server_name }}"
-    remove_on_absent: all
+    remove_on_absent: "{{ role_root_azure_remove_on_absent }}"
     state: absent
   register: r_azure
+
+- when: root_azure_os_disk_delete_on_termination
+  name: Delete os disk
+  delegate_to: localhost
+  retries: 5
+  delay: 5
+  azure.azcollection.azure_rm_manageddisk:
+    resource_group: "{{ resource_group }}"
+    name: "{{ server_name }}"
+    state: absent
+
+- when: root_azure_data_disk_delete_on_termination
+  block:
+    - name: Get facts for all managed disks marked to be deleted by YaK
+      delegate_to: localhost
+      retries: 5
+      delay: 5
+      azure_rm_manageddisk_info:
+        resource_group: "{{ resource_group }}"
+        tags: 
+          - 'YakState:deletion'
+          - 'YakServerName:{{ server_name }}'
+      register: r_get_rm_manageddisk
+
+    - name: Delete data disks
+      delegate_to: localhost
+      retries: 5
+      delay: 5
+      azure.azcollection.azure_rm_manageddisk:
+        resource_group: "{{ resource_group }}"
+        name: "{{ item.name }}"
+        state: absent
+      loop: '{{ r_get_rm_manageddisk.ansible_info.azure_managed_disk }}'
 
 - debug: var=r_azure
   delegate_to: localhost
