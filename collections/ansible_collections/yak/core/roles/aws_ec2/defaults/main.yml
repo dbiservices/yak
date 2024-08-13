@@ -13,3 +13,14 @@ availability_zone: eu-central-1a
 #     path: "{{ ansible_ssh_private_key_file|dirname }}"
 #     private_key_name: "{{ ansible_ssh_private_key_file|basename }}"
 #     public_key_name: "{{ ansible_ssh_public_key_file|basename }}"
+
+
+yak_aws_ec2_azure_subscription_id: "{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}"
+yak_azure_virtualmachine_azure_client_id: "{{ lookup('env','AZURE_CLIENT_ID') }}"
+yak_azure_virtualmachine_azure_secret: "{{ lookup('env','AZURE_SECRET') }}"
+yak_azure_virtualmachine_azure_tenant: "{{ lookup('env','AZURE_TENANT') }}"
+
+yak_aws_ec2_aws_access_key_id: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+yak_aws_ec2_aws_secret_access_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+yak_aws_ec2_aws_session_token: "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+

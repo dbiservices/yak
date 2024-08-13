@@ -3,6 +3,13 @@
 - ansible.builtin.include_role:
     name: yak.core.oci_compute
     tasks_from: check_credential.yml
+  vars:
+    yak_oci_compute_oci_ansible_auth_type: "{{ yak_artifact_provider_oci_ansible_auth_type }}"
+    yak_oci_compute_oci_user_id: "{{ yak_artifact_provider_oci_user_id }}"
+    yak_oci_compute_oci_user_fingerprint: "{{ yak_artifact_provider_oci_user_fingerprint }}"
+    yak_oci_compute_oci_region: "{{ yak_artifact_provider_oci_region }}"
+    yak_oci_compute_oci_tenancy: "{{ yak_artifact_provider_oci_tenancy }}"
+    yak_oci_compute_oci_user_key_file: "{{ yak_artifact_provider_oci_user_key_file }}"
 
 - name: Install OCI cli from PowerShell
   become: yes
@@ -43,7 +50,7 @@
   become_user: "{{ ansible_user }}"
   become_method: runas
   ansible.builtin.copy:
-    src: "{{ lookup('env','OCI_USER_KEY_FILE') }}"
+    src: "{{ yak_artifact_provider_oci_user_key_file }}"
     dest: C:\Users\Ansible\.oci\oci_key
 
 - name: Download artifact
@@ -57,11 +64,11 @@
       --name {{ item }} `
       --file "{{ destination_path }}\\{{ item | replace('/','\\') }}"
   environment:
-      OCI_CLI_AUTH            : "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE',default='api_key') }}"
-      OCI_CLI_USER            : "{{ lookup('env','OCI_USER_ID') }}"
-      OCI_CLI_FINGERPRINT     : "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
-      OCI_CLI_TENANCY         : "{{ lookup('env','OCI_TENANCY') }}"
-      OCI_CLI_REGION          : "{{ lookup('env','OCI_REGION') }}"
+      OCI_CLI_AUTH            : "{{ yak_artifact_provider_oci_ansible_auth_type }}"
+      OCI_CLI_USER            : "{{ yak_artifact_provider_oci_user_id }}"
+      OCI_CLI_FINGERPRINT     : "{{ yak_artifact_provider_oci_user_fingerprint }}"
+      OCI_CLI_TENANCY         : "{{ yak_artifact_provider_oci_tenancy }}"
+      OCI_CLI_REGION          : "{{ yak_artifact_provider_oci_region }}"
       OCI_CLI_KEY_FILE        : 'C:\Users\Ansible\.oci\oci_key'
   loop: "{{ artifact_files }}"
 

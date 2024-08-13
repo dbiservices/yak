@@ -9,3 +9,20 @@ variables_to_check :
   - destination_path 
   - destination_owner 
   - destination_group 
+
+yak_artifact_provider_oci_ansible_auth_type: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_OCI_ANSIBLE_AUTH_TYPE',default='api_key') }}"
+yak_artifact_provider_oci_user_id: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_OCI_USER_ID') }}"
+yak_artifact_provider_oci_user_fingerprint: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_OCI_USER_FINGERPRINT') }}"
+yak_artifact_provider_oci_tenancy: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_OCI_TENANCY') }}"
+yak_artifact_provider_oci_region: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_OCI_REGION') }}"
+yak_artifact_provider_oci_user_key_file: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_OCI_USER_KEY_FILE') }}"
+
+yak_artifact_provider_azure_subscription_id: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AZURE_SUBSCRIPTION_ID') }}"
+yak_artifact_provider_azure_client_id: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AZURE_CLIENT_ID') }}"
+yak_artifact_provider_azure_secret: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AZURE_SECRET') }}"
+yak_artifact_provider_azure_tenant: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AZURE_TENANT') }}"
+
+yak_artifact_provider_aws_ec2_aws_access_key_id: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AWS_ACCESS_KEY_ID') }}"
+yak_artifact_provider_aws_ec2_aws_secret_access_key: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AWS_SECRET_ACCESS_KEY') }}"
+yak_artifact_provider_aws_ec2_aws_session_token: "{{ lookup('env','YAK_ARTIFACT_PROVIDER_AWS_SESSION_TOKEN') }}"
+

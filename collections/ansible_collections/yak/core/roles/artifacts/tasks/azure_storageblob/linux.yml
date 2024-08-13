@@ -3,7 +3,12 @@
 - ansible.builtin.include_role:
     name: yak.core.azure_virtualmachine
     tasks_from: check_credential.yml
-
+  vars:
+    yak_azure_virtualmachine_azure_subscription_id: "{{ yak_artifact_provider_azure_subscription_id }}"
+    yak_azure_virtualmachine_azure_client_id: "{{ yak_artifact_provider_azure_client_id }}"
+    yak_azure_virtualmachine_azure_secret: "{{ yak_artifact_provider_azure_secret }}"
+    yak_azure_virtualmachine_azure_tenant: "{{ yak_artifact_provider_azure_tenant }}"
+    
 - name: Download azcopy
   ansible.builtin.get_url:
     url: https://aka.ms/downloadazcopy-v10-linux

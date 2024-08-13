@@ -2,3 +2,10 @@
 ---
 debug: false
 custom_tags: {}
+
+yak_oci_compute_oci_ansible_auth_type: "{{ lookup('env','OCI_ANSIBLE_AUTH_TYPE',default='api_key') }}"
+yak_oci_compute_oci_user_id: "{{ lookup('env','OCI_USER_ID') }}"
+yak_oci_compute_oci_user_fingerprint: "{{ lookup('env','OCI_USER_FINGERPRINT') }}"
+yak_oci_compute_oci_region: "{{ lookup('env','OCI_REGION') }}"
+yak_oci_compute_oci_user_key_file: "{{ lookup('env','OCI_USER_KEY_FILE') }}"
+yak_oci_compute_oci_tenancy: "{{ lookup('env','OCI_TENANCY') }}"

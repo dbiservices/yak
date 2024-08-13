@@ -11,3 +11,9 @@ role_root_device_storage_account_type: "{{ root_device_storage_account_type|defa
 role_dns:
   type: "{{ dns.type|default('none')}}"              # managed, custom, none
   dns_servers: "{{ dns.dns_servers|default(omit)}}"  # List/string | Which DNS servers should the NIC lookup.
+
+yak_azure_virtualmachine_azure_subscription_id: "{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}"
+yak_azure_virtualmachine_azure_client_id: "{{ lookup('env','AZURE_CLIENT_ID') }}"
+yak_azure_virtualmachine_azure_secret: "{{ lookup('env','AZURE_SECRET') }}"
+yak_azure_virtualmachine_azure_tenant: "{{ lookup('env','AZURE_TENANT') }}"
+

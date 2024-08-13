@@ -12,7 +12,7 @@
   azure.azcollection.azure_rm_resource:
     resource_group: "{{ artifacts.variables.resource_group }}"
     method: POST
-    url: "/subscriptions/{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}\
+    url: "/subscriptions/{{ yak_artifact_provider_azure_subscription_id }}\
           /resourceGroups/{{ artifacts.variables.resource_group }}/providers/\
           Microsoft.Storage/storageAccounts/\
           {{ artifacts.variables.storage_account_name }}/ListServiceSas/"
@@ -24,8 +24,7 @@
       signedExpiry: '{{ sas_time_expire }}'
   register: response_azure_sas
   environment:
-    AZURE_SUBSCRIPTION_ID: "{{ lookup('env','AZURE_SUBSCRIPTION_ID') }}"
-    AZURE_CLIENT_ID: "{{ lookup('env','AZURE_CLIENT_ID') }}"
-    AZURE_SECRET: "{{ lookup('env','AZURE_SECRET') }}"
-    AZURE_TENANT: "{{ lookup('env','AZURE_TENANT') }}"
-
+    AZURE_SUBSCRIPTION_ID: "{{ yak_artifact_provider_azure_subscription_id }}"
+    AZURE_CLIENT_ID: "{{ yak_artifact_provider_azure_client_id }}"
+    AZURE_SECRET: "{{ yak_artifact_provider_azure_secret }}"
+    AZURE_TENANT: "{{ yak_artifact_provider_azure_tenant }}"
