@@ -5,7 +5,6 @@
 #   hosts:
 #     - t-az-ol87-lvm-1
 #     - t-oci-ol89-1
-#     - t-aws-debian11-amd64-1
 #     - t-aws-debian11-1
 #   vars:
 #     artifacts:
@@ -55,6 +54,7 @@
 #       variables:
 #         storage_account_name: yakartifacts
 #         container: yakartifacts
+#         resource_group: dbi-testing-yak-rg
 #   roles:
 #     - name: yak.core.artifacts
 #       vars:
@@ -77,6 +77,7 @@
 #       variables:
 #         storage_account_name: yakartifacts
 #         container: yakartifacts
+#         resource_group: dbi-testing-yak-rg
 #   roles:
 #     - name: yak.core.artifacts
 #       vars:

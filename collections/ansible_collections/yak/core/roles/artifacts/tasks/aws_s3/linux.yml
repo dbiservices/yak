@@ -5,6 +5,10 @@
 - ansible.builtin.include_role:
     name: yak.core.aws_ec2
     tasks_from: check_credential.yml
+  vars:
+    yak_aws_ec2_aws_access_key_id: "{{ yak_artifact_provider_aws_ec2_aws_access_key_id }}"
+    yak_aws_ec2_aws_secret_access_key: "{{ yak_artifact_provider_aws_ec2_aws_secret_access_key }}"
+    yak_aws_ec2_aws_session_token: "{{ yak_artifact_provider_aws_ec2_aws_session_token }}"
 
 - name: Download artifact
   become: true
@@ -15,9 +19,9 @@
     mode: get
     retries: 5
   environment:
-    AWS_ACCESS_KEY_ID     : "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
-    AWS_SECRET_ACCESS_KEY : "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
-    AWS_SESSION_TOKEN     : "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+    AWS_ACCESS_KEY_ID     : "{{ yak_artifact_provider_aws_ec2_aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY : "{{ yak_artifact_provider_aws_ec2_aws_secret_access_key }}"
+    AWS_SESSION_TOKEN     : "{{ yak_artifact_provider_aws_ec2_aws_session_token }}"
   vars:
     ansible_python_interpreter: '{{ ansible_user_dir }}/.venv/env.ansible/bin/python3'
   loop: "{{ artifact_files }}"
