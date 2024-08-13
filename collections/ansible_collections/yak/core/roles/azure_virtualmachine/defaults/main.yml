@@ -17,3 +17,5 @@ yak_azure_virtualmachine_azure_client_id: "{{ lookup('env','AZURE_CLIENT_ID') }}
 yak_azure_virtualmachine_azure_secret: "{{ lookup('env','AZURE_SECRET') }}"
 yak_azure_virtualmachine_azure_tenant: "{{ lookup('env','AZURE_TENANT') }}"
 
+# Encryption at host for azure is enable if it is set to true at server or infra scope level.
+encryption_at_host: '{{ infra_encryption_at_host|default(false) or server_encryption_at_host|default(false) }}'
