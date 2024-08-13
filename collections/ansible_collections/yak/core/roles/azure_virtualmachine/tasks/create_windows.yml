@@ -29,6 +29,8 @@
     vm_size: "{{ vm_size }}"
     virtual_network_name: "{{ virtual_network_name }}"
     subnet_name: "{{ subnet_name }}"
+    security_profile:
+      encryption_at_host: "{{ role_azure_encryption_at_host| ternary(role_azure_encryption_at_host,omit) }}"  # encryption_at_host should be defined in <infrastructure_name>/variables.yml if required, see : https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_virtualmachine_module.html#parameter-security_profile/encryption_at_host
     network_interfaces: "{{ server_name }}-nic-01"
     image:
       offer: "{{ image.offer }}"
@@ -36,7 +38,10 @@
       sku: "{{ image.sku }}"
       version: "{{ image.version }}"
     os_type: "{{ os_type | capitalize }}"
-    managed_disk_type: "{{ role_root_device_storage_account_type }}"
+    managed_disk_type: "{{ role_azure_os_disk.managed_disk_type }}"
+    os_disk_caching: "{{ role_azure_os_disk.os_disk_caching }}"
+    os_disk_size_gb: "{{ role_azure_os_disk.os_disk_size_gb }}"
+    remove_on_absent: "{{ role_root_azure_remove_on_absent }}"
     custom_data: "{{ winrm_script }}"
     tags: "{{ custom_tags }}"
   register: r_azure

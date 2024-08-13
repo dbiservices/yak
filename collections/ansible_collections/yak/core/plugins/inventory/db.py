@@ -206,6 +206,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         providerShapeId
                         providerShapeName
                         providerShapeVariables
+                        providerDisksParametersVariables
                         secrets
                         variables
                     }
@@ -410,6 +411,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._set_hvars(server_name, 'yak_shape_name', server["providerShapeName"].lower())
         self._append_hvars(server_name, server["providerImageVariables"])
         self._append_hvars(server_name, server["providerShapeVariables"])
+
+        # Root Disk parameters
+        self._append_hvars(server_name, server["providerDisksParametersVariables"])
 
         # IPs
         self._set_hvars(server_name, 'ansible_host', server["name"])

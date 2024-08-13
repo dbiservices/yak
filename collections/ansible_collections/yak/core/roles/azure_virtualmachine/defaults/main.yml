@@ -4,9 +4,18 @@ debug: false
 custom_tags: "{}"
 role_storage_devices:
   specifications:
-    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
+    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('Standard_LRS') }}"
 
-role_root_device_storage_account_type: "{{ root_device_storage_account_type|default('StandardSSD_LRS') }}"
+root_azure_data_disk_delete_on_termination: true
+role_root_azure_remove_on_absent: "{% if role_azure_os_disk.remove_on_absent and root_azure_data_disk_delete_on_termination %}['all']{% else %}['network_interfaces','public_ips']{% endif %}"
+
+role_azure_os_disk:
+  managed_disk_type: "{{ azure_root_disk_parameters.managed_disk_type | default('Standard_LRS') }}"
+  os_disk_caching: "{{ azure_root_disk_parameters.os_disk_caching | default('ReadWrite') }}"
+  os_disk_size_gb: "{{ azure_root_disk_parameters.os_disk_size_gb | default(role_os_default_values[os_type|lower].root_os_default_volume_size) | default(role_os_default_values.default.root_os_default_volume_size) }}"
+  remove_on_absent: "{{ azure_root_disk_parameters.remove_on_absent | default(true) }}"
+
+role_azure_encryption_at_host: '{{ azure_root_disk_parameters.encryption_at_host | default(true) }}'
 
 role_dns:
   type: "{{ dns.type|default('none')}}"              # managed, custom, none
@@ -16,4 +25,12 @@ yak_azure_virtualmachine_azure_subscription_id: "{{ lookup('env','AZURE_SUBSCRIP
 yak_azure_virtualmachine_azure_client_id: "{{ lookup('env','AZURE_CLIENT_ID') }}"
 yak_azure_virtualmachine_azure_secret: "{{ lookup('env','AZURE_SECRET') }}"
 yak_azure_virtualmachine_azure_tenant: "{{ lookup('env','AZURE_TENANT') }}"
+
+role_os_default_values:
+    windows:
+        root_os_default_volume_size: 130
+    linux:
+        root_os_default_volume_size: 30
+    default:
+        root_os_default_volume_size: 30
 
