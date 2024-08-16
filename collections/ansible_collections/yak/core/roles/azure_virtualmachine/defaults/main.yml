@@ -15,6 +15,8 @@ role_azure_os_disk:
   os_disk_size_gb: "{{ azure_root_disk_parameters.os_disk_size_gb | default(role_os_default_values[os_type|lower].root_os_default_volume_size) | default(role_os_default_values.default.root_os_default_volume_size) }}"
   remove_on_absent: "{{ azure_root_disk_parameters.remove_on_absent | default(true) }}"
 
+role_azure_encryption_at_host: '{{ azure_root_disk_parameters.encryption_at_host | default(true) }}'
+
 role_dns:
   type: "{{ dns.type|default('none')}}"              # managed, custom, none
   dns_servers: "{{ dns.dns_servers|default(omit)}}"  # List/string | Which DNS servers should the NIC lookup.
@@ -23,9 +25,6 @@ yak_azure_virtualmachine_azure_subscription_id: "{{ lookup('env','AZURE_SUBSCRIP
 yak_azure_virtualmachine_azure_client_id: "{{ lookup('env','AZURE_CLIENT_ID') }}"
 yak_azure_virtualmachine_azure_secret: "{{ lookup('env','AZURE_SECRET') }}"
 yak_azure_virtualmachine_azure_tenant: "{{ lookup('env','AZURE_TENANT') }}"
-
-# Encryption at host for azure is enable if it is set to true at server or infra scope level.
-encryption_at_host: '{{ infra_encryption_at_host|default(false) or server_encryption_at_host|default(false) }}'
 
 role_os_default_values:
     windows:
