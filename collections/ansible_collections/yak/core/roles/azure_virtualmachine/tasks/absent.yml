@@ -4,16 +4,15 @@
 # No need to tag disks if all disks will be deleted as the azure.azcollection.azure_rm_virtualmachine can delete all disks
 # Only tags data disks as there is an issue with os_disk and tagging via ansible
 - when: 
-    - not (root_azure_os_disk_delete_on_termination and root_azure_data_disk_delete_on_termination)
-    - root_azure_data_disk_delete_on_termination
-  name: Tag data disks to be deleted
+    - not (role_azure_os_disk.remove_on_absent and root_azure_data_disk_delete_on_termination)
+  name: Tag data disks before deletion
   block:
     - include_tasks: get_vm_state.yml
 
     - when: r_get_vm_state|json_query('vms[?name==`'+server_name+'`]')|length > 0
       block:
         - include_tasks: stopped.yml
-        - name: Tag data disks for deletion
+        - name: Tag data disks before deletion
           delegate_to: localhost
           retries: 5
           delay: 5
@@ -21,7 +20,7 @@
             resource_group: "{{ resource_group }}"
             name: "{{ item.name }}"
             tags:
-              YakState: 'deletion'
+              YakState: '{% if root_azure_data_disk_delete_on_termination %}deletion{% else %}keeping{% endif %}'
               YakServerName: '{{ server_name }}'
           loop: '{{ r_azure_vm_stopped.ansible_facts.azure_vm.storage_profile.data_disks }}'
 
@@ -34,7 +33,7 @@
     state: absent
   register: r_azure
 
-- when: root_azure_os_disk_delete_on_termination
+- when: role_azure_os_disk.remove_on_absent
   name: Delete os disk
   delegate_to: localhost
   retries: 5

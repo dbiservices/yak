@@ -1,10 +1,10 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 role_root_device_ebs_option: #https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EbsBlockDevice.html
-    volume_type: "{{ root_device_ebs_option.volume_type | default('gp3') }}"
-    volume_size: "{{ root_device_ebs_option.volume_size | default(role_os_default_values[os_type|lower].root_device_ebs_default_volume_size) | default(role_os_default_values.default.root_device_ebs_default_volume_size) }}"
-    encrypted: "{{ root_device_ebs_option.encrypted | default(true) }}"
-    delete_on_termination: "{{ root_device_ebs_option.delete_on_termination | default(true) }}"
+    volume_type: "{{ aws_root_disk_parameters.volume_type | default('gp3') }}"
+    volume_size: "{{ aws_root_disk_parameters.volume_size | default(role_os_default_values[os_type|lower].root_device_ebs_default_volume_size) | default(role_os_default_values.default.root_device_ebs_default_volume_size) }}"
+    encrypted: "{{ aws_root_disk_parameters.encrypted | default(true) }}"
+    delete_on_termination: "{{ aws_root_disk_parameters.delete_on_termination | default(true) }}"
 
 role_os_default_values:
     windows:
@@ -13,3 +13,4 @@ role_os_default_values:
         root_device_ebs_default_volume_size: 20
     default:
         root_device_ebs_default_volume_size: 20
+

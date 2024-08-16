@@ -2,11 +2,29 @@
 ---
 # vars file for ./roles/oci_compute
 role_root_oci_boot_volume_options: 
-    boot_volume_size_in_gbs: "{{ root_oci_boot_volume_options.boot_volume_size_in_gbs | default(role_os_default_values[os_type|lower].root_default_boot_volume_size_in_gbs) | default(role_os_default_values.default.root_default_boot_volume_size_in_gbs) }}"
-    boot_volume_vpus_per_gb: "{{ root_oci_boot_volume_options.boot_volume_vpus_per_gb | default(10) }}"
-    delete_on_termination: "{{ root_oci_boot_volume_options.delete_on_termination|default(true) | bool }}"
-    is_pv_encryption_in_transit_enabled: '{{ root_oci_boot_volume_options.is_pv_encryption_in_transit_enabled | default(true) }}'
-    
+    boot_volume_size_in_gbs: "{{ oci_root_disk_parameters.boot_volume_size_in_gbs | default(role_os_default_values[os_type|lower].root_default_boot_volume_size_in_gbs) | default(role_os_default_values.default.root_default_boot_volume_size_in_gbs) }}"
+    boot_volume_vpus_per_gb: "{{ mapping_oci_volume_type_to_vpus_per_gb[oci_root_disk_parameters.volume_type|default('Balanced')] }}"
+    delete_on_termination: "{{ oci_root_disk_parameters.delete_on_termination|default(true) | bool }}"
+    is_pv_encryption_in_transit_enabled: '{{ oci_root_disk_parameters.is_pv_encryption_in_transit_enabled | default(true) }}'
+
+# Lower Cost
+#     IOPS: 2,048 IOPS
+#     Throughput: 245.76 MB/s
+# Balanced
+#     IOPS: 25,000 IOPS
+#     Throughput: 480 MB/s
+# Higher Performance
+#     IOPS: 50,000 IOPS
+#     Throughput: 614.4 MB/s
+# Ultra High Performance
+#     IOPS: 75,000 IOPS
+#     Throughput: 737.28 MB/s
+mapping_oci_volume_type_to_vpus_per_gb:
+    'Lower Cost': 0 
+    'Balanced': 10
+    'Higher Performance': 20
+    'Ultra High Performance': 30
+
 role_os_default_values:
     windows:
         root_default_boot_volume_size_in_gbs: 50

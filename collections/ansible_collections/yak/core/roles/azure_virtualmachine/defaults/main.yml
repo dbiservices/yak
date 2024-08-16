@@ -4,16 +4,16 @@ debug: false
 custom_tags: "{}"
 role_storage_devices:
   specifications:
-    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
+    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('Standard_LRS') }}"
 
-role_root_azure_device_storage_account_type: "{{ root_azure_device_storage_account_type|default('StandardSSD_LRS') }}"
-role_root_azure_os_disk_caching: "{{ root_azure_os_disk_caching|default('ReadWrite') }}"
-role_root_azure_os_disk_size_gb: "{{ root_os_disk_size_gb | default(role_os_default_values[os_type|lower].root_os_default_volume_size) | default(role_os_default_values.default.root_os_default_volume_size) }}"
-
-root_azure_os_disk_delete_on_termination: true
 root_azure_data_disk_delete_on_termination: true
-role_root_azure_remove_on_absent: "{% if root_azure_os_disk_delete_on_termination and root_azure_data_disk_delete_on_termination %}['all']{% else %}['network_interfaces','public_ips']{% endif %}"
+role_root_azure_remove_on_absent: "{% if role_azure_os_disk.remove_on_absent and root_azure_data_disk_delete_on_termination %}['all']{% else %}['network_interfaces','public_ips']{% endif %}"
 
+role_azure_os_disk:
+  managed_disk_type: "{{ azure_root_disk_parameters.managed_disk_type | default('Standard_LRS') }}"
+  os_disk_caching: "{{ azure_root_disk_parameters.os_disk_caching | default('ReadWrite') }}"
+  os_disk_size_gb: "{{ azure_root_disk_parameters.os_disk_size_gb | default(role_os_default_values[os_type|lower].root_os_default_volume_size) | default(role_os_default_values.default.root_os_default_volume_size) }}"
+  remove_on_absent: "{{ azure_root_disk_parameters.remove_on_absent | default(true) }}"
 
 role_dns:
   type: "{{ dns.type|default('none')}}"              # managed, custom, none
