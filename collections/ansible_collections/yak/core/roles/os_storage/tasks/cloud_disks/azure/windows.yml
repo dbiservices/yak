@@ -15,10 +15,10 @@
     name: "{{ machine_name }}-disk-{{ item.drive_letter }}-{{ item.partition_label }}"
     resource_group: "{{ resource_group }}"
     zone: "{{ zone_id|default(omit) }}"
-    disk_size_gb: "{{ role_storage_devices.max_size_gb }}"
+    disk_size_gb: "{{ item.size_gb|int }}"
     managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
-    storage_account_type: "{{ role_storage_devices.specifications.storage_account_type }}"
+    storage_account_type: "{{ role_storage_devices.azure_component_disk_parameters.managed_disk_type }}"
     tags: "{{ {
                 'Name': 'disk-'+item.drive_letter+'-'+item.partition_label,
                 'Partition_label': item.partition_label,

@@ -21,10 +21,10 @@
       region: "{{ region_id }}"
       instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
       volume_size: "{{ item.size_gb|int }}"
-      volume_type: "{{ role_storage_devices.specifications.volume_type }}"
+      volume_type: "{{ role_storage_devices.aws_component_disk_parameters.volume_type }}"
       device_name: "/dev/sd{{ item.drive_letter|lower }}"
-      encrypted: "{{ role_storage_devices.specifications.encrypted }}"
-      delete_on_termination: yes
+      encrypted: "{{ role_storage_devices.aws_component_disk_parameters.encrypted }}"
+      delete_on_termination: "{{ role_storage_devices.aws_component_disk_parameters.delete_on_termination }}"
       tags: "{{ {
                   'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
                   'Partition_label': item.partition_label,
