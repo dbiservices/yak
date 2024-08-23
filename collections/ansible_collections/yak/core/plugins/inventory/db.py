@@ -414,7 +414,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._append_hvars(server_name, server["providerShapeVariables"])
 
         # Root Disk parameters
-        self._set_hvars(server_name, 'provider_disks_parameters_id', server["providerDisksParametersId"])
         self._append_hvars(server_name, server["providerDisksParametersVariables"])
 
         # IPs
