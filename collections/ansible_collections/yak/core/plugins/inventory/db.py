@@ -206,7 +206,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                         providerShapeId
                         providerShapeName
                         providerShapeVariables
-                        providerDisksParametersId
                         providerDisksParametersVariables
                         secrets
                         variables
