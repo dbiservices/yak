@@ -15,7 +15,7 @@
     subnet_name: "{{ subnet_name }}"
     ssh_password_enabled: false
     security_profile:
-      encryption_at_host: "{{ encryption_at_host | default('false') }}" # encryption_at_host should be defined in <infrastructure_name>/variables.yml if required, see : https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_virtualmachine_module.html#parameter-security_profile/encryption_at_host
+      encryption_at_host: "{{ role_azure_encryption_at_host | ternary(role_azure_encryption_at_host,omit) }}" # encryption_at_host should be defined in <infrastructure_name>/variables.yml if required, see : https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_virtualmachine_module.html#parameter-security_profile/encryption_at_host
     ssh_public_keys:
       - path: "/home/{{ ansible_user }}/.ssh/authorized_keys"
         key_data: "{{ lookup('file', ansible_ssh_public_key_file) }}"
@@ -26,7 +26,10 @@
       sku: "{{ image.sku }}"
       version: "{{ image.version }}"
     os_type: "{{ os_type | capitalize }}"
-    managed_disk_type: "{{ role_root_device_storage_account_type }}"
+    managed_disk_type: "{{ role_azure_os_disk.managed_disk_type }}"
+    os_disk_caching: "{{ role_azure_os_disk.os_disk_caching }}"
+    os_disk_size_gb: "{{ role_azure_os_disk.os_disk_size_gb }}"
+    remove_on_absent: "{{ role_root_azure_remove_on_absent }}"
     tags: "{{ custom_tags }}"
   register: r_azure
 

@@ -28,7 +28,13 @@
     display_name: "{{ display_name }}"
     subnet_id: "{{ subnet_id }}"
     create_vnic_details: "{{ vnic_details }}"
-    preserve_boot_volume: no
+    source_details:
+      boot_volume_size_in_gbs: "{{ role_root_oci_boot_volume_options.boot_volume_size_in_gbs }}"
+      boot_volume_vpus_per_gb: "{{ role_root_oci_boot_volume_options.boot_volume_vpus_per_gb }}"
+      source_type: "image"
+      image_id: "{{ image_id }}"
+    preserve_boot_volume: "{{ not role_root_oci_boot_volume_options.delete_on_termination }}"
+    is_pv_encryption_in_transit_enabled: "{{ role_root_oci_boot_volume_options.is_pv_encryption_in_transit_enabled }}"
     metadata : { "ssh_authorized_keys": "{{ lookup('file', ansible_ssh_public_key_file) }}", "user_data": "{{ cloud_init_script | b64encode }}" }
     freeform_tags: "{{ custom_tags }}"
   register: r_oci_compute_instance_present

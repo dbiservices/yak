@@ -7,4 +7,5 @@
     name: "{{ server_name }}"
     started: no
     allocated: no
+  register: r_azure_vm_stopped
 
