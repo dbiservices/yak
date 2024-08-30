@@ -135,71 +135,71 @@ def lambda_handler(event, context):
 
     # Code
     for aws_s3_object in aws_s3_objects:
+        if aws_s3_object['Key'][-1] == '/':
+            continue
 
         # print('# Object: [{} byte(s)] {}'.format(aws_s3_object['Size'], aws_s3_object['Key']))
         local_object_name = f"{TEMP_DOWNLOAD_DIR}/{aws_s3_object['Key']}"
+        path = Path(local_object_name)
 
-        if aws_s3_object['Key'][-1] == '/':
+        # print('# Creating local directory "{}/{}"'.format(TEMP_DOWNLOAD_DIR, aws_s3_object['Key']))
+        Path(path.parent.absolute()).mkdir(parents=True, exist_ok=True)
 
-            # print('# Creating local directory "{}/{}"'.format(TEMP_DOWNLOAD_DIR, aws_s3_object['Key']))
-            Path(local_object_name).mkdir(parents=True, exist_ok=True)
 
-        elif aws_s3_object['Key'][-1] != '/':
+        if sync_target == 'all' or sync_target == 'oci':
 
-            if sync_target == 'all' or sync_target == 'oci':
+            object_exists_in_oci, object_has_same_size_in_oci = \
+                s3_object_already_exists_in_oci(aws_s3_object, oci_s3_objects)
 
-                object_exists_in_oci, object_has_same_size_in_oci = \
-                    s3_object_already_exists_in_oci(aws_s3_object, oci_s3_objects)
+            if not object_exists_in_oci or (object_exists_in_oci and not object_has_same_size_in_oci):
+                print(f"# Object: [{aws_s3_object['Size']} byte(s)] {aws_s3_object['Key']}")
 
-                if not object_exists_in_oci or (object_exists_in_oci and not object_has_same_size_in_oci):
-                    print(f"# Object: [{aws_s3_object['Size']} byte(s)] {aws_s3_object['Key']}")
+                print(f'# Download aws s3 object to "{local_object_name}"')
+                aws_s3_client.download_file(
+                    Bucket=AWS_S3_BUCKET_NAME,
+                    Key=aws_s3_object['Key'],
+                    Filename=local_object_name
+                )
 
-                    print(f'# Download aws s3 object to "{local_object_name}"')
-                    aws_s3_client.download_file(
-                        Bucket=AWS_S3_BUCKET_NAME,
-                        Key=aws_s3_object['Key'],
-                        Filename=local_object_name
+                if object_exists_in_oci and not object_has_same_size_in_oci:
+                    print(f"# Removing object \"{aws_s3_object['Key']}\" in OCI from bucket \"{OCI_BUCKET_NAME}\"")
+                    # oci_object_storage.delete_object(oci_namespace, OCI_BUCKET_NAME, aws_s3_object['Key'])
+
+                print(f"# Uploading object in OCI to bucket \"{OCI_BUCKET_NAME}\" with object name \"{aws_s3_object['Key']}\"")
+                with open(file=local_object_name, mode="rb") as data:
+                    oci_s3_client.put_object(Bucket=OCI_BUCKET_NAME, Key=aws_s3_object['Key'], Body=data)
+
+                print(f'# Removing local file "{local_object_name}"\n')
+                Path(local_object_name).unlink()
+
+
+        if sync_target == 'all' or sync_target == 'azure':
+
+            object_exists_in_azure, object_has_same_size_in_azure = \
+                s3_object_already_exists_in_azure(aws_s3_object, az_blob_list)
+
+            if not object_exists_in_azure or (object_exists_in_azure and not object_has_same_size_in_azure):
+
+                print(f'# Download aws s3 object to "{local_object_name}"')
+                aws_s3_client.download_file(
+                    Bucket=AWS_S3_BUCKET_NAME,
+                    Key=aws_s3_object['Key'],
+                    Filename=local_object_name
+                )
+
+                if object_exists_in_azure and not object_has_same_size_in_azure:
+                    print(f"# Removing object \"{aws_s3_object['Key']}\" in Azure from bucket \"{AZ_BLOB_SERVICE_CONTAINER}\"")
+                    az_container_client.delete_blob(aws_s3_object['Key'])
+
+                print(f"# Uploading object in Azure to bucket \"{AZ_BLOB_SERVICE_CONTAINER}\" with object name \"{aws_s3_object['Key']}\"")
+                blob_client = az_blob_service_client.get_blob_client(
+                        container=AZ_BLOB_SERVICE_CONTAINER, blob=aws_s3_object['Key']
                     )
+                with open(file=local_object_name, mode="rb") as data:
+                    blob_client.upload_blob(data)
 
-                    if object_exists_in_oci and not object_has_same_size_in_oci:
-                        print(f"# Removing object \"{aws_s3_object['Key']}\" in OCI from bucket \"{OCI_BUCKET_NAME}\"")
-                        # oci_object_storage.delete_object(oci_namespace, OCI_BUCKET_NAME, aws_s3_object['Key'])
-
-                    print(f"# Uploading object in OCI to bucket \"{OCI_BUCKET_NAME}\" with object name \"{aws_s3_object['Key']}\"")
-                    with open(file=local_object_name, mode="rb") as data:
-                        oci_s3_client.put_object(Bucket=OCI_BUCKET_NAME, Key=aws_s3_object['Key'], Body=data)
-
-                    print(f'# Removing local file "{local_object_name}"\n')
-                    Path(local_object_name).unlink()
-
-
-            if sync_target == 'all' or sync_target == 'azure':
-
-                object_exists_in_azure, object_has_same_size_in_azure = \
-                    s3_object_already_exists_in_azure(aws_s3_object, az_blob_list)
-
-                if not object_exists_in_azure or (object_exists_in_azure and not object_has_same_size_in_azure):
-
-                    print(f'# Download aws s3 object to "{local_object_name}"')
-                    aws_s3_client.download_file(
-                        Bucket=AWS_S3_BUCKET_NAME,
-                        Key=aws_s3_object['Key'],
-                        Filename=local_object_name
-                    )
-
-                    if object_exists_in_azure and not object_has_same_size_in_azure:
-                        print(f"# Removing object \"{aws_s3_object['Key']}\" in Azure from bucket \"{AZ_BLOB_SERVICE_CONTAINER}\"")
-                        az_container_client.delete_blob(aws_s3_object['Key'])
-
-                    print(f"# Uploading object in Azure to bucket \"{AZ_BLOB_SERVICE_CONTAINER}\" with object name \"{aws_s3_object['Key']}\"")
-                    blob_client = az_blob_service_client.get_blob_client(
-                            container=AZ_BLOB_SERVICE_CONTAINER, blob=aws_s3_object['Key']
-                        )
-                    with open(file=local_object_name, mode="rb") as data:
-                        blob_client.upload_blob(data)
-
-                    print('# Removing local file "{}" \n'.format(local_object_name))
-                    Path(local_object_name).unlink()
+                print('# Removing local file "{}" \n'.format(local_object_name))
+                Path(local_object_name).unlink()
 
     print("If you don't see any object names in the output, it means everything is already synchronized.")
     print("Synchronization script finished successfully.")
