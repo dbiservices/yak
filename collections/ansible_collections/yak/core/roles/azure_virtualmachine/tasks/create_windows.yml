@@ -28,10 +28,13 @@
     admin_password: "{{ os_admin_password }}"
     vm_size: "{{ vm_size }}"
     virtual_network_name: "{{ virtual_network_name }}"
+    virtual_network_resource_group: "{{ role_virtual_network_resource_group }}"
     subnet_name: "{{ subnet_name }}"
     security_profile:
       encryption_at_host: "{{ role_azure_encryption_at_host| ternary(role_azure_encryption_at_host,omit) }}"  # encryption_at_host should be defined in <infrastructure_name>/variables.yml if required, see : https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_virtualmachine_module.html#parameter-security_profile/encryption_at_host
-    network_interfaces: "{{ server_name }}-nic-01"
+    network_interfaces: 
+      - name: "{{ server_name }}-nic-01"
+        resource_group: "{{ role_network_interface_resource_group }}"
     image:
       offer: "{{ image.offer }}"
       publisher: "{{ image.publisher }}"
