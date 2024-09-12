@@ -17,5 +17,5 @@
     that: zone_id is defined
     fail_msg: "'zone_id' must be defined when 'storage_account_type' = 'UltraSSD_LRS'"
     success_msg: "'zone_id' is defined properly for 'storage_account_type' = 'UltraSSD_LRS'"
-  when: role_storage_devices.specifications.storage_account_type == 'UltraSSD_LRS'
+  when: role_storage_devices.azure_component_disk_parameters.managed_disk_type == 'UltraSSD_LRS'
 ...

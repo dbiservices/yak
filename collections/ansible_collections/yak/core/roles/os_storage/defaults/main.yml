@@ -7,12 +7,24 @@ volume_group_name: data
 custom_tags: {}
 role_storage_devices:
   # AWS,OCI,AZURE
-  max_size_gb: "{{ storage_devices.max_size_gb|default(100) }}"
+  aws_component_disk_parameters:
+    volume_type: "{{ yak_inventory_os_storages_disk_parameters.aws_component_disk_parameters.volume_type | default('gp3') }}"
+    encrypted: "{{ yak_inventory_os_storages_disk_parameters.aws_component_disk_parameters.encrypted | default(true) }}"
+    delete_on_termination: "{{ yak_inventory_os_storages_disk_parameters.aws_component_disk_parameters.delete_on_termination | default(true) }}"
+    max_size_gb: "{{ yak_inventory_os_storages_disk_parameters.aws_component_disk_parameters.max_size_gb | default(100) }}"
+  azure_component_disk_parameters:
+    managed_disk_type: "{{ yak_inventory_os_storages_disk_parameters.azure_component_disk_parameters.managed_disk_type | default('StandardSSD_LRS') }}"
+    os_disk_caching: "{{ yak_inventory_os_storages_disk_parameters.azure_component_disk_parameters.os_disk_caching | default('ReadWrite') }}"
+    #remove_on_absent: "{{ yak_inventory_os_storages_disk_parameters.azure_component_disk_parameters.remove_on_absent | default(true) }}"
+    max_size_gb: "{{ yak_inventory_os_storages_disk_parameters.azure_component_disk_parameters.max_size_gb | default(100) }}"
+  oci_component_disk_parameters:
+    vpus_per_gb: "{{ mapping_oci_volume_type_to_vpus_per_gb[yak_inventory_os_storages_disk_parameters.oci_component_disk_parameters.volume_type|default('Balanced')] }}"
+    #delete_on_termination: "{{ yak_inventory_os_storages_disk_parameters.oci_component_disk_parameters.delete_on_termination|default(true) | bool }}"
+    max_size_gb: "{{ yak_inventory_os_storages_disk_parameters.oci_component_disk_parameters.max_size_gb | default(100) }}"
   os_storage_linux_stripe_size: "{{ storage_devices.stripe_size|default(64) }}"
-  specifications:
-    # AWS
-    volume_type: "{{ storage_devices.specifications.volume_type|default('gp3') }}"
-    encrypted: "{{ storage_devices.specifications.encrypted|default(true) }}"
-    # Azure
-    storage_account_type: "{{ storage_devices.specifications.storage_account_type|default('StandardSSD_LRS') }}"
-    attach_caching: "{% if storage_devices.specifications.attach_caching is defined and storage_devices.specifications.attach_caching == 'none' %}{% else %}{{ storage_devices.specifications.attach_caching|default('read_only') }}{% endif %}"
+
+mapping_oci_volume_type_to_vpus_per_gb:
+    'Lower Cost': 0 
+    'Balanced': 10
+    'Higher Performance': 20
+    'Ultra High Performance': 30

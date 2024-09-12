@@ -1,7 +1,9 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - include_tasks: derive_volumes_need.yml
-
+  vars:
+    derive_volumes_need_max_size_gb: "{{ role_storage_devices.aws_component_disk_parameters.max_size_gb }}"
+    
 - name: Get the list of existing instances
   delegate_to: localhost
   community.aws.ec2_instance_info:
@@ -22,11 +24,11 @@
     ec2_volume:
       region: "{{ region_id }}"
       instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      volume_size: "{{ role_storage_devices.max_size_gb }}"
-      volume_type: "{{ role_storage_devices.specifications.volume_type }}"
+      volume_size: "{{ role_storage_devices.aws_component_disk_parameters.max_size_gb }}"
+      volume_type: "{{ role_storage_devices.aws_component_disk_parameters.volume_type }}"
       device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
-      encrypted: "{{ role_storage_devices.specifications.encrypted }}"
-      delete_on_termination: yes
+      encrypted: "{{ role_storage_devices.aws_component_disk_parameters.encrypted }}"
+      delete_on_termination: "{{ role_storage_devices.aws_component_disk_parameters.delete_on_termination }}"
       tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_ec2_volumes
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"

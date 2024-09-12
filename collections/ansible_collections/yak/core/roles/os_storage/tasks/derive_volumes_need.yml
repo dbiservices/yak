@@ -5,7 +5,8 @@
 
 - debug: var=role_storage_devices
 
+# derive_volumes_need_max_size_gb need to be provided for example with vars:
 - name: Derive number of disk needed
   set_fact:
-    number_of_devices: "{{ (total_volume_gb|int / role_storage_devices.max_size_gb|int) | round(0,'ceil') | int  }}"
+    number_of_devices: "{{ (total_volume_gb|int / derive_volumes_need_max_size_gb|int) | round(0,'ceil') | int  }}"
     allowed_device_alphabet_letter: "fghijklmnopqrstuvwxyz"
