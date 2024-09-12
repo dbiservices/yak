@@ -93,10 +93,14 @@
   delegate_to: localhost
   azure.azcollection.azure_rm_networkinterface:
     name: "{{ server_name }}-nic-01"
-    resource_group: "{{ resource_group }}"
-    virtual_network: "{{ virtual_network_name }}"
-    subnet_name: "{{ subnet_name }}"
-    security_group: "{{ security_group }}"
+    resource_group: "{{ role_network_interface_resource_group }}"
+    virtual_network:
+      name: "{{ virtual_network_name }}"
+      resource_group: "{{ role_virtual_network_resource_group }}"
+    subnet_name: "{{ subnet_name }}" # It uses the virtual_network‘s resource group.
+    security_group:
+      name: "{{ security_group }}"
+      resource_group: "{{ role_security_group_resource_group }}"
     ip_configurations: "{{ azure_ip_configurations }}"
     dns_servers: "{{ role_dns.dns_servers }}"
     tags: "{{ custom_tags }}"

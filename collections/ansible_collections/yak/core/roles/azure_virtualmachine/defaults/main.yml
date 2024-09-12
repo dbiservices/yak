@@ -34,3 +34,7 @@ role_os_default_values:
     default:
         root_os_default_volume_size: 30
 
+
+role_virtual_network_resource_group: "{{ virtual_network_resource_group | default(resource_group, true) }}"
+role_network_interface_resource_group: "{{ network_interface_resource_group | default(resource_group, true) }}"
+role_security_group_resource_group: "{{ security_group_resource_group | default(resource_group, true) }}"

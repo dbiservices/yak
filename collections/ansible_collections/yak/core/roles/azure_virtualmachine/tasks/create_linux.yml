@@ -12,6 +12,7 @@
     admin_username: "{{ ansible_user }}"
     vm_size: "{{ vm_size }}"
     virtual_network_name: "{{ virtual_network_name }}"
+    virtual_network_resource_group: "{{ role_virtual_network_resource_group }}"
     subnet_name: "{{ subnet_name }}"
     ssh_password_enabled: false
     security_profile:
@@ -19,7 +20,9 @@
     ssh_public_keys:
       - path: "/home/{{ ansible_user }}/.ssh/authorized_keys"
         key_data: "{{ lookup('file', ansible_ssh_public_key_file) }}"
-    network_interfaces: "{{ server_name }}-nic-01"
+    network_interfaces: 
+      - name: "{{ server_name }}-nic-01"
+        resource_group: "{{ role_network_interface_resource_group }}"
     image:
       offer: "{{ image.offer }}"
       publisher: "{{ image.publisher }}"
