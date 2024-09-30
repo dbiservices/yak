@@ -1,0 +1,99 @@
+---
+# To run this test playbook
+# docker compose exec  yak-runner bash
+# cd /workspace/yak/collections/ansible_collections/yak/core/plugins/modules/
+# export YAK_ANSIBLE_HTTP_TOKEN=<token_here>
+# ansible-playbook test_yak_component_variables_update.yml
+- name: Test YAK Component Variables Update
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    component_name: "component-template-test"
+
+  tasks:
+    - name: Set values of variables to prepare test
+      yak.core.yak_component_variables_update:
+        component_name: "{{ component_name }}"
+        variable_name: "{{ item.variable }}"
+        value: "{{ item.value }}"
+      register: update_result
+      loop :
+        - variable: "example_mandatory_variable"
+          value: foo
+        - variable: "example_advanced_mandatory_variable"
+          value: bar
+
+    - name: Update component variables
+      yak.core.yak_component_variables_update:
+        component_name: "{{ component_name }}"
+        variable_name: "{{ item.variable }}"
+        value: "{{ item.value }}"
+      register: update_result
+      loop :
+        - variable: "example_mandatory_variable"
+          value: "TEST OK"
+        - variable: "example_advanced_mandatory_variable"
+          value: 1
+
+    - name: Display update result
+      debug:
+        var: update_result.results
+
+    - name: Check if update was successful
+      assert:
+        that:
+          - item.changed 
+          - "'properly modified' in item.message"
+        fail_msg: "Component variables update failed"
+        success_msg: "Component variables update succeeded"
+      loop: "{{ update_result.results }}"
+
+    - name: Try to update non existing variable
+      yak.core.yak_component_variables_update:
+        component_name: "{{ component_name }}"
+        variable_name: "{{ item.variable }}"
+        value: "{{ item.value }}"
+      register: update_result
+      loop :
+        - variable: "FAKE"
+          value: "TEST OK"
+      failed_when: not update_result.failed
+
+    - name: Display update result
+      debug:
+        var: update_result.results
+
+    - name: Check if update was successful
+      assert:
+        that:
+          - not item.changed 
+          - "'Variable named FAKE doesn' in item.msg"
+        fail_msg: "Component variables update failed"
+        success_msg: "Component variables update succeeded"
+      loop: "{{ update_result.results }}"
+
+
+    - name: Try to update variable with already existing value
+      yak.core.yak_component_variables_update:
+        component_name: "{{ component_name }}"
+        variable_name: "{{ item.variable }}"
+        value: "{{ item.value }}"
+      register: update_result
+      loop :
+        - variable: "example_mandatory_variable"
+          value: "TEST OK"
+
+    - name: Display update result
+      debug:
+        var: update_result.results
+
+    - name: Check if update was successful
+      assert:
+        that:
+          - not item.changed 
+          - "'already has the proper value' in item.message"
+        fail_msg: "Component variables update failed"
+        success_msg: "Component variables update succeeded"
+      loop: "{{ update_result.results }}"
