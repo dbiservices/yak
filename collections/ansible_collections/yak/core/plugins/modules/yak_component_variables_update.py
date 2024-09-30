@@ -10,37 +10,30 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: yak_component_variables_update
-short_description: Update YAK component variables
+short_description: Update a single YAK component variable
 description:
-    - This module updates component variables in the YAK system using a GraphQL query.
+    - This module updates a single component variable in the YAK system using a GraphQL query.
 options:
     component_name:
         description: The name of the component to update
         required: true
         type: str
-    component_variables:
-        description: List of variables to update
+    variable_name:
+        description: The name of the variable to update
         required: true
-        type: list
-        elements: dict
-        options:
-            variable:
-                description: The name of the variable to update
-                required: true
-                type: str
-            value:
-                description: The new value for the variable
-                required: true
-                type: str
+        type: str
+    value:
+        description: The new value for the variable
+        required: true
+        type: str
 '''
 
 EXAMPLES = r'''
-- name: Update component variables
+- name: Update component variable
   yak.core.yak_component_variables_update:
     component_name: "postgres1"
-    component_variables:
-      - variable: "version"
-        value: "pv_postgres_target_version"
+    variable_name: "version"
+    value: "12"
 '''
 
 RETURN = r'''
@@ -49,7 +42,6 @@ message:
     type: str
     returned: always
 '''
-
 from ansible.module_utils.basic import AnsibleModule
 
 # Define the available arguments/parameters that a user can pass to the module
@@ -68,7 +60,7 @@ result = dict(
 # Create the module object
 module = AnsibleModule(
     argument_spec=module_args,
-    supports_check_mode=True
+    supports_check_mode=False
 )
 
 def graphQLRequest(graphql_request, graphql_request_variables):
