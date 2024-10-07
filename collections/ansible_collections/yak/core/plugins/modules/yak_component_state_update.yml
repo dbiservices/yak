@@ -1,0 +1,49 @@
+---
+- name: Test module yak_component_state_update
+  hosts: localhost
+  gather_facts: no
+  vars:
+    server_name: srv-aws-linux
+    infrastructure_name: aws-yak-test
+  tasks:
+
+      
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'declared'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'deploying'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'running'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'stopping'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'stopped'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'terminating'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'terminated'
+
+  - name: Update current component state
+    delegate_to: localhost
+    yak.core.yak_component_state_update:
+      component_state_name: 'failed'

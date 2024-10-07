@@ -5,6 +5,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import (absolute_import, division, print_function)
 from ansible.errors import AnsibleError
+from ..module_utils.graphql_utils import graphQLRequest
 import ruamel.yaml
 import os
 import requests
@@ -182,23 +183,6 @@ def api_update_server(server_name, server_state=None, private_ip=None, public_ip
     graphql_request_variables = {"pServerName": server_name, "pServerStateName": server_state, "pPrivateIp": private_ip, "pPublicIp": public_ip}
     graphQLRequest(graphql_request, graphql_request_variables)
     
-def api_update_component(component_name: str, basic_variables: dict = None, advanced_variables: dict = None, component_state_name: str=None):
-    graphql_request = """
-    mutation componentUpdate ($pComponentName: String!, $pBasicVariables: JSON, $pAdvancedVariables: JSON, $pComponentStateName: String! ) {
-        componentUpdate(
-                input: {pComponentName: $pComponentName, 
-                pAdvancedVariables: $pAdvancedVariables,
-                pBasicVariables: $pBasicVariables,
-                pComponentStateName: $pComponentStateName}
-            ) { integer } 
-        }
-    """
-    graphql_request_variables = {"pComponentName": component_name, 
-                                 "pBasicVariables": basic_variables, 
-                                 "pAdvancedVariables": advanced_variables,
-                                 "pComponentStateName": component_state_name}
-    graphQLRequest(graphql_request, graphql_request_variables)
-
 def api_get_infrastructure_variables(infrastructure_name):
 
     graphql_request = """
@@ -230,26 +214,6 @@ def api_update_infrastructure(infrastructure_name, infrastructure_variables):
     graphql_request_variables = {"pInfrastructureName": infrastructure_name, "pVariables": infrastructure_variables}
     graphQLRequest(graphql_request, graphql_request_variables)
 
-
-def graphQLRequest(graphql_request, graphql_request_variables):
-
-    response = requests.post(
-        url=os.environ.get('YAK_ANSIBLE_TRANSPORT_URL'),
-        headers={
-            "Authorization": "Bearer {}".format(os.environ.get('YAK_ANSIBLE_HTTP_TOKEN')),
-            "Content-Type": "application/json",
-        },
-        json={
-            "query": graphql_request,
-            "variables": graphql_request_variables,
-        },
-    )
-    if response.status_code != 200:
-        raise AnsibleError(f"API error: {response}\n{response.text}")
-    if "errors" in response.json():
-        raise AnsibleError("GraphQL error: {}\n".format(response.json()["errors"][0]["message"]))
-    if graphql_request.lstrip().startswith('query'):
-        return response.json()["data"]
 
 def load_yml(target_name):
 
