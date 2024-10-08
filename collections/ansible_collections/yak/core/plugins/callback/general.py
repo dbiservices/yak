@@ -1,7 +1,8 @@
 # Make coding more python3-ish, this is required for contributions to Ansible
 from __future__ import (absolute_import, division, print_function)
 from os import environ
-from ..modules.yak_inventory_update import api_update_server, api_update_component
+from ..modules.yak_inventory_update import api_update_server
+from ..modules.yak_component_state_update import api_update_component
 __metaclass__ = type
 
 # Ref. https://technekey.com/how-to-write-a-simple-callback-plugin-for-ansible/
@@ -100,9 +101,9 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_stats(self, playbook):
         self.yak_display_playbook_info(playbook)
 
-        if playbook.failures == {}:
-            self.yak_api_update_component_state("running")
-        else:
+        if playbook.failures != {}:
+        #     self.yak_api_update_component_state("running")
+        # else:
             self.yak_api_update_component_state("failed")
 
     #
