@@ -29,6 +29,7 @@ options:
         description: The state of the component.
         required: true
         type: str
+        choices: ['declared','deploying','running','stopping','stopped','terminating','terminated','failed']
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -37,7 +38,12 @@ from ansible.module_utils.basic import AnsibleModule
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        component_state_name=dict(type='str', required=True),
+        component_state_name=dict(type='str', choices=['declared','deploying','running','stopping','stopped','terminating','terminated','failed'], required=True),
+    )
+
+    module = AnsibleModule(
+        argument_spec=module_args,
+        supports_check_mode=True
     )
 
     # seed the result dict in the object

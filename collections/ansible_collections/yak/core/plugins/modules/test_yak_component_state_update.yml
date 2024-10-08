@@ -1,13 +1,9 @@
 ---
+# YAK_INVENTORY_TYPE YAK_ANSIBLE_HTTP_TOKEN YAK_ANSIBLE_TRANSPORT_URL YAK_CORE_COMPONENT environment must be set
 - name: Test module yak_component_state_update
   hosts: localhost
   gather_facts: no
-  vars:
-    server_name: srv-aws-linux
-    infrastructure_name: aws-yak-test
   tasks:
-
-      
   - name: Update current component state
     delegate_to: localhost
     yak.core.yak_component_state_update:
