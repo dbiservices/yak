@@ -76,6 +76,8 @@
     resource_group: "{{ resource_group }}"
     name: "{{ server_name }}-public-ip-01"
     state: absent
+  failed_when: false
+
 
 - name: Delete key from ssh config file
   delegate_to: localhost
@@ -83,3 +85,4 @@
     path: "{{ yak_local_ssh_config_file }}"
     state: absent
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
+  failed_when: false

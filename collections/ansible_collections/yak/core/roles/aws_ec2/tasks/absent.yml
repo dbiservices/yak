@@ -23,6 +23,7 @@
     path: "{{ yak_local_ssh_config_file }}"
     state: absent
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
+  failed_when: false
 
 - name: Delete server key pair
   delegate_to: localhost
@@ -30,3 +31,4 @@
     region: "{{ region_id }}"
     name: "{{ machine_name }}"
     state: absent
+  failed_when: false
