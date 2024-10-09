@@ -64,3 +64,5 @@
     path: "{{ yak_local_ssh_config_file }}"
     state: absent
     marker: "## {mark} ANSIBLE MANAGED BLOCK - {{ inventory_hostname }} ##"
+  failed_when: false
+
