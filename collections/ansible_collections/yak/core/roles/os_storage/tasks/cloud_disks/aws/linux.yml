@@ -1,9 +1,8 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - include_tasks: derive_volumes_need.yml
-  vars:
-    derive_volumes_need_max_size_gb: "{{ role_storage_devices.aws_component_disk_parameters.max_size_gb }}"
-    
+- include_tasks: define_linux_variable.yml
+
 - name: Get the list of existing instances
   delegate_to: localhost
   community.aws.ec2_instance_info:

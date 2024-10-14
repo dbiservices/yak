@@ -1,8 +1,8 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - include_tasks: derive_volumes_need.yml
-  vars:
-    derive_volumes_need_max_size_gb: "{{ role_storage_devices.azure_component_disk_parameters.max_size_gb }}"
+- include_tasks: define_linux_variable.yml
+
 
 - name: Failing if finding a disk with old naming convention
   delegate_to: localhost
@@ -19,11 +19,11 @@
     name: "{{ machine_name }}-disk{{ item }}"
     resource_group: "{{ resource_group }}"
     zone: "{{ zone_id|default(omit) }}"
-    disk_size_gb: "{{ role_storage_devices.azure_component_disk_parameters.max_size_gb }}"
+    disk_size_gb: "{{ yak_filesystem_configuration.max_size_gb }}"
     managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
-    storage_account_type: "{{ role_storage_devices.azure_component_disk_parameters.managed_disk_type }}"
-    attach_caching: "{{ role_storage_devices.azure_component_disk_parameters.os_disk_caching }}"
+    storage_account_type: "{{ yak_filesystem_configuration.managed_disk_type }}"
+    attach_caching: "{{ yak_filesystem_configuration.os_disk_caching }}"
     tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
   register: r_azure_rm_manageddisk
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"

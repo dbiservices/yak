@@ -1,18 +1,17 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - include_tasks: derive_volumes_need.yml
-  vars:
-    derive_volumes_need_max_size_gb: "{{ role_storage_devices.oci_component_disk_parameters.max_size_gb }}"
+- include_tasks: define_linux_variable.yml
 
 - name: Create volume
   delegate_to: localhost
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ machine_name }}_disk{{ item }}"
-    size_in_gbs: "{{ role_storage_devices.oci_component_disk_parameters.max_size_gb }}"
-    vpus_per_gb: "{{ role_storage_devices.oci_component_disk_parameters.vpus_per_gb }}"
-    freeform_tags : "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
+    display_name: "{{ machine_name }}-{{ sanitized_mount_point_name }}-{{ item }}"
+    size_in_gbs: "{{ os_storage_disk_new_size }}"
+    vpus_per_gb: "{{ mapping_oci_volume_type_to_vpus_per_gb[yak_filesystem_configuration.volume_type|default('Balanced',true)] }}"
+    freeform_tags : "{{ {'Name': machine_name +'-'+sanitized_mount_point_name+'-'+item} | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
 

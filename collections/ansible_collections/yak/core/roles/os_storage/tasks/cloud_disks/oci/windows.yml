@@ -5,17 +5,16 @@
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
-    size_in_gbs: "{{ item.size_gb|int }}"
-    vpus_per_gb: "{{ role_storage_devices.oci_component_disk_parameters.vpus_per_gb }}"
+    display_name: "{{ machine_name }}-disk-{{ yak_filesystem_configuration.drive_letter }}-{{ yak_filesystem_configuration.partition_label }}"
+    size_in_gbs: "{{ yak_filesystem_configuration.size_gb|int }}"
+    vpus_per_gb: "{{ mapping_oci_volume_type_to_vpus_per_gb[yak_filesystem_configuration.volume_type|default('Balanced',true)] }}"
     freeform_tags : "{{ {
-                          'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
-                          'Partition_label': item.partition_label,
-                          'Drive_letter': item.drive_letter
+                          'Name': 'disk-'+yak_filesystem_configuration.drive_letter+'-'+yak_filesystem_configuration.partition_label,
+                          'Partition_label': yak_filesystem_configuration.partition_label,
+                          'Drive_letter': yak_filesystem_configuration.drive_letter
                         }
                         | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
-  loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_oci_blockstorage_volume_present
   delegate_to: localhost

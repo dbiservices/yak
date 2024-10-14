@@ -482,8 +482,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self._log_debug(f"Populating storage_point: {storage_point}...")
                     self.inventory.hosts[server].vars["yak_inventory_os_storages"].append(storage_point)
 
-            self.inventory.hosts[server].vars["yak_inventory_os_storages_disk_parameters"] = servers_list["providerDisksParametersVariables"]
-
         for server in dict(self.inventory.hosts):
             if server not in global_component_servers_list:
                 server_to_remove = self.inventory.get_host(server)

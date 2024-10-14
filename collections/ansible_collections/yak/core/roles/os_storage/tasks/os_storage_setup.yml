@@ -1,0 +1,7 @@
+- include_tasks: assertions/main.yml
+
+# disks provisionning
+- include_tasks: cloud_disks/{{ provider }}/{{ os_type }}.yml
+
+# filesystem setup
+- include_tasks: os_disks/{{ os_type }}/main.yml
