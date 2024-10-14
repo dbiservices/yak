@@ -1,0 +1,44 @@
+- block:
+  - when: init_count | default(true)
+    ansible.builtin.set_fact:
+      retry_count: 0
+
+  - name: Re-collect facts after disk addition 
+    ansible.builtin.setup:
+      gather_subset:
+        - devices
+
+  - debug: var=ansible_devices
+    when: debug | bool
+
+  - name: Derive the pv list 
+    delegate_to: localhost
+    yak.core.derive_pv_list:
+      provider: "{{ provider }}"
+      os_type: "{{ os_type }}"
+      vol_info: "{{ r_attached_volumes }}"
+      ansible_devices: "{{ ansible_devices }}"
+    register: r_derive_pv_list
+  
+  - when: r_derive_pv_list.pv_list|length != number_of_devices|int
+    name: Ensure expected data is present
+    ansible.builtin.fail:
+      msg: 'AWS EBS Volume still not mounted'
+
+  rescue:
+  - when: retry_count | int >= 10
+    name: Fail after 10 tries
+    ansible.builtin.fail:
+      msg: "Failed to retrive the proper number of PV from the server devices list"
+
+  - ansible.builtin.pause:
+      seconds: '5'
+
+  - name: Increment Retry Count
+    ansible.builtin.set_fact:
+      retry_count: "{{ retry_count | int + 1 }}"
+
+  - name: Retry derive pv
+    ansible.builtin.include_tasks: volumes_aws_derive_pv.yml
+    vars:
+      init_count: false

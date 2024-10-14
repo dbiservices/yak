@@ -20,6 +20,9 @@
   delegate_to: localhost
   when: debug | bool
 
+- fail:
+    msg: '{{ r_oci_blockstorage_volume_present }}'
+
 - name: Get instances ID
   delegate_to: localhost
   oracle.oci.oci_compute_instance_facts:

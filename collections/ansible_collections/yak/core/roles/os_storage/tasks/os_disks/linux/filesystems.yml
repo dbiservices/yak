@@ -14,7 +14,7 @@
     fstype: "{{ yak_filesystem_configuration.filesystem_type }}"
     dev: "/dev/{{ sanitized_mount_point_name }}/{{ sanitized_mount_point_name }}"
 
-- name: Get UUID for each FS
+- name: Get UUID of the File system
   become: yes
   shell: >
     lsblk /dev/{{ sanitized_mount_point_name }}/{{ sanitized_mount_point_name }}
@@ -25,8 +25,6 @@
 
 - debug: var=r_fs_uuid
   when: debug | bool
-
-- debug: var=r_fs_uuid
 
 - name: Assert that r_fs_uuid.stdout is not empty
   assert:

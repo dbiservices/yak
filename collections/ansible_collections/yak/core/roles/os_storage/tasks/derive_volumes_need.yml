@@ -6,4 +6,4 @@
 
 - name: Derive additional 5% disk space 
   set_fact:
-    os_storage_disk_new_size: "{{ yak_filesystem_configuration.max_size_gb|int + (yak_filesystem_configuration.size_gb|int * 0.05) | int}}"
+    os_storage_disk_new_size: "{{ (yak_filesystem_configuration.max_size_gb|int * 1.05) | int }}"

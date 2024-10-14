@@ -26,5 +26,5 @@
 - name: Create a volume group
   become: yes
   lvg:
-    vg: "{{ volume_group_name }}"
+    vg: "{{ sanitized_mount_point_name }}"
     pvs: "{{ pvs_list }}"

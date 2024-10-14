@@ -19,7 +19,7 @@
     name: "{{ machine_name }}-disk{{ item }}"
     resource_group: "{{ resource_group }}"
     zone: "{{ zone_id|default(omit) }}"
-    disk_size_gb: "{{ yak_filesystem_configuration.max_size_gb }}"
+    disk_size_gb: "{{ os_storage_disk_new_size }}"
     managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
     storage_account_type: "{{ yak_filesystem_configuration.managed_disk_type }}"

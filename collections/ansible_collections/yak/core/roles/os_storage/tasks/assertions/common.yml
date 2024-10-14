@@ -5,19 +5,21 @@
       - "provider: {{ provider }}"
       - "machine_name: {{ machine_name }}"
       - "os_type: {{ os_type }}"
-      - "volume_group_name: {{ volume_group_name }}"
+      - "volume_group_name: {{ sanitized_mount_point_name }}"
       - "custom_tags: {{ custom_tags }}"
       - "role_storage_devices: {{ role_storage_devices }}"
       - "yak_filesystem_configuration: {{ yak_filesystem_configuration }}"
   when: debug|bool
 
-- name: Ensure that max_size_gb is valid
-  ansible.builtin.assert:
-    that:
-      - yak_filesystem_configuration.max_size_gb|int > 2
-      - yak_filesystem_configuration.max_size_gb|int < 10240
-    fail_msg: "'max_size_gb' has an invalid value. Please use a value between 3 and 10240."
-    success_msg: "'max_size_gb' has a valid value."
+# Windows don't have max_size
+# Need to make check depending of each cloud provider for minimum size and depending of os
+# - name: Ensure that max_size_gb is valid
+#   ansible.builtin.assert:
+#     that:
+#       - yak_filesystem_configuration.max_size_gb|int > 2
+#       - yak_filesystem_configuration.max_size_gb|int < 10240
+#     fail_msg: "'max_size_gb' has an invalid value. Please use a value between 3 and 10240."
+#     success_msg: "'max_size_gb' has a valid value."
 
 # To add to cloud provider specific for check
 
