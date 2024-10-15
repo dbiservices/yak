@@ -26,12 +26,12 @@
   register: r_ebs_volumes
 
 
-- name: Extract EBS volumes with yak_mount_point tag equal to the mountpoint
+- name: Extract EBS volumes with Yak_mount_point tag equal to the mountpoint
   set_fact:
     filtered_existing_fs_volumes: >-
       {{ r_ebs_volumes.volumes | 
-          selectattr('tags.yak_mount_point', 'defined') | 
-          selectattr('tags.yak_mount_point', 'equalto', yak_filesystem_configuration.mount_point) | 
+          selectattr('tags.Yak_mount_point', 'defined') | 
+          selectattr('tags.Yak_mount_point', 'equalto', yak_filesystem_configuration.mount_point) | 
           list }}
 
 # Create volume if currently less than desired.
@@ -73,8 +73,8 @@
             {{
               {
                 'Name': 'disk-' + machine_name + '-' + sanitized_mount_point_name + '-' + (item + filtered_existing_fs_volumes|length)|string, 
-                'yak_mount_point': yak_filesystem_configuration.mount_point,
-                'yak_machine_name': machine_name
+                'Yak_mount_point': yak_filesystem_configuration.mount_point,
+                'Yak_machine_name': machine_name
               }
               | combine(custom_tags)
             }}

@@ -17,7 +17,7 @@
     region: "{{ region_id }}"
     filters:
       attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      "tag:yak_mount_point": "{{ yak_filesystem_configuration.mount_point }}"
+      "tag:Yak_mount_point": "{{ yak_filesystem_configuration.mount_point }}"
   register: r_attached_volumes
 
 - debug: var=r_attached_volumes
