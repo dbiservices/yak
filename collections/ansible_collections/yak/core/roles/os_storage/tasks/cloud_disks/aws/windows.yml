@@ -28,7 +28,7 @@
       tags: >
             {{
               {
-                'Name': 'disk_' + machine_name + '-' + yak_filesystem_configuration.drive_letter + '-' + yak_filesystem_configuration.partition_label,
+                'Name': 'disk-' + machine_name + '-' + yak_filesystem_configuration.drive_letter + '-' + yak_filesystem_configuration.partition_label,
                 'Partition_label': yak_filesystem_configuration.partition_label,
                 'Drive_letter': yak_filesystem_configuration.drive_letter,
                 'Yak_machine_name': machine_name

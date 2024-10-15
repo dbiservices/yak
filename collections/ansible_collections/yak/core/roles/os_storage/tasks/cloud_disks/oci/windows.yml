@@ -5,23 +5,23 @@
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ machine_name }}-disk-{{ yak_filesystem_configuration.drive_letter }}-{{ yak_filesystem_configuration.partition_label }}"
+    display_name: "{{ machine_name }}-{{ yak_filesystem_configuration.drive_letter }}-{{ yak_filesystem_configuration.partition_label }}"
     size_in_gbs: "{{ yak_filesystem_configuration.size_gb|int }}"
     vpus_per_gb: "{{ mapping_oci_volume_type_to_vpus_per_gb[yak_filesystem_configuration.volume_type|default('Balanced',true)] }}"
-    freeform_tags : "{{ {
-                          'Name': 'disk-'+yak_filesystem_configuration.drive_letter+'-'+yak_filesystem_configuration.partition_label,
-                          'Partition_label': yak_filesystem_configuration.partition_label,
-                          'Drive_letter': yak_filesystem_configuration.drive_letter
-                        }
-                        | combine(custom_tags) }}"
+    freeform_tags : >
+      {{
+        {
+          'Name': machine_name + '-' + yak_filesystem_configuration.drive_letter + '-' + yak_filesystem_configuration.partition_label,
+          'Partition_label': yak_filesystem_configuration.partition_label,
+          'Drive_letter': yak_filesystem_configuration.drive_letter
+        }
+        | combine(custom_tags)
+      }}
   register: r_oci_blockstorage_volume_present
 
 - debug: var=r_oci_blockstorage_volume_present
   delegate_to: localhost
   when: debug | bool
-
-- fail:
-    msg: '{{ r_oci_blockstorage_volume_present }}'
 
 - name: Get instances ID
   delegate_to: localhost
@@ -43,8 +43,7 @@
     compartment_id: "{{ compartment_id }}"
     type: iscsi
     instance_id: "{{ r_oci_compute_instance_facts.instances[0].id }}"
-    volume_id: "{{ item.volume.id }}"
-  loop: "{{ r_oci_blockstorage_volume_present.results }}"
+    volume_id: "{{ r_oci_blockstorage_volume_present.volume.id }}"
   register: r_oci_blockstorage_volume_attachment
 
 - debug: var=r_oci_blockstorage_volume_attachment
