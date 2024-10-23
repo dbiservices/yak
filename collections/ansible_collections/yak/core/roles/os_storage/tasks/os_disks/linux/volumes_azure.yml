@@ -11,14 +11,21 @@
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_virtualmachine_info
 
-- debug: var=r_azure_rm_virtualmachine_info
-
 - set_fact:
+    azure_storage_disks_name: []
     pvs_list: []
 
 - set_fact:
-    pvs_list: "{{ pvs_list + [ '/dev/disk/azure/scsi1/lun' + item|string ] }}"
-  with_items: "{{ r_azure_rm_virtualmachine_info|json_query('vms[?name==`'+machine_name+'`].data_disks[*].lun|[]') }}"
+    azure_storage_disks_name: '{{ azure_storage_disks_name + [item.state.name] }}'
+  loop: '{{ r_azure_rm_manageddisk.results }}'
+
+- when: 
+  - item.name in azure_storage_disks_name
+  - r_azure_rm_virtualmachine_info.vms[0].name == machine_name
+  name: Extract LUN for each managed disk
+  set_fact:
+    pvs_list: "{{ pvs_list + [ '/dev/disk/azure/scsi1/lun' + item.lun|string ] }}"
+  loop: "{{ r_azure_rm_virtualmachine_info.vms[0].data_disks }}"
 
 - debug: var=pvs_list
   when: debug | bool

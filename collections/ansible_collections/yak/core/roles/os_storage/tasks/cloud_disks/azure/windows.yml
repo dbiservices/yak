@@ -3,30 +3,32 @@
 - name: Failing if finding a disk with old naming convention
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk_info:
-    name: "{{ machine_name }}_disk_{{ item.drive_letter }}_{{ item.partition_label }}"
+    name: "{{ machine_name }}_disk_{{ yak_filesystem_configuration.drive_letter }}_{{ yak_filesystem_configuration.partition_label }}"
     resource_group: "{{ resource_group }}"
   register: r_azure_rm_manageddisk_info
   failed_when: r_azure_rm_manageddisk_info.ansible_info.azure_managed_disk | length > 0
-  loop: "{{ yak_inventory_os_storages }}"
 
 - name: Create and attach the managed disk to VM
   delegate_to: localhost
   azure.azcollection.azure_rm_manageddisk:
-    name: "{{ machine_name }}-disk-{{ item.drive_letter }}-{{ item.partition_label }}"
+    name: "disk-{{ machine_name }}-{{ yak_filesystem_configuration.drive_letter }}-{{ yak_filesystem_configuration.partition_label }}"
     resource_group: "{{ resource_group }}"
     zone: "{{ zone_id|default(omit) }}"
-    disk_size_gb: "{{ item.size_gb|int }}"
+    disk_size_gb: "{{ yak_filesystem_configuration.size_gb|int }}"
     managed_by: "{{ machine_name }}"
     os_type: "{{ os_type }}"
     storage_account_type: "{{ yak_filesystem_configuration.managed_disk_type }}"
-    tags: "{{ {
-                'Name': 'disk-'+item.drive_letter+'-'+item.partition_label,
-                'Partition_label': item.partition_label,
-                'Drive_letter': item.drive_letter
-              }
-              | combine(custom_tags) }}"
+    attach_caching: "{{ mapping_os_disk_caching[yak_filesystem_configuration.os_disk_caching] | default('read_write') }}"
+    tags : >
+      {{
+        {
+          'Name': 'disk-' + machine_name + '-' + yak_filesystem_configuration.drive_letter + '-' + yak_filesystem_configuration.partition_label,
+          'Partition_label': yak_filesystem_configuration.partition_label,
+          'Drive_letter': yak_filesystem_configuration.drive_letter
+        }
+        | combine(custom_tags)
+      }}
   register: r_azure_rm_manageddisk
-  loop: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_azure_rm_manageddisk
   delegate_to: localhost

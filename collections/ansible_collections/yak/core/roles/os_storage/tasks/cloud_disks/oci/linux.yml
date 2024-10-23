@@ -8,10 +8,10 @@
   oracle.oci.oci_blockstorage_volume:
     compartment_id: "{{ compartment_id }}"
     availability_domain: "{{ availability_domain }}"
-    display_name: "{{ machine_name }}-{{ sanitized_mount_point_name }}-{{ item }}"
+    display_name: "disk-{{ machine_name }}-{{ sanitized_mount_point_name }}-{{ item }}"
     size_in_gbs: "{{ os_storage_disk_new_size }}"
     vpus_per_gb: "{{ mapping_oci_volume_type_to_vpus_per_gb[yak_filesystem_configuration.volume_type|default('Balanced',true)] }}"
-    freeform_tags : "{{ {'Name': machine_name +'-'+sanitized_mount_point_name+'-'+item} | combine(custom_tags) }}"
+    freeform_tags : "{{ {'Name': 'disk-' + machine_name +'-'+sanitized_mount_point_name+'-'+item} | combine(custom_tags) }}"
   register: r_oci_blockstorage_volume_present
   loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
 

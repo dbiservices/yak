@@ -28,3 +28,8 @@ mapping_oci_volume_type_to_vpus_per_gb:
     'Balanced': 10
     'Higher Performance': 20
     'Ultra High Performance': 30
+
+mapping_os_disk_caching:
+    'None': ''
+    'ReadWrite': 'read_write'
+    'ReadOnly': 'read_only'

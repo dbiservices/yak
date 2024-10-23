@@ -24,7 +24,7 @@
       volume_type: "{{ yak_filesystem_configuration.volume_type }}"
       device_name: "/dev/sd{{ yak_filesystem_configuration.drive_letter|lower }}"
       encrypted: "{{ yak_filesystem_configuration.encrypted }}"
-      delete_on_termination: "{{ yak_filesystem_configuration.delete_on_termination }}"
+      delete_on_termination: "{{ yak_filesystem_configuration.delete_on_termination | default(true) }}"
       tags: >
             {{
               {

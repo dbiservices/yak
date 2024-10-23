@@ -10,7 +10,7 @@
 
 - name: Create a filesystem on logical volume
   become: yes
-  filesystem:
+  community.general.filesystem:
     fstype: "{{ yak_filesystem_configuration.filesystem_type }}"
     dev: "/dev/{{ sanitized_mount_point_name }}/{{ sanitized_mount_point_name }}"
 
