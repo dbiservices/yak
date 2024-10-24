@@ -2,41 +2,44 @@
 - name: Create a logical volume
   become: yes
   community.general.lvol:
-    vg: "{{ volume_group_name }}"
-    lv: "{{ item.mount_point | replace('/','') }}"
-    size: "{{ item.size_gb }}g"
+    vg: "{{ sanitized_mount_point_name }}"
+    lv: "{{ sanitized_mount_point_name }}"
+    size: "{{ yak_filesystem_configuration.size_gb }}g"
     shrink: no
     opts: "-i {{ number_of_devices }} -I {{ role_storage_devices.os_storage_linux_stripe_size }}"
-  with_items: "{{ yak_inventory_os_storages }}"
 
 - name: Create a filesystem on logical volume
   become: yes
-  filesystem:
-    fstype: "{{ item.filesystem_type }}"
-    dev: "/dev/{{ volume_group_name }}/{{ item.mount_point | replace('/','') }}"
-  with_items: "{{ yak_inventory_os_storages }}"
+  community.general.filesystem:
+    fstype: "{{ yak_filesystem_configuration.filesystem_type }}"
+    dev: "/dev/{{ sanitized_mount_point_name }}/{{ sanitized_mount_point_name }}"
 
-- name: Get UUID for each FS
+- name: Get UUID of the File system
   become: yes
   shell: >
-    lsblk /dev/{{ volume_group_name }}/{{ item.mount_point | replace('/','') }}
+    lsblk /dev/{{ sanitized_mount_point_name }}/{{ sanitized_mount_point_name }}
     -o uuid
     | egrep  -v '^UUID'
   register: r_fs_uuid
   changed_when: false
-  with_items: "{{ yak_inventory_os_storages }}"
 
 - debug: var=r_fs_uuid
   when: debug | bool
 
+- name: Assert that r_fs_uuid.stdout is not empty
+  assert:
+    that:
+      - r_fs_uuid.stdout is not none
+      - r_fs_uuid.stdout != ""
+    fail_msg: "r_fs_uuid.stdout is empty!"
+    
 - name: Mount logical volume
   become: yes
   ansible.posix.mount:
-    path: "{{ item.mount_point }}"
-    src: "UUID={{ r_fs_uuid|json_query('results[?item.mount_point==`'+item.mount_point+'`].stdout|[0]') }}"
+    path: "{{ yak_filesystem_configuration.mount_point }}"
+    src: "UUID={{ r_fs_uuid.stdout }}"
     # _netdev: must be set for OCI cloud at least, because we use ISCSI
     #          Not needed on AWS and Azure but not harmful.
-    opts: _netdev{% if item.opts is defined %}{% if item.opts %}{% if item.opts|length>0 %},{{ item.opts }}{% endif %}{% endif %}{% endif %}
-    fstype: "{{ item.filesystem_type }}"
+    opts: _netdev{% if yak_filesystem_configuration.opts is defined %}{% if yak_filesystem_configuration.opts %}{% if yak_filesystem_configuration.opts|length>0 %},{{ yak_filesystem_configuration.opts }}{% endif %}{% endif %}{% endif %}
+    fstype: "{{ yak_filesystem_configuration.filesystem_type }}"
     state: mounted
-  with_items: "{{ yak_inventory_os_storages }}"

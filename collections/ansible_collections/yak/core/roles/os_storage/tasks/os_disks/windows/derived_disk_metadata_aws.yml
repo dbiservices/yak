@@ -14,11 +14,12 @@
     region: "{{ region_id }}"
     filters:
       attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      "tag:Name": disk*
+      "tag:Drive_letter": "{{ yak_filesystem_configuration.drive_letter }}"
   register: r_attached_volumes
 
 - name: Re-collect facts after disk addition and ensure expected data is present
   community.windows.win_disk_facts:
+
 
 - debug: var=r_attached_volumes
   when: debug|bool
@@ -40,3 +41,5 @@
 
 - debug: var=pv_list_extended
   when: debug | bool
+
+- debug: var=pv_list_extended

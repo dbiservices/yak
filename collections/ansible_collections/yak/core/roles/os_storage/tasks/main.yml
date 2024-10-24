@@ -1,7 +1,11 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
+
+- debug:
+    msg: '{{ yak_inventory_os_storages }}'
+
 - when : provider != "on_premises"
-  block:
-    - include_tasks: assertions/main.yml
-    - include_tasks: cloud_disks/{{ provider }}/{{ os_type }}.yml
-    - include_tasks: os_disks/{{ os_type }}/main.yml
+  include_tasks: os_storage_setup.yml
+  loop: '{{ yak_inventory_os_storages }}'
+  loop_control:
+    loop_var: 'yak_filesystem_configuration'

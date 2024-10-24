@@ -17,29 +17,13 @@
     region: "{{ region_id }}"
     filters:
       attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      "tag:Name": disk*
+      "tag:Yak_mount_point": "{{ yak_filesystem_configuration.mount_point }}"
   register: r_attached_volumes
 
 - debug: var=r_attached_volumes
   when: debug | bool
 
-- name: Re-collect facts after disk addition and ensure expected data is present
-  setup:
-  until: ansible_devices|dict2items|json_query('[?value.model==`Amazon Elastic Block Store`].key')|length >= number_of_devices|int
-  retries: 10
-  delay: 5
-
-- debug: var=ansible_devices
-  when: debug | bool
-
-- name: Derive the pv list
-  delegate_to: localhost
-  yak.core.derive_pv_list:
-    provider: "{{ provider }}"
-    os_type: "{{ os_type }}"
-    vol_info: "{{ r_attached_volumes }}"
-    ansible_devices: "{{ ansible_devices }}"
-  register: r_derive_pv_list
+- include_tasks: "volumes_aws_derive_pv.yml"
 
 - debug: var=r_derive_pv_list
   when: debug | bool
@@ -47,5 +31,7 @@
 - name: Create a volume group
   become: yes
   lvg:
-    vg: "{{ volume_group_name }}"
+    vg: "{{ sanitized_mount_point_name }}"
     pvs: "{{ r_derive_pv_list.pv_list }}"
+
+

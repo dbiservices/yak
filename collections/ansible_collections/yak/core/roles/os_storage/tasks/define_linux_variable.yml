@@ -1,0 +1,4 @@
+---
+- name: Sanitize mount point to be used for naming
+  set_fact:
+    sanitized_mount_point_name: "{{ yak_filesystem_configuration.mount_point | regex_replace('[^a-zA-Z0-9]', '-') | regex_replace('^-', '') }}"

@@ -1,7 +1,7 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - set_fact:
-    iscsi_commands: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].volume_attachment.iscsi_attach_commands|[]') }}"
+    iscsi_commands: "{{ r_oci_blockstorage_volume_attachment.volume_attachment.iscsi_attach_commands }}"
 
 - name: Run ISCSI configuration
   ansible.windows.win_powershell:
@@ -23,24 +23,18 @@
       }
   register: r_disk_number_per_target_node_address
 
-- debug: var=r_disk_number_per_target_node_address
-
-- set_fact:
-    pv_list_extended: []
-
 # The next task expects this format.
 - set_fact:
     pv_list_extended: >
-      {{ pv_list_extended +
+      {{
         [
           {
-            'drive_letter': item.drive_letter,
-            'partition_label': item.partition_label,
-            'windows_disk_number': r_disk_number_per_target_node_address|json_query('output[?TargetNodeAddress==`'+item.iqn|string+'`].DiskNumber|[0]')|int
+            'drive_letter': yak_filesystem_configuration.drive_letter,
+            'partition_label': yak_filesystem_configuration.partition_label,
+            'windows_disk_number': r_disk_number_per_target_node_address|json_query('output[?TargetNodeAddress==`'+r_oci_blockstorage_volume_attachment.volume_attachment.iqn|string+'`].DiskNumber|[0]')|int
           }
         ]
       }}
-  with_items: "{{ r_oci_blockstorage_volume_attachment|json_query('results[*].{volume_name: item.item.volume_name, drive_letter: item.item.drive_letter, partition_label: item.item.partition_label, iqn:volume_attachment.iqn}') }}"
 
 - debug: var=pv_list_extended
   when: debug | bool

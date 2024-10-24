@@ -1,9 +1,8 @@
 # Copyright: (c) 2023, dbi services, distributed without any warranty under the terms of the GNU General Public License v3
 ---
 - include_tasks: derive_volumes_need.yml
-  vars:
-    derive_volumes_need_max_size_gb: "{{ role_storage_devices.aws_component_disk_parameters.max_size_gb }}"
-    
+- include_tasks: define_linux_variable.yml
+
 - name: Get the list of existing instances
   delegate_to: localhost
   community.aws.ec2_instance_info:
@@ -18,26 +17,77 @@
   delegate_to: localhost
   when: debug | bool
 
-- name: Generate EC2 volumes variable for Linux
+- name: Get details of all EBS volumes
   delegate_to: localhost
+  amazon.aws.ec2_vol_info:
+    region: "{{ region_id }}"
+    filters:
+      attachment.instance-id: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+  register: r_ebs_volumes
+
+
+- name: Extract EBS volumes with Yak_mount_point tag equal to the mountpoint
   set_fact:
-    ec2_volume:
-      region: "{{ region_id }}"
-      instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      volume_size: "{{ role_storage_devices.aws_component_disk_parameters.max_size_gb }}"
-      volume_type: "{{ role_storage_devices.aws_component_disk_parameters.volume_type }}"
-      device_name: "/dev/sd{{ allowed_device_alphabet_letter[item|int-1:item|int] }}"
-      encrypted: "{{ role_storage_devices.aws_component_disk_parameters.encrypted }}"
-      delete_on_termination: "{{ role_storage_devices.aws_component_disk_parameters.delete_on_termination }}"
-      tags: "{{ {'Name': 'disk'+item} | combine(custom_tags) }}"
-  register: r_ec2_volumes
-  loop: "{{ query('sequence', 'start=1 end='+(number_of_devices)|string) }}"
+    filtered_existing_fs_volumes: >-
+      {{ r_ebs_volumes.volumes | 
+          selectattr('tags.Yak_mount_point', 'defined') | 
+          selectattr('tags.Yak_mount_point', 'equalto', yak_filesystem_configuration.mount_point) | 
+          list }}
 
-- debug: var=r_ec2_volumes
-  delegate_to: localhost
-  when: debug | bool
+# Create volume if currently less than desired.
+# No update or modification possible once created for now
+- when: filtered_existing_fs_volumes|length < number_of_devices|int
+  name: Create new volume for the filesystem
+  block:
+    - name: Extract the used device letters for /dev/sd[a-z]
+      set_fact:
+        used_device_letters: >-
+          {{ r_ebs_volumes.volumes | 
+          map(attribute='attachment_set') | 
+          selectattr('0', 'defined') | 
+          map(attribute='0.device') | 
+          select('search', '^/dev/sd') | 
+          map('regex_replace', '/dev/sd', '') | list }}
 
-- name: Create and attach the volumes to instance
-  delegate_to: localhost
-  amazon.aws.ec2_vol: "{{ item.ansible_facts.ec2_volume }}"
-  loop: "{{ r_ec2_volumes.results }}"
+    - name: Find free device letters
+      set_fact:
+        free_device_letters: "{{ allowed_device_alphabet_letter | difference(used_device_letters) }}"
+
+    - name: Ensure there are enough free letters for new devices
+      assert:
+        that: free_device_letters | length >= (number_of_devices|int - (filtered_existing_fs_volumes | length))
+        fail_msg: "Not enough free device letters to create {{ number_of_devices|int - (filtered_existing_fs_volumes | length) }} new devices."
+
+    - name: Generate EC2 volumes variable for Linux
+      delegate_to: localhost
+      set_fact:
+        ec2_volume:
+          region: "{{ region_id }}"
+          instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
+          volume_size: "{{ os_storage_disk_new_size }}"
+          volume_type: "{{ yak_filesystem_configuration.volume_type }}"
+          device_name: "/dev/sd{{ free_device_letters[item] }}"
+          encrypted: "{{ yak_filesystem_configuration.encrypted }}"
+          delete_on_termination: "{{ yak_filesystem_configuration.delete_on_termination | default(true) }}"
+          tags: >
+            {{
+              {
+                'Name': 'disk-' + machine_name + '-' + sanitized_mount_point_name + '-' + (item + filtered_existing_fs_volumes|length)|string, 
+                'Yak_mount_point': yak_filesystem_configuration.mount_point,
+                'Yak_machine_name': machine_name
+              }
+              | combine(custom_tags)
+            }}
+      register: r_ec2_volumes
+      loop: "{{ range(0, number_of_devices|int - (filtered_existing_fs_volumes | length)) }}"
+
+    - debug: var=r_ec2_volumes
+      delegate_to: localhost
+      when: debug | bool
+
+    # creates an EBS volume and optionally attaches it to an instance.
+    # If both an instance ID and a device name is given and the instance has a device at the device name, then no volume is created and no attachment is made.
+    - name: Create and attach the volumes to instance
+      delegate_to: localhost
+      amazon.aws.ec2_vol: "{{ item.ansible_facts.ec2_volume }}"
+      loop: "{{ r_ec2_volumes.results }}"

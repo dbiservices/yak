@@ -1,12 +1,9 @@
 ---
-- name: Derive total volume need from fS requirement of the composant
-  set_fact:
-    total_volume_gb: "{{ yak_inventory_os_storages|json_query('[*].size_gb|[]')|sum }}"
-
-- debug: var=role_storage_devices
-
-# derive_volumes_need_max_size_gb need to be provided for example with vars:
 - name: Derive number of disk needed
   set_fact:
-    number_of_devices: "{{ (total_volume_gb|int / derive_volumes_need_max_size_gb|int) | round(0,'ceil') | int  }}"
+    number_of_devices: "{{ (yak_filesystem_configuration.size_gb|int / yak_filesystem_configuration.max_size_gb|int) | round(0,'ceil') | int  }}"
     allowed_device_alphabet_letter: "fghijklmnopqrstuvwxyz"
+
+- name: Derive additional 5% disk space 
+  set_fact:
+    os_storage_disk_new_size: "{{ (yak_filesystem_configuration.max_size_gb|int * 1.05) | int }}"

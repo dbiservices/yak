@@ -20,25 +20,26 @@
     ec2_volume:
       region: "{{ region_id }}"
       instance: "{{ r_ec2_instance_info.instances[0].instance_id }}"
-      volume_size: "{{ item.size_gb|int }}"
-      volume_type: "{{ role_storage_devices.aws_component_disk_parameters.volume_type }}"
-      device_name: "/dev/sd{{ item.drive_letter|lower }}"
-      encrypted: "{{ role_storage_devices.aws_component_disk_parameters.encrypted }}"
-      delete_on_termination: "{{ role_storage_devices.aws_component_disk_parameters.delete_on_termination }}"
-      tags: "{{ {
-                  'Name': 'disk_'+item.drive_letter+'_'+item.partition_label,
-                  'Partition_label': item.partition_label,
-                  'Drive_letter': item.drive_letter
-                }
-                | combine(custom_tags) }}"
-  register: r_ec2_volumes
-  loop: "{{ yak_inventory_os_storages }}"
+      volume_size: "{{ yak_filesystem_configuration.size_gb|int }}"
+      volume_type: "{{ yak_filesystem_configuration.volume_type }}"
+      device_name: "/dev/sd{{ yak_filesystem_configuration.drive_letter|lower }}"
+      encrypted: "{{ yak_filesystem_configuration.encrypted }}"
+      delete_on_termination: "{{ yak_filesystem_configuration.delete_on_termination | default(true) }}"
+      tags: >
+            {{
+              {
+                'Name': 'disk-' + machine_name + '-' + yak_filesystem_configuration.drive_letter + '-' + yak_filesystem_configuration.partition_label,
+                'Partition_label': yak_filesystem_configuration.partition_label,
+                'Drive_letter': yak_filesystem_configuration.drive_letter,
+                'Yak_machine_name': machine_name
+              }
+              | combine(custom_tags)
+            }}
 
-- debug: var=r_ec2_volumes
+- debug: var=ec2_volume
   delegate_to: localhost
   when: debug | bool
 
 - name: Create and attach the volumes to instance
   delegate_to: localhost
-  amazon.aws.ec2_vol: "{{ item.ansible_facts.ec2_volume }}"
-  loop: "{{ r_ec2_volumes.results }}"
+  amazon.aws.ec2_vol: "{{ ec2_volume }}"

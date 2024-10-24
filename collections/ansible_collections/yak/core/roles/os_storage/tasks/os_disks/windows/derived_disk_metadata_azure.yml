@@ -34,8 +34,10 @@
     ansible_disks: "{{ ansible_disks }}"
   register: r_derive_pv_list
 
-- set_fact:
-    pv_list_extended: "{{ r_derive_pv_list.pv_list_extended }}"
+- when: item.drive_letter == yak_filesystem_configuration.drive_letter
+  set_fact:
+    pv_list_extended: ['{{ item }}']
+  loop: '{{ r_derive_pv_list.pv_list_extended }}'
 
 - debug: var=pv_list_extended
   when: debug | bool

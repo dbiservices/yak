@@ -5,20 +5,29 @@
       - "provider: {{ provider }}"
       - "machine_name: {{ machine_name }}"
       - "os_type: {{ os_type }}"
-      - "volume_group_name: {{ volume_group_name }}"
+      - "volume_group_name: {{ sanitized_mount_point_name }}"
       - "custom_tags: {{ custom_tags }}"
       - "role_storage_devices: {{ role_storage_devices }}"
+      - "yak_filesystem_configuration: {{ yak_filesystem_configuration }}"
   when: debug|bool
 
-- name: Ensure that storage_devices max_size_gb is valid
-  ansible.builtin.assert:
-    that:
-      - item|int > 2
-      - item|int < 10240
-    fail_msg: "'max_size_gb' has an invalid value. Please use a value between 3 and 10240."
-    success_msg: "'storage_devices max_size_gb' has a valid value."
-  loop:
-    - '{{ role_storage_devices.aws_component_disk_parameters.max_size_gb }}'
-    - '{{ role_storage_devices.azure_component_disk_parameters.max_size_gb }}'
-    - '{{ role_storage_devices.oci_component_disk_parameters.max_size_gb }}'
-...
+# Windows don't have max_size
+# Need to make check depending of each cloud provider for minimum size and depending of os
+# - name: Ensure that max_size_gb is valid
+#   ansible.builtin.assert:
+#     that:
+#       - yak_filesystem_configuration.max_size_gb|int > 2
+#       - yak_filesystem_configuration.max_size_gb|int < 10240
+#     fail_msg: "'max_size_gb' has an invalid value. Please use a value between 3 and 10240."
+#     success_msg: "'max_size_gb' has a valid value."
+
+# To add to cloud provider specific for check
+
+# - name: Ensure that yak_filesystem_configuration.encrypted is valid
+#   ansible.builtin.assert:
+#     that: >
+#       yak_filesystem_configuration.encrypted == true
+#       or
+#       yak_filesystem_configuration.encrypted == false
+#     fail_msg: "'yak_filesystem_configuration.encrypted' has an invalid value. Please use 'true' or 'false'."
+#     success_msg: "'yak_filesystem_configuration.encrypted' has a valid value."
