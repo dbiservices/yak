@@ -405,15 +405,22 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._set_hvars(server_name, 'provider', server["providerName"])
 
         # OS
-        self._set_hvars(server_name, 'ansible_user', server["providerImageAnsibleUser"])
-        self._set_hvars(server_name, 'os_type', server["providerImageOsType"].lower())
-        self._set_hvars(server_name, 'yak_image_name', server["providerImageName"].lower())
-        self._set_hvars(server_name, 'yak_shape_name', server["providerShapeName"].lower())
-        self._append_hvars(server_name, server["providerImageVariables"])
-        self._append_hvars(server_name, server["providerShapeVariables"])
+        if server["providerName"].lower() != "on_premises":
+            self._set_hvars(server_name, 'ansible_user', server["providerImageAnsibleUser"])
+            self._set_hvars(server_name, 'os_type', server["providerImageOsType"].lower())
+            self._set_hvars(server_name, 'yak_image_name', server["providerImageName"].lower())
+            self._set_hvars(server_name, 'yak_shape_name', server["providerShapeName"].lower())
+            self._append_hvars(server_name, server["providerImageVariables"])
+            self._append_hvars(server_name, server["providerShapeVariables"])
 
-        # Root Disk parameters
-        self._append_hvars(server_name, server["providerDisksParametersVariables"])
+            # Root Disk parameters
+            self._append_hvars(server_name, server["providerDisksParametersVariables"])
+
+        if server["providerName"].lower() == "on_premises":
+            on_premises_os_type = server["variables"].get("os_type", "").lower()
+            self._set_hvars(server_name, 'os_type', on_premises_os_type)
+            if on_premises_os_type == "windows":
+                self._set_hvars(server_name, "ansible_connection", "winrm")
 
         # IPs
         self._set_hvars(server_name, 'ansible_host', server["name"])
