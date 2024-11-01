@@ -7,7 +7,6 @@
     number_of_instances: "{{ r_ec2_instance_info.instances | length }}"
 
 - block:
-  - include_tasks: set_key_if_not_exists.yml
   - include_tasks: derive_image_id.yml
   - include_tasks: "create_{{ os_type }}.yml"
   - include_tasks: post_config.yml
