@@ -142,8 +142,9 @@ ssh-copy-id -i sshkey.pub ansible@172.22.11.21
 
 ```bash
 [root@localhost ~]# sudo visudo
-root     ALL=(ALL)      ALL
-ansible  ALL=(ALL) NOPASSWD: ALL
+## Same thing without a password
+%wheel  ALL=(ALL)       NOPASSWD: ALL
+ansible ALL=(ALL)       NOPASSWD: ALL
 ```
 
 #### 3.4 Test Ansible connection to the Linux server 
