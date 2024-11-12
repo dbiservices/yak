@@ -135,7 +135,7 @@ In this example, we have a user named ansible and added sudo for it.
 No we have to exchange ssh key to make the connection from YaK to the VM password-less:
 
 ```bash
-ssh-copy-id ansible@192.168.222.111
+ssh-copy-id -i sshkey.pub ansible@172.22.11.21
 ```
 
 #### 3.3 Test Ansible connection to the Linux server 
