@@ -138,7 +138,15 @@ No we have to exchange ssh key to make the connection from YaK to the VM passwor
 ssh-copy-id -i sshkey.pub ansible@172.22.11.21
 ```
 
-#### 3.3 Test Ansible connection to the Linux server 
+#### 3.3 Allow root to run any commands anywhere on your server
+
+```bash
+[root@localhost ~]# sudo visudo
+root     ALL=(ALL)      ALL
+ansible  ALL=(ALL) NOPASSWD: ALL
+```
+
+#### 3.4 Test Ansible connection to the Linux server 
 
 ```bash
 ansible -m ping onpremise_testing/srv01
